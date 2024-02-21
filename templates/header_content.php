@@ -32,6 +32,10 @@ $url_base = "http://localhost:9090/admin/";
   <link rel="stylesheet" href="../../plugins/summernote/summernote-bs4.min.css">
   <!-- Estilos Personalizados -->
   <link rel="stylesheet" href="../../dist/css/estilos.css">
+  <!-- Agrega estos enlaces en la sección head de tu HTML -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 
@@ -158,6 +162,12 @@ $url_base = "http://localhost:9090/admin/";
               </p>
             </a>
             <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/productos/crear_categoria.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crear Categoria</p>
+                </a>
+              </li>
               <li class="nav-item">
                 <a href="<?php echo $url_base;?>secciones/productos/crear.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>

@@ -22,13 +22,13 @@
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-success">
-                                    Escanear Codigo
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-default">
+                                    <i class="fas fa-barcode"></i>
                                 </button>
-                                <input type="text" class="form-control" required id="result">
-                                <div class="modal fade" id="modal-success">
+                                <input type="text" class="form-control" required>
+                                <div class="modal fade" id="modal-default">
                                     <div class="modal-dialog">
-                                    <div class="modal-content bg-success" style="width: 115%;">
+                                    <div class="modal-content bg-default" style="width: 115%;">
                                         <div class="modal-header" style="text-align:center">
                                             <h4 class="modal-title">Escanear Codigo</h4>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -36,11 +36,15 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                        <!-- <div id="barcode"> -->
-                                            <video id="barcodevideo" autoplay></video>
-                                            <canvas id="barcodecanvasg" ></canvas>
-                                        <!-- </div> -->
-                                        <canvas id="barcodecanvas"></canvas>
+                                            <div id="barcode">
+                                                <video id="barcodevideo" autoplay></video>
+                                                <canvas id="barcodecanvasg" ></canvas>
+                                            </div>
+                                            <canvas id="barcodecanvas" ></canvas>
+                                            <div id="result"></div> 
+                                            <a class="btn btn-app" id="miBoton" onclick="copiarContenido()">
+                                                <i class="far fa-clipboard"></i> Copiar
+                                            </a>
                                         </div>
                                         <div class="modal-footer justify-content-between">
                                             <button type="button" class="btn btn-outline-light" data-dismiss="modal">Cerrar</button>
