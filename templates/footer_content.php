@@ -38,6 +38,27 @@
       sound.play();	
     });
 });
+
+function copiarContenido() {
+            // Selecciona el contenido del div
+            var contenido = document.getElementById('result').innerText;
+
+            // Crea un elemento de texto temporal
+            var elementoTemporal = document.createElement('textarea');
+            elementoTemporal.value = contenido;
+
+            // Añade el elemento temporal al documento
+            document.body.appendChild(elementoTemporal);
+
+            // Selecciona y copia el contenido del elemento temporal
+            elementoTemporal.select();
+            document.execCommand('copy');
+
+            // Elimina el elemento temporal
+            document.body.removeChild(elementoTemporal);
+
+            alert('Contenido copiado!');
+        }
 </script>
 <!-- Bootstrap 4 -->
 <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -47,7 +68,7 @@
 <script src="../../plugins/sparklines/sparkline.js"></script>
 <!-- JQVMap -->
 <script src="../../plugins/jqvmap/jquery.vmap.min.js"></script>
-<script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<script src="../../plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
 <!-- jQuery Knob Chart -->
 <script src="../../plugins/jquery-knob/jquery.knob.min.js"></script>
 <!-- daterangepicker -->
@@ -67,8 +88,6 @@
 <script src="../../dist/js/pages/dashboard.js"></script>
 <!-- barcode -->
 <script type="text/javascript" src="../../dist/js/barcode.js"></script>
-
-
 <!-- DataTables  & Plugins -->
 <script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
