@@ -14,8 +14,12 @@ if(isset($_GET['txtID'])){
 }
 
 
-$sentencia=$conexion->prepare("SELECT * FROM `producto`");
+$sentencia=$conexion->prepare("SELECT producto.*, categoria.*
+FROM producto
+INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id");
+
 $sentencia->execute();
+
 $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
@@ -34,16 +38,13 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <tr>
                     <th>Codigo</th>
                     <th>Nombre del Producto</th>
-                    <th>Cantidad en Stock</th>
-                    <th>Tipo de unidad</th>
                     <th>Precio de compra</th>
                     <th>Precio de Venta</th>
                     <th>Marca del Producto</th>
-                    <th>Modelo del producto</th>
-                    <th>Estado del producto</th>
-                    <th>Foto</th>
+                    <th>Modelo del producto</th>                                    
+                    <th>Categoria</th>
+                    <th>Cantidad en Stock</th>
                     <th>Editar</th>
-
                     
                   </tr>
                   </thead>
@@ -53,14 +54,13 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                 <tr class="">
                 <td scope="row"><?php echo $registro['producto_codigo']; ?></td>
                 <td><?php echo $registro['producto_nombre']; ?></td>
-                <td><?php echo $registro['producto_stock_total']; ?></td>
-                <td><?php echo $registro['producto_tipo_unidad']; ?></td>
                 <td><?php echo $registro['producto_precio_compra']; ?></td>
-                <td><?php echo $registro['producto_precio_venta']; ?></td>
+                <td><?php echo $registro['producto_precio_venta']; ?></td>                
                 <td><?php echo $registro['producto_marca']; ?></td>
                 <td><?php echo $registro['producto_modelo']; ?></td>
-                <td><?php echo $registro['producto_estado']; ?></td>
-                <td><?php echo $registro['producto_foto']; ?></td>
+                <td><?php echo $registro['categoria_nombre']; ?></td>
+                <td><?php echo $registro['producto_stock_total']; ?></td>
+
                 <td>
                       <div class="btn-group">
                       <a                    
@@ -73,10 +73,8 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     class="btn btn-danger"
                     href="index.php?txtID=<?php echo $registro['producto_id']; ?>"
                     role="button"
-                    >Eliminar</a>
-                        
-                        
-                     
+                    >Eliminar</a>                    
+         
                       </div>
                     </td>
               </tr>  

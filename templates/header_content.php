@@ -213,6 +213,18 @@ $url_base = "http://localhost:9090/admin/";
                   <p>Crear Caja</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/productos/" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Nueva Caja</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/productos/" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Lista de Caja</p>
+                </a>
+              </li>
             </ul>
           </li>
 
