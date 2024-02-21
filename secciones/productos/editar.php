@@ -22,7 +22,7 @@ if(isset($_GET['txtID'])){
 if($_POST){
     print_r($_POST);
 
-    //recolectamos los datos del metodo POST
+    //recolectamos los datos del metodo POST    
     $txtID=(isset($_POST['txtID']))?$_POST['txtID']:"";
     $producto_codigo=(isset($_POST["producto_codigo"])?$_POST["producto_codigo"]:"");
     $producto_nombre=(isset($_POST["producto_nombre"])?$_POST["producto_nombre"]:"");
@@ -57,7 +57,24 @@ if($_POST){
     $sentencia->bindParam(":producto_modelo",$producto_modelo);
     $sentencia->bindParam(":producto_id",$txtID);   
 
-    $sentencia->execute(); 
+    $resultado = $sentencia->execute();
+    if ($resultado) {
+        echo '<script>
+        Swal.fire({
+            title: "¡Editado Correctamente!!",
+            icon: "success",
+            confirmButtonText: "¡Entendido!"
+        });
+        </script>';
+    }else {
+        echo '<script>
+        Swal.fire({
+            title: "Error al Editar",
+            icon: "error",
+            confirmButtonText: "¡Entendido!"
+        });
+        </script>';
+    }
 }
 ?>
 
@@ -87,6 +104,7 @@ if($_POST){
                                 id="producto_nombre"
                                 value="<?php echo $producto_nombre;?>"
                                 >
+                                
                             </div>
                         </div>
                         <div class="col-sm-4">
