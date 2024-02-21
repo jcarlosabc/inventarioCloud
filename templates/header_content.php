@@ -1,6 +1,6 @@
 
 <?php 
-$url_base = "http://localhost:9090/admin/";
+$url_base = "http://localhost/inventariocloud/";
 ?>
 
 <!DOCTYPE html>
