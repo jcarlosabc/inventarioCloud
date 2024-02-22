@@ -1,3 +1,4 @@
+<?php include("../../templates/header_content.php") ?>
 <?php 
 include("../../db.php");
 
@@ -24,7 +25,6 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 
-<?php include("../../templates/header_content.php") ?>
 
 <div class="card">
               <div class="card-header">

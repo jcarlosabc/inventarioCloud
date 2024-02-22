@@ -153,6 +153,7 @@ $url_base = "http://localhost/inventariocloud/";
               </li>
             </ul>
           </li>
+
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon far fa-star fa-lg mr-2"></i>
@@ -179,21 +180,34 @@ $url_base = "http://localhost/inventariocloud/";
                   <i class="far fa-circle nav-icon"></i>
                   <p>Lista de Productos</p>
                 </a>
-              </li>
+              </li>              
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-star fa-lg mr-2"></i>
+              <p>
+                CAJAS
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">              
               <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/productos/" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Nueva Caja</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/productos/" class="nav-link">
+                <a href="<?php echo $url_base;?>secciones/cajas/" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Lista de Caja</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/cajas/crear.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crear Caja</p>
+                </a>
+              </li>
             </ul>
           </li>
+          
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
