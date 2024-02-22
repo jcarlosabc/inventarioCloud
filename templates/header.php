@@ -174,6 +174,30 @@ $url_base = "http://localhost:9090/admin/";
                   <i class="far fa-circle nav-icon"></i>
                   <p>Lista de Productos</p>
                 </a>
+              </li>              
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-star fa-lg mr-2"></i>
+              <p>
+                CAJAS
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">              
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/cajas/" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Lista de Caja</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/cajas/crear.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crear Caja</p>
+                </a>
               </li>
             </ul>
           </li>
