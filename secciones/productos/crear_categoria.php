@@ -28,14 +28,11 @@ if ($_POST) {
     }
 }
 ?>
-
-
 <br>
-
           <!-- left column -->
           <div class="">
             <!-- general form elements -->
-            <div class="card card-default" style="margin-top:7%">
+            <div class="card card-primary" style="margin-top:7%">
                 <div class="card-header">
                     <h3 class="card-title textTabla">REGISTRE NUEVA CATEGORIA</h3>
                 </div>
@@ -46,7 +43,7 @@ if ($_POST) {
                         <div class="row" style="justify-content:center">
                             <div class="col-sm-4" style="justify-content:center">
                                 <div class="form-group">
-                                    <label for="nuevaCategoria" class="textLabel">Nueva Categoria</label> 
+                                    <!-- <label for="nuevaCategoria" class="textLabel">Nueva Categoria</label>  -->
                                     <input type="text" class="form-control camposTabla" name="nueva_categoria" required id="nuevaCategoria">
                                 </div>
                             </div>
@@ -54,7 +51,7 @@ if ($_POST) {
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer" style="text-align:center">
-                        <button type="submit"  class="btn btn-primary">Guardar</button>
+                        <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
                     </div>
                 </form>
             </div>

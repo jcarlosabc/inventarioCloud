@@ -83,17 +83,13 @@ $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     <div class="row">
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="text" 
-                                class="form-control"
-                                name="producto_nombre"  
-                                id="producto_nombre"                                
-                                >
+                                <label for="producto_nombre" class="textLabel">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text" class="form-control camposTabla" name="producto_nombre" id="producto_nombre">
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label for="exampleInputEmail1" class="textLabel">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <label class="textLabel">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-default">
                                     <i class="fas fa-barcode"></i>
                                 </button>
@@ -132,14 +128,12 @@ $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label for="exampleInputEmail1" class="textLabel">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <label class="textLabel">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
                                 <select class="form-control select2" style="width: 100%;" name="categoria_id">                                    
                                     <?php foreach ($lista_categoria as $registro) {?>                 
-                        <option value="<?php echo $registro['categoria_id']; ?>"><?php echo $registro['categoria_nombre']; ?></option> 
-                         <?php } ?>
-                                
-                                  
+                                        <option value="<?php echo $registro['categoria_id']; ?>"><?php echo $registro['categoria_nombre']; ?></option> 
+                                    <?php } ?>
                                 </select>
                                 </div>
                             </div>
@@ -148,32 +142,32 @@ $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     <div class="row">
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control" placeholder="000.000" name="producto_precio_compra" id="producto_precio_compra">
+                                <label for="producto_precio_compra" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_compra" id="producto_precio_compra">
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control" placeholder="000.000" name="producto_precio_venta" id="producto_precio_venta">
+                                <label for="producto_precio_venta" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_venta" id="producto_precio_venta">
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control" name="producto_stock_total" id="producto_stock_total">
+                                <label for="producto_stock_total" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total">
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control" name="producto_marca" id="producto_marca">
+                                <label for="producto_marca" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla" name="producto_marca" id="producto_marca">
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control"  name="producto_modelo" id="producto_modelo">
+                                <label for="producto_modelo" class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla"  name="producto_modelo" id="producto_modelo">
                             </div>
                         </div>
                         
