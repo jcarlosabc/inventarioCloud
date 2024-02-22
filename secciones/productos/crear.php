@@ -4,9 +4,9 @@
           <!-- left column -->
           <div class="">
             <!-- general form elements -->
-            <div class="card card-primary">
+            <div class="card card-primary" style="margin-top:7%">
               <div class="card-header">
-                <h3 class="card-title">REGISTRE EL NUEVO PRODUCTO</h3>
+                <h3 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start --> 
@@ -15,17 +15,17 @@
                     <div class="row">
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="text" class="form-control" required id="exampleInputEmail1">
+                                <label for="exampleInputEmail1" class="textLabel">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text" class="form-control camposTabla" required >
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <label for="exampleInputEmail1" class="textLabel">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-default">
                                     <i class="fas fa-barcode"></i>
                                 </button>
-                                <input type="text" class="form-control" required>
+                                <input type="text" class="form-control camposTabla" required>
                                 <div class="modal fade" id="modal-default">
                                     <div class="modal-dialog">
                                     <div class="modal-content bg-default" style="width: 115%;">
@@ -60,9 +60,9 @@
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <label for="exampleInputEmail1" class="textLabel">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
-                                <select class="form-control select2" style="width: 100%;">
+                                <select class="form-control select2 camposTabla" style="width: 100%;">
                                     <option selected="selected">Alabama</option>
                                     <option>Alaska</option>
                                     <option>California</option>
@@ -78,52 +78,36 @@
                     <div class="row">
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control" placeholder="000.000" required id="exampleInputEmail1">
+                                <label for="exampleInputEmail1" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.000" required >
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control" placeholder="000.000" required id="exampleInputEmail1">
+                                <label for="exampleInputEmail1" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.000" required >
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control" required id="exampleInputEmail1">
+                                <label for="exampleInputEmail1" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla_stock" required >
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control" id="exampleInputEmail1">
+                                <label for="exampleInputEmail1" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla" >
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control" id="exampleInputEmail1">
+                                <label for="exampleInputEmail1" class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="num" class="form-control camposTabla" >
                             </div>
                         </div>
                         
                     </div>
-                  <!-- <div class="form-group col-4">
-                    <label for="exampleInputPassword1">Codigo de Barra</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                  </div> -->
-                  <!-- <div class="form-group">
-                    <label for="exampleInputFile">File input</label>
-                    <div class="input-group">
-                      <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="exampleInputFile">
-                        <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                      </div>
-                      <div class="input-group-append">
-                        <span class="input-group-text">Upload</span>
-                      </div>
-                    </div>
-                  </div> -->
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">

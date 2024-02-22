@@ -1,6 +1,6 @@
 
 <?php 
-$url_base = "http://localhost/inventariocloud/";
+$url_base = "http://localhost:9090/admin/";
 ?>
 
 <!DOCTYPE html>
@@ -31,19 +31,24 @@ $url_base = "http://localhost/inventariocloud/";
   <!-- summernote -->
   <link rel="stylesheet" href="../../plugins/summernote/summernote-bs4.min.css">
   <!-- Estilos Personalizados -->
-  <link rel="stylesheet" href="../../dist/css/estilos.css">
+  <link rel="stylesheet" href="../../dist/css/estilos_content.css">
   <!-- Agrega estos enlaces en la sección head de tu HTML -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 
 <div class="wrapper">
     <!-- Preloader -->
-    <!-- <div class="preloader flex-column justify-content-center align-items-center">
+    <div class="preloader flex-column justify-content-center align-items-center">
     <img class="animation__shake" src="../../dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
-  </div> -->
+  </div>
 
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -52,8 +57,8 @@ $url_base = "http://localhost/inventariocloud/";
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="index3.html" class="nav-link">Inicio</a>
+      <li class="nav-item">
+        <a href="http://localhost:9090/admin/index.php" class="nav-link" style="background: #dc5bf3; color: white;">Inicio</a>
       </li>
     </ul>
 
@@ -130,6 +135,8 @@ $url_base = "http://localhost/inventariocloud/";
               </a>
             </li>
           </li>
+          
+        <!-- SECCIÓN DE VENTAS -->
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cart-plus fa-lg mr-2"></i>
@@ -153,6 +160,8 @@ $url_base = "http://localhost/inventariocloud/";
               </li>
             </ul>
           </li>
+
+        <!-- SECCIÓN DE PRODUCTO -->
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon far fa-star fa-lg mr-2"></i>
@@ -182,6 +191,7 @@ $url_base = "http://localhost/inventariocloud/";
               </li>
             </ul>
           </li>
+
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
