@@ -35,19 +35,19 @@ if ($_POST) {
           <!-- left column -->
           <div class="">
             <!-- general form elements -->
-            <div class="card card-default">
+            <div class="card card-default" style="margin-top:7%">
                 <div class="card-header">
-                    <h3 class="card-title">REGISTRE NUEVA CATEGORIA</h3>
+                    <h3 class="card-title textTabla">REGISTRE NUEVA CATEGORIA</h3>
                 </div>
               <!-- /.card-header -->
               <!-- form start --> 
                 <form action="" method="POST" id="formCategoria">
                     <div class="card-body ">
-                        <div class="row">
-                            <div class="col-sm-4">
+                        <div class="row" style="justify-content:center">
+                            <div class="col-sm-4" style="justify-content:center">
                                 <div class="form-group">
-                                    <label for="nueva_categoria">Nueva Categoria</label> 
-                                    <input type="text" class="form-control" name="nueva_categoria" required id="nuevaCategoria">
+                                    <label for="nuevaCategoria" class="textLabel">Nueva Categoria</label> 
+                                    <input type="text" class="form-control camposTabla" name="nueva_categoria" required id="nuevaCategoria">
                                 </div>
                             </div>
                         </div>

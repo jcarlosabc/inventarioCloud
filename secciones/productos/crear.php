@@ -72,9 +72,9 @@ $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
           <!-- left column -->
           <div class="">
             <!-- general form elements -->
-            <div class="card card-primary">
+            <div class="card card-primary" style="margin-top:7%">
               <div class="card-header">
-                <h3 class="card-title">REGISTRE EL NUEVO PRODUCTO</h3>
+                <h3 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start --> 
@@ -93,7 +93,7 @@ $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <label for="exampleInputEmail1" class="textLabel">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-default">
                                     <i class="fas fa-barcode"></i>
                                 </button>
@@ -132,7 +132,7 @@ $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <label for="exampleInputEmail1" class="textLabel">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
                                 <select class="form-control select2" style="width: 100%;" name="categoria_id">                                    
                                     <?php foreach ($lista_categoria as $registro) {?>                 
@@ -178,22 +178,6 @@ $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                         
                     </div>
-                  <!-- <div class="form-group col-4">
-                    <label for="exampleInputPassword1">Codigo de Barra</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                  </div> -->
-                  <!-- <div class="form-group">
-                    <label for="exampleInputFile">File input</label>
-                    <div class="input-group">
-                      <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="exampleInputFile">
-                        <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                      </div>
-                      <div class="input-group-append">
-                        <span class="input-group-text">Upload</span>
-                      </div>
-                    </div>
-                  </div> -->
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
