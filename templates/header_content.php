@@ -164,7 +164,7 @@ $url_base = "http://localhost:9090/admin/";
         <!-- SECCIÓN DE PRODUCTO -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon far fa-star fa-lg mr-2"></i>
+              <i class="fas fa-shopping-basket"></i>
               <p>
                 PRODUCTOS
                 <i class="fas fa-angle-left right"></i>
@@ -192,9 +192,10 @@ $url_base = "http://localhost:9090/admin/";
             </ul>
           </li>
 
+        <!-- SECCIÓN DE CAJAS -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon far fa-star fa-lg mr-2"></i>
+            <i class="fas fa-cash-register"></i>
               <p>
                 CAJAS
                 <i class="fas fa-angle-left right"></i>
@@ -202,25 +203,13 @@ $url_base = "http://localhost:9090/admin/";
             </a>
             <ul class="nav nav-treeview">              
               <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/cajas/" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Lista de Caja</p>
-                </a>
-              </li>
-              <li class="nav-item">
                 <a href="<?php echo $url_base;?>secciones/cajas/crear.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Crear Caja</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/productos/" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Nueva Caja</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/productos/" class="nav-link">
+                <a href="<?php echo $url_base;?>secciones/cajas/" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Lista de Caja</p>
                 </a>

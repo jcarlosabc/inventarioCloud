@@ -43,9 +43,9 @@ if ($_POST) {
           <!-- left column -->
           <div class="">
             <!-- general form elements -->
-            <div class="card card-default">
+            <div class="card card-primary" style="margin-top:7%">
                 <div class="card-header">
-                    <h3 class="card-title">REGISTRE UNA NUEVA CAJA</h3>
+                    <h3 class="card-title textTabla">REGISTRE UNA NUEVA CAJA</h3>
                 </div>
               <!-- /.card-header -->
               <!-- form start --> 
@@ -54,20 +54,20 @@ if ($_POST) {
                         <div class="row">
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label for="numeroCaja">Numero de la Caja</label> 
-                                    <input type="text" class="form-control" name="caja_numero" required id="caja_numero">
+                                    <label for="caja_numero" class="textLabel">Numero de la Caja</label> 
+                                    <input type="text" class="form-control camposTabla" name="caja_numero" required id="caja_numero">
                                 </div>                               
                              </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                 <label for="nombreCaja">Nombre de la Caja</label> 
-                                <input type="text" class="form-control" name="caja_nombre" required id="caja_nombre">
+                                 <label for="caja_nombre" class="textLabel">Nombre de la Caja</label> 
+                                <input type="text" class="form-control camposTabla" name="caja_nombre" required id="caja_nombre">
                             </div>                                
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                 <label for="efectivoCaja">Efectivo de la Caja</label> 
-                                <input type="text" class="form-control" name="caja_efectivo" required id="caja_efectivo">
+                                 <label for="caja_efectivo" class="textLabel">Efectivo de la Caja</label> 
+                                <input type="text" class="form-control camposTabla" name="caja_efectivo" required id="caja_efectivo">
                             </div>                                
                         </div>
 

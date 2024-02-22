@@ -124,6 +124,8 @@ $url_base = "http://localhost:9090/admin/";
               </a>
             </li>
           </li>
+
+        <!-- SECCIÓN DE VENTAS -->
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cart-plus fa-lg mr-2"></i>
@@ -148,9 +150,10 @@ $url_base = "http://localhost:9090/admin/";
             </ul>
           </li>
 
+        <!-- SECCIÓN DE PRODUCTOS -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon far fa-star fa-lg mr-2"></i>
+              <i class="fas fa-shopping-basket"></i>
               <p>
                 PRODUCTOS
                 <i class="fas fa-angle-left right"></i>
@@ -178,9 +181,10 @@ $url_base = "http://localhost:9090/admin/";
             </ul>
           </li>
 
+        <!-- SECCIÓN DE CAJAS -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon far fa-star fa-lg mr-2"></i>
+            <i class="fas fa-cash-register"></i>
               <p>
                 CAJAS
                 <i class="fas fa-angle-left right"></i>
