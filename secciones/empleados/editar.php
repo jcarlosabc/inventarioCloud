@@ -31,15 +31,16 @@ if (isset($_GET['txtID'])) {
         $usuario_email = isset($_POST['usuario_email']) ? $_POST['usuario_email'] : "";
         $usuario_clave = isset($_POST['usuario_clave_1']) ? $_POST['usuario_clave_1'] : "";
         $usuario_rol = isset($_POST["usuario_rol"]) ? $_POST["usuario_rol"] : "";
-
         $usuario_caja = isset($_POST["usuario_caja"]) ? $_POST["usuario_caja"] : "";
 
+        $username = "u" + $usuario_apellido; 
         $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
         usuario_nombre=:usuario_nombre,
         usuario_apellido=:usuario_apellido,
         usuario_email=:usuario_email,
         usuario_usuario =:usuario_usuario,
         usuario_clave=:usuario_clave,
+        rol=:rol,
         caja_id = :caja_id
         WHERE usuario_id =:usuario_id");
 
@@ -47,8 +48,9 @@ if (isset($_GET['txtID'])) {
         $sentencia_edit->bindParam(":usuario_nombre", $usuario_nombre);
         $sentencia_edit->bindParam(":usuario_apellido", $usuario_apellido);
         $sentencia_edit->bindParam(":usuario_email", $usuario_email);
-        $sentencia_edit->bindParam(":usuario_usuario", $usuario_rol);
+        $sentencia_edit->bindParam(":usuario_usuario", $username);
         $sentencia_edit->bindParam(":usuario_clave", $usuario_clave);
+        $sentencia_edit->bindParam(":rol", $usuario_rol);
         $sentencia_edit->bindParam(":caja_id", $usuario_caja);
 
         $resultado_edit = $sentencia_edit->execute();
@@ -112,7 +114,7 @@ echo '<script>
 <!-- left column -->
 <div class="">
     <!-- general form elements -->
-    <div class="card card-primary" style="margin-top:7%">
+    <div class="card card-warning" style="margin-top:7%">
         <div class="card-header">
             <h3 class="card-title textTabla">EDITAR USUARIO</h3>
         </div>
@@ -165,9 +167,8 @@ echo '<script>
                                 <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_rol">
 
                                     <option value="<?= $usuario_tipo ?>" selected><?= $usuario_tipo ?></option>
-                                    <option value="Administrador">Administrador</option>
-                                    <option value="Empleado">Empleado</option>
-                                    <option value="Cajero">Cajero</option>
+                                    <option value="1">Empleado</option>
+                                    <option value="0">Administrador</option>
                                 </select>
                             </div>
                         </div>
