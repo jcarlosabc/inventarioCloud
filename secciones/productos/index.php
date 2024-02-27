@@ -10,7 +10,7 @@ if(isset($_GET['txtID'])){
   $sentencia=$conexion->prepare("DELETE FROM producto WHERE producto_id=:producto_id");
   $sentencia->bindParam(":producto_id",$txtID);
   $sentencia->execute();
-  header("Location:index.php");
+  
 }
 $sentencia=$conexion->prepare("SELECT producto.*, categoria.*
 FROM producto
@@ -45,8 +45,8 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                 <tr class="">
                   <td scope="row"><?php echo $registro['producto_codigo']; ?></td>
                   <td><?php echo $registro['producto_nombre']; ?></td>
-                  <td><?php echo $registro['producto_precio_compra']; ?></td>
-                  <td><?php echo $registro['producto_precio_venta']; ?></td>                
+                  <td><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
+                  <td><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>                
                   <td><?php echo $registro['producto_marca']; ?></td>
                   <td><?php echo $registro['producto_modelo']; ?></td>
                   <td><?php echo $registro['categoria_nombre']; ?></td>
@@ -55,8 +55,8 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     <div class="btn-group">
                         <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['producto_id']; ?>"role="button">Editar</a>
                         <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['producto_id']; ?>" role="button">Eliminar</a>                    
-                      </div>
-                    </td>
+                    </div>
+                  </td>
                 </tr>  
               <?php } ?>
             </tbody>                  

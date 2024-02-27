@@ -1,5 +1,6 @@
-<?php include("../../templates/header_content.php") ?>
+
 <?php
+
 include("../../db.php");
 
 if ($_POST) {
@@ -11,9 +12,13 @@ if ($_POST) {
     $producto_precio_venta = isset($_POST['producto_precio_venta']) ? $_POST['producto_precio_venta'] : "";
     $producto_marca = isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
     $producto_modelo = isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
-    $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";   
-        
-
+    $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";  
+    
+    // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
+    $producto_precio_compra = str_replace(array('$', ','), '', $producto_precio_compra);
+    $producto_precio_venta = str_replace(array('$', ','), '', $producto_precio_venta);
+    
+    
     
     $sentencia = $conexion->prepare("INSERT INTO producto(
     producto_id,
@@ -66,14 +71,78 @@ $sentencia=$conexion->prepare("SELECT * FROM `categoria`");
 $sentencia->execute();
 $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 ?>
+<?php include("../../templates/header_content.php") ?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+        // Obtener los inputs de precio de compra y precio de venta
+        var inputPrecioCompra = document.getElementById("producto_precio_compra");
+        var inputPrecioVenta = document.getElementById("producto_precio_venta");
+
+        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de compra
+        inputPrecioCompra.addEventListener("input", function(event) {
+            // Obtener el valor actual del input
+            var valor = event.target.value;
+
+            // Remover cualquier caracter que no sea número
+            valor = valor.replace(/[^\d]/g, '');
+
+            // Añadir el signo de peso al inicio
+            valor = "$" + valor;
+            
+            // Formatear el número con separador de miles
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            
+            // Asignar el valor formateado de vuelta al input
+            event.target.value = valor;
+        });
+        
+        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de venta
+        inputPrecioVenta.addEventListener("input", function(event) {
+            // Obtener el valor actual del input
+            var valor = event.target.value;
+
+            // Remover cualquier caracter que no sea número
+            valor = valor.replace(/[^\d]/g, '');
+            
+            // Añadir el signo de peso al inicio
+            valor = "$" + valor;
+
+            // Formatear el número con separador de miles
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+            // Asignar el valor formateado de vuelta al input
+            event.target.value = valor;
+        });
+
+        // Prevenir el envío del formulario si el valor de alguno de los campos no es válido
+        document.getElementById("formCaja").addEventListener("submit", function(event) {
+            // Obtener el valor actual del input de precio de compra
+            var valorCompra = inputPrecioCompra.value;
+
+            // Obtener el valor actual del input de precio de venta
+            var valorVenta = inputPrecioVenta.value;
+
+            // Remover cualquier caracter que no sea número
+            valorCompra = valorCompra.replace(/[^\d]/g, '');
+            valorVenta = valorVenta.replace(/[^\d]/g, '');
+            
+            // Si alguno de los valores es vacío o no es un número válido, prevenir el envío del formulario
+            if (valorCompra === '' || isNaN(parseInt(valorCompra)) || valorVenta === '' || isNaN(parseInt(valorVenta))) {
+                event.preventDefault();
+                alert("Ingrese un monto válido en precio de compra y precio de venta.");
+            }
+        });
+    });
+</script>
 
 <br>
+
 
           <!-- left column -->
           <div class="">
             <!-- general form elements -->
             <div class="card card-primary" style="margin-top:7%">
-              <div class="card-header">
+                <div class="card-header">
                 <h3 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO</h3>
               </div>
               <!-- /.card-header -->
@@ -143,13 +212,13 @@ $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_compra" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_compra" id="producto_precio_compra">
+                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.0" name="producto_precio_compra" id="producto_precio_compra">
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_venta" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_venta" id="producto_precio_venta">
+                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.0" name="producto_precio_venta" id="producto_precio_venta">
                             </div>
                         </div>
                         <div class="col-sm-2">

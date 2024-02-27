@@ -1,3 +1,12 @@
+<?php 
+session_start();
+$url_base = "http://localhost/inventariocloud/";
+
+if (!isset($_SESSION['usuario_nombre'])) {
+  header("Location:".$url_base."login.php");
+}
+
+?>
 <?php include("templates/header.php") ?>
 
         <!-- Small boxes (Stat box) -->

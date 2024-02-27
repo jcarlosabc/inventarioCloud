@@ -4,8 +4,8 @@ include("../../db.php");
 if ($_POST) {
     $caja_numero = isset($_POST['caja_numero']) ? $_POST['caja_numero'] : "";
     $caja_nombre = isset($_POST['caja_nombre']) ? $_POST['caja_nombre'] : "";
-    $caja_efectivo = isset($_POST['caja_efectivo']) ? $_POST['caja_efectivo'] : "";
-    
+    $caja_efectivo = isset($_POST['caja_efectivo']) ? $_POST['caja_efectivo'] : "";   
+            
     $sentencia = $conexion->prepare("INSERT INTO caja(
         caja_numero, 
         caja_nombre,
@@ -24,7 +24,11 @@ if ($_POST) {
             title: "¡Caja Creada Exitosamente!!",
             icon: "success",
             confirmButtonText: "¡Entendido!"
-        });
+        }).then((result) => {
+            if(result.isConfirmed){
+                window.location.href = "http://localhost/inventariocloud/secciones/cajas/";
+            }
+        })
         </script>';
     }else {
         echo '<script>
@@ -35,10 +39,15 @@ if ($_POST) {
         });
         </script>';
     }
+    
 }
 
+
 ?>
+
+
 <br>
+
 
           <!-- left column -->
           <div class="">
@@ -54,19 +63,19 @@ if ($_POST) {
                         <div class="row">
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label for="caja_numero" class="textLabel">Numero de la Caja</label> 
+                                    <label for="caja_numero" class="textLabel">Código</label> 
                                     <input type="text" class="form-control camposTabla" name="caja_numero" required id="caja_numero">
                                 </div>                               
                              </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                 <label for="caja_nombre" class="textLabel">Nombre de la Caja</label> 
+                                 <label for="caja_nombre" class="textLabel">Nombre</label> 
                                 <input type="text" class="form-control camposTabla" name="caja_nombre" required id="caja_nombre">
                             </div>                                
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                 <label for="caja_efectivo" class="textLabel">Efectivo de la Caja</label> 
+                                 <label for="caja_efectivo" class="textLabel">Efectivo</label> 
                                 <input type="text" class="form-control camposTabla" name="caja_efectivo" required id="caja_efectivo">
                             </div>                                
                         </div>
@@ -76,6 +85,8 @@ if ($_POST) {
                     <!-- /.card-body -->
                     <div class="card-footer" style="text-align:center">
                         <button type="submit"  class="btn btn-primary">Guardar</button>
+                        <a role="button"  href="index.php" class="btn btn-danger">Cancelar</a>
+
                     </div>
                 </form>
             </div>
