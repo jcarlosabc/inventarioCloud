@@ -12,21 +12,23 @@ if ($_POST) {
 
     $usuario_caja = isset($_POST['usuario_caja']) ? $_POST['usuario_caja'] : "";
 
+    $username = "u" + $usuario_apellido; 
     $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
         usuario_nombre,
         usuario_apellido , 
         usuario_email,
         usuario_usuario,
         usuario_clave,
+        rol,
         caja_id) 
-        VALUES (NULL, :usuario_nombre , :usuario_apellido, :usuario_email , :usuario_usuario, :usuario_clave, :caja_id)");
+        VALUES (NULL, :usuario_nombre , :usuario_apellido, :usuario_email , :usuario_usuario, :usuario_clave, :rol, :caja_id)");
 
     $sentencia->bindParam(":usuario_nombre", $usuario_nombre);
     $sentencia->bindParam(":usuario_apellido", $usuario_apellido);
     $sentencia->bindParam(":usuario_email", $usuario_email);
-    $sentencia->bindParam(":usuario_usuario", $usuario_rol);
+    $sentencia->bindParam(":usuario_usuario", $username);
     $sentencia->bindParam(":usuario_clave", $usuario_clave);
-
+    $sentencia->bindParam(":rol", $usuario_rol);
     $sentencia->bindParam(":caja_id", $usuario_caja);
 
 
@@ -142,9 +144,8 @@ echo '<script>
                             <label class="textLabel">Rol de usuario</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <div class="form-group">
                                 <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_rol">
-                                    <option value="Administrador">Administrador</option>
-                                    <option value="Empleado">Empleado</option>
-                                    <option value="Cajero">Cajero</option>
+                                    <option value="1">Empleado</option>
+                                    <option value="0">Administrador</option>
                                 </select>
                             </div>
                         </div>
