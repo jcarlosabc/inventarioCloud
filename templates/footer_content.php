@@ -129,6 +129,13 @@ function copiarContenido() {
     }).buttons().container().appendTo('#vBuscar_wrapper .col-md-6:eq(0)');
    
   });
+
+  $(function () {
+    $("#lista_usuario").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false
+    }).buttons().container().appendTo('#lista_usuario_wrapper .col-md-6:eq(0)');
+  });
+  
 </script>
 </body>
 </html>
