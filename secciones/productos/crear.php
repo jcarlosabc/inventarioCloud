@@ -11,9 +11,7 @@ if ($_POST) {
     $producto_precio_venta = isset($_POST['producto_precio_venta']) ? $_POST['producto_precio_venta'] : "";
     $producto_marca = isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
     $producto_modelo = isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
-    $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";   
-        
-
+    $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : ""; 
     
     $sentencia = $conexion->prepare("INSERT INTO producto(
     producto_id,
@@ -46,7 +44,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result)=>{
             if(result.isConfirmed){
-                window.location.href="http://localhost/inventariocloud/secciones/productos/"
+                window.location.href="http://localhost:9090/admin/secciones/productos/"
             }
         })
 
@@ -143,31 +141,31 @@ $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_compra" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_compra" id="producto_precio_compra">
+                                <input type="number" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_compra" id="producto_precio_compra">
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_venta" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_venta" id="producto_precio_venta">
+                                <input type="number" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_venta" id="producto_precio_venta">
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="producto_stock_total" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total">
+                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total">
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="producto_marca" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control camposTabla" name="producto_marca" id="producto_marca">
+                                <input type="number" class="form-control camposTabla" name="producto_marca" id="producto_marca">
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="producto_modelo" class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control camposTabla"  name="producto_modelo" id="producto_modelo">
+                                <input type="number" class="form-control camposTabla"  name="producto_modelo" id="producto_modelo">
                             </div>
                         </div>
                         
