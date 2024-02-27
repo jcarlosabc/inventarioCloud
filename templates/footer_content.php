@@ -123,6 +123,7 @@ function copiarContenido() {
       "responsive": true,
     });
   });
+  
   $(function () {
     $("#vBuscar").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false
@@ -137,5 +138,11 @@ function copiarContenido() {
   });
   
 </script>
+
+
+
+
+
+
 </body>
 </html>
