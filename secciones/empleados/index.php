@@ -12,9 +12,7 @@ if(isset($_GET['txtID'])){
   $sentencia->execute();
   
 }
-    $sentencia=$conexion->prepare("SELECT usuario.*, caja.*
-    FROM usuario
-    INNER JOIN caja ON usuario.caja_id = caja.caja_id ");
+    $sentencia=$conexion->prepare("SELECT * FROM usuario");
     $sentencia->execute();
     $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
 
@@ -34,7 +32,7 @@ if(isset($_GET['txtID'])){
               <th>Usuario</th>
               <th>Correo</th>
               <th>Tipo de usuario</th>
-              <th>Caja de usuario</th>
+              <!-- <th>Caja de usuario</th> -->
               <th>Opciones</th>
 
             </tr>
@@ -47,7 +45,7 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['usuario_apellido']; ?></td>
                   <td><?php echo $registro['usuario_email']; ?></td>                
                   <td><?php echo $registro['usuario_usuario']; ?></td>
-                  <td><?php echo $registro['caja_nombre']; ?></td>
+                  <!-- <td><?php echo $registro['caja_nombre']; ?></td> -->
 
                   <td>
                     <div class="btn-group">

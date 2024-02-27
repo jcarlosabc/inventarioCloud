@@ -4,16 +4,12 @@ if ($_POST) {
     include("db.php");
 
     $usuario_nombre = isset($_POST['usuario_nombre']) ? $_POST['usuario_nombre'] : "";
-    $usuario_clave = isset($_POST['usuario_clave']) ? $_POST['usuario_clave'] : "";
- 
+    $usuario_clave = hash('sha256',(isset($_POST['usuario_clave']) ? $_POST['usuario_clave'] : ""));
 
     $sentencia=$conexion ->prepare("SELECT *,count(*) as n_usuario 
     FROM usuario 
     WHERE usuario_nombre=:usuario_nombre AND usuario_clave=:usuario_clave");
-    
-    $usuario_nombre=$_POST["usuario_nombre"];
-    $usuario_clave=$_POST["usuario_clave"];
-
+      
     $sentencia->bindParam("usuario_nombre",$usuario_nombre);
     $sentencia->bindParam("usuario_clave",$usuario_clave);
 
