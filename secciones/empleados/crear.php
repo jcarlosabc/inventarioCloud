@@ -12,7 +12,7 @@ if ($_POST) {
 
     $usuario_caja = isset($_POST['usuario_caja']) ? $_POST['usuario_caja'] : "";
 
-    $username = "u" + $usuario_apellido; 
+    $username = "u" . $usuario_apellido; 
     $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
         usuario_nombre,
         usuario_apellido , 
