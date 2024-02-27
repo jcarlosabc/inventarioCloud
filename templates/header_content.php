@@ -1,6 +1,11 @@
 
 <?php 
-$url_base = "http://localhost:9090/admin/";
+session_start();
+$url_base = "http://localhost/inventariocloud/";
+
+if (!isset($_SESSION['usuario_nombre'])) {
+    header("Location:".$url_base."login.php");
+}
 ?>
 
 <!DOCTYPE html>
@@ -58,8 +63,12 @@ $url_base = "http://localhost:9090/admin/";
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item">
-        <a href="http://localhost:9090/admin/index.php" class="nav-link" style="background: #dc5bf3; color: white;">Inicio</a>
+        <a href="http://localhost/inventariocloud/" class="nav-link" style="background: #dc5bf3; color: white;">Inicio</a>
+        
       </li>
+      <li>
+      <a href="<?php echo $url_base;?>cerrar.php" class="nav-link">Cerrar Sesion</a>
+</li>
     </ul>
 
     <!-- Right navbar links -->
@@ -106,7 +115,7 @@ $url_base = "http://localhost:9090/admin/";
           <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Alexander Pierce</a>
+          <a href="#" class="d-block"><?php echo $_SESSION['usuario_nombre']?></a>
         </div>
       </div>
 
@@ -158,6 +167,31 @@ $url_base = "http://localhost:9090/admin/";
                   <p>Historial de Ventas</p>
                 </a>
               </li>
+            </ul>
+          </li>
+
+          <!-- SECCIÓN DE CLIENTES -->
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-address-book"></i>
+              <p>
+                CLIENTES
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/clientes/crear.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crear Cliente</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/clientes/index.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Lista de Clientes</p>
+                </a>
+              </li>                           
             </ul>
           </li>
 

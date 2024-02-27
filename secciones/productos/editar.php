@@ -43,12 +43,17 @@ if ($_POST) {
     $codigo_barra= isset($_POST['producto_codigo']) ? $_POST['producto_codigo'] : "";
     $producto_nombre= isset($_POST['producto_nombre']) ? $_POST['producto_nombre'] : "";
     $producto_stock_total= isset($_POST['producto_stock_total']) ? $_POST['producto_stock_total'] : "";
-    $precio_compra_producto= isset($_POST['producto_precio_compra']) ? $_POST['producto_precio_compra'] : "";
+    $producto_precio_compra= isset($_POST['producto_precio_compra']) ? $_POST['producto_precio_compra'] : "";
     $producto_precio_venta= isset($_POST['producto_precio_venta']) ? $_POST['producto_precio_venta'] : "";
     $producto_marca= isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
     $producto_modelo= isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
     $categoria_id= isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";
-    
+
+    // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
+    $producto_precio_compra = str_replace(array('$', ','), '', $producto_precio_compra);
+    $producto_precio_venta = str_replace(array('$', ','), '', $producto_precio_venta);
+     print_r($_POST);
+     
     $sentencia_edit = $conexion->prepare("UPDATE producto SET 
     producto_codigo=:producto_codigo,
     producto_nombre=:producto_nombre,
@@ -64,7 +69,7 @@ if ($_POST) {
     $sentencia_edit->bindParam(":producto_codigo", $codigo_barra);
     $sentencia_edit->bindParam(":producto_nombre", $producto_nombre);
     $sentencia_edit->bindParam(":producto_stock_total", $producto_stock_total);
-    $sentencia_edit->bindParam(":producto_precio_compra", $precio_compra_producto);
+    $sentencia_edit->bindParam(":producto_precio_compra", $producto_precio_compra);
     $sentencia_edit->bindParam(":producto_precio_venta", $producto_precio_venta);
     $sentencia_edit->bindParam(":producto_marca", $producto_marca);
     $sentencia_edit->bindParam(":producto_modelo", $producto_modelo);
@@ -79,7 +84,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "http://localhost:9090/admin/secciones/productos/index.php";
+                window.location.href = "http://localhost/inventariocloud/secciones/productos/";
             }
         })
         </script>';
@@ -95,6 +100,69 @@ if ($_POST) {
 }
 ?>
 <br>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+        // Obtener los inputs de precio de compra y precio de venta
+        var inputPrecioCompra = document.getElementById("producto_precio_compra");
+        var inputPrecioVenta = document.getElementById("producto_precio_venta");
+
+        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de compra
+        inputPrecioCompra.addEventListener("input", function(event) {
+            // Obtener el valor actual del input
+            var valor = event.target.value;
+
+            // Remover cualquier caracter que no sea número
+            valor = valor.replace(/[^\d]/g, '');
+
+            // Añadir el signo de peso al inicio
+            valor = "$" + valor;
+
+            // Formatear el número con separador de miles
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+            // Asignar el valor formateado de vuelta al input
+            event.target.value = valor;
+        });
+
+        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de venta
+        inputPrecioVenta.addEventListener("input", function(event) {
+            // Obtener el valor actual del input
+            var valor = event.target.value;
+
+            // Remover cualquier caracter que no sea número
+            valor = valor.replace(/[^\d]/g, '');
+
+            // Añadir el signo de peso al inicio
+            valor = "$" + valor;
+
+            // Formatear el número con separador de miles
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+            // Asignar el valor formateado de vuelta al input
+            event.target.value = valor;
+        });
+
+        // Prevenir el envío del formulario si el valor de alguno de los campos no es válido
+        document.getElementById("formCaja").addEventListener("submit", function(event) {
+            // Obtener el valor actual del input de precio de compra
+            var valorCompra = inputPrecioCompra.value;
+
+            // Obtener el valor actual del input de precio de venta
+            var valorVenta = inputPrecioVenta.value;
+
+            // Remover cualquier caracter que no sea número
+            valorCompra = valorCompra.replace(/[^\d]/g, '');
+            valorVenta = valorVenta.replace(/[^\d]/g, '');
+
+            // Si alguno de los valores es vacío o no es un número válido, prevenir el envío del formulario
+            if (valorCompra === '' || isNaN(parseInt(valorCompra)) || valorVenta === '' || isNaN(parseInt(valorVenta))) {
+                event.preventDefault();
+                alert("Ingrese un monto válido en precio de compra y precio de venta.");
+            }
+        });
+    });
+</script>
+
           <!-- left column -->
           <div class="">
             <!-- general form elements -->
@@ -121,7 +189,7 @@ if ($_POST) {
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_edit_qr">
                                     <i class="fas fa-barcode"></i>
                                 </button>
-                                <input type="text" class="form-control camposTabla" required value="<?php echo $producto_codigo;?>">
+                                <input type="text" class="form-control camposTabla" name="producto_codigo" id="producto_codigo" required value="<?php echo $producto_codigo;?>">
                                 <div class="modal fade" id="modal_edit_qr">
                                     <div class="modal-dialog">
                                     <div class="modal-content bg-default" style="width: 115%;">
@@ -174,8 +242,8 @@ if ($_POST) {
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control camposTabla_dinero" placeholder="000.000"name="producto_precio_compra" id="producto_precio_compra"
-                                    value="<?php echo $producto_precio_compra;?>">
+                                <input type="num" class="form-control camposTabla_dinero" placeholder="$000.00" name="producto_precio_compra" id="producto_precio_compra"
+                                value="<?php echo '$' . number_format($producto_precio_compra, 2, '.', ','); ?>">
                             </div>
                         </div>
                         <div class="col-sm-3">
@@ -183,12 +251,11 @@ if ($_POST) {
                                 <label for="" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="num" 
                                 class="form-control camposTabla_dinero"
-                                placeholder="000.000"
+                                placeholder="$000.00"
                                  
                                 name="producto_precio_venta"
                                 id="producto_precio_venta"
-                                value="<?php echo $producto_precio_venta;?>">
-                                  
+                                value="<?php echo '$' . number_format($producto_precio_venta, 2, '.', ','); ?>">                                 
 
                             </div>
                         </div>
