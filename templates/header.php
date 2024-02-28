@@ -49,7 +49,7 @@ $url_base = "http://localhost/inventariocloud/";
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="index3.html" class="nav-link">Inicio</a>
+          <a href="index.php" class="nav-link">Inicio</a>
         </li>
         <li>
           <a href="<?php echo $url_base;?>cerrar.php" class="nav-link" style="background: #17A2B8; border-radius: 17px;font-size: 15px;
@@ -102,7 +102,7 @@ $url_base = "http://localhost/inventariocloud/";
             <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
-            <a href="#" class="d-block h5" ><?php echo $_SESSION['usuario_nombre']?></a>
+            <a href="#" class="d-block h5" ><?php echo $_SESSION['usuario_usuario']?></a>
           </div>
         </div>
   
@@ -213,6 +213,7 @@ $url_base = "http://localhost/inventariocloud/";
               </ul>
             </li>
   
+          <?php if ($_SESSION['rolEmpleado']) { ?>
           <!-- SECCIÓN DE CAJAS -->
             <li class="nav-item">
               <a href="#" class="nav-link">
@@ -238,56 +239,31 @@ $url_base = "http://localhost/inventariocloud/";
               </ul>
             </li>
 
-          <!-- SECCIÓN DE USUARIO -->
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fa fa-users fa-lg mr-2"></i>
-                <p>
-                  USUARIO
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">              
+              <!-- SECCIÓN DE USUARIO -->
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Crear usuario</p>
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon fa fa-users fa-lg mr-2"></i>
+                    <p>
+                      USUARIO
+                      <i class="fas fa-angle-left right"></i>
+                    </p>
                   </a>
+                  <ul class="nav nav-treeview">              
+                    <li class="nav-item">
+                      <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Crear usuario</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Lista de Usuario</p>
+                      </a>
+                    </li>
+                  </ul>
                 </li>
-                <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Lista de Usuario</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-             <!-- SECCIÓN DE USUARIO -->
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="fa fa-users" aria-hidden="true"></i>
-              <p>
-                 USUARIO
-                 <i class="fas fa-angle-left right"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">              
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Crear usuario</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Lista de Usuario</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-
+            <?php } ?>
             
             <li class="nav-item">
               <a href="#" class="nav-link">
