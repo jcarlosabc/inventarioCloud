@@ -1,7 +1,7 @@
 <?php include("../../templates/header_content.php") ?>
+
 <?php
 include("../../db.php");
-
 if ($_POST) {
     
     $cliente_id = isset($_POST['cliente_id']) ? $_POST['cliente_id'] : "";
@@ -13,6 +13,8 @@ if ($_POST) {
     $cliente_direccion = isset($_POST['cliente_direccion']) ? $_POST['cliente_direccion'] : "";
     $cliente_telefono = isset($_POST['cliente_telefono']) ? $_POST['cliente_telefono'] : "";
     $cliente_email = isset($_POST['cliente_email']) ? $_POST['cliente_email'] : "";
+    $responsable = $_SESSION['usuario_id'];
+    
     
     
     $sentencia = $conexion->prepare("INSERT INTO cliente(
@@ -24,8 +26,9 @@ if ($_POST) {
         cliente_provincia,
         cliente_direccion,
         cliente_telefono,
-        cliente_email) 
-        VALUES (NULL,:cliente_numero_documento, :cliente_nombre,:cliente_apellido,:cliente_ciudad,:cliente_provincia,:cliente_direccion,:cliente_telefono,:cliente_email)");
+        cliente_email,
+        responsable) 
+        VALUES (NULL,:cliente_numero_documento, :cliente_nombre,:cliente_apellido,:cliente_ciudad,:cliente_provincia,:cliente_direccion,:cliente_telefono,:cliente_email,:responsable)");
     
     $sentencia->bindParam(":cliente_numero_documento", $cliente_numero_documento);
     $sentencia->bindParam(":cliente_nombre", $cliente_nombre);
@@ -35,6 +38,7 @@ if ($_POST) {
     $sentencia->bindParam(":cliente_direccion", $cliente_direccion);
     $sentencia->bindParam(":cliente_telefono", $cliente_telefono);
     $sentencia->bindParam(":cliente_email", $cliente_email);
+    $sentencia->bindParam(":responsable",$responsable);
         
     $resultado = $sentencia->execute();
     if ($resultado) {
@@ -71,7 +75,7 @@ if ($_POST) {
             <!-- general form elements -->
             <div class="card card-primary" style="margin-top:7%">
               <div class="card-header">
-                <h3 class="card-title textTabla" >REGISTRE NUEVO CLIENTE</h3>
+                <h3 class="card-title textTabla" >REGISTRE NUEVO CLIENTE &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="index.php" role="button">Lista de Clientes</a></h3>
               </div>
               <!-- /.card-header -->
               <!-- form start --> 
@@ -134,6 +138,7 @@ if ($_POST) {
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
                   <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+                  <a role="button"  href="index.php" class="btn btn-danger">Cancelar</a>
                 </div>
               </form>
             </div>

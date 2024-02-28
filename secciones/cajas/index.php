@@ -20,7 +20,7 @@ $lista_caja=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 <br>
 <div class="card card-primary">
         <div class="card-header">
-          <h2 class="card-title">LISTA DE CAJAS</h2>
+          <h2 class="card-title">LISTA DE CAJAS &nbsp;&nbsp;<a class="btn btn-warning"  style="color:black" href="crear.php" role="button">Crear Caja</a></h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
