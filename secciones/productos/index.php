@@ -53,8 +53,9 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['producto_stock_total']; ?></td>
                   <td>
                     <div class="btn-group">
+                        <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id']; ?>" role="button">Añadir</a> 
                         <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['producto_id']; ?>"role="button">Editar</a>
-                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['producto_id']; ?>" role="button">Eliminar</a>                    
+                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['producto_id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
                     </div>
                   </td>
                 </tr>  

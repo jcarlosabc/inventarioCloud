@@ -35,9 +35,9 @@ $url_base = "http://localhost/inventariocloud/";
 
 <div class="wrapper">
   <!-- Preloader -->
-  <!-- <div class="preloader flex-column justify-content-center align-items-center">
+  <div class="preloader flex-column justify-content-center align-items-center">
     <img class="animation__shake" src="dist/img/logos/logo_nube.png" alt="AdminLTELogo" height="60" width="80">
-  </div> -->
+  </div>
   
   <?php if ($_SESSION['logueado']) { ?>
     <!-- Navbar -->
@@ -88,7 +88,7 @@ $url_base = "http://localhost/inventariocloud/";
       <!-- Main Sidebar Container -->
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
-      <a href="index3.html" class="brand-link">
+      <a href="#" class="brand-link">
         <img src="dist/img/logos/logo_nube.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">Inventario Cloud</span>
       </a>
@@ -200,7 +200,7 @@ $url_base = "http://localhost/inventariocloud/";
                 <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/productos/crear.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Ingresar Productos</p>
+                    <p>Crear Productos</p>
                   </a>
                 </li>
                 <li class="nav-item">
