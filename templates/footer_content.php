@@ -107,7 +107,9 @@ function copiarContenido() {
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.min.js"></script>
 <!-- Page specific script -->
+
 <script>
+  //  CONFIGURANDO TABLAS
   $(function () {
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
@@ -123,26 +125,74 @@ function copiarContenido() {
       "responsive": true,
     });
   });
-  
-  $(function () {
-    $("#vBuscar").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false
-    }).buttons().container().appendTo('#vBuscar_wrapper .col-md-6:eq(0)');
-   
-  });
 
   $(function () {
-    $("#lista_usuario").DataTable({
+    $("#vBuscar, #lista_usuario, #lista_cajas").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false
     }).buttons().container().appendTo('#lista_usuario_wrapper .col-md-6:eq(0)');
   });
-  
+
+  // MASCARAS DE DINERO
+  document.addEventListener('DOMContentLoaded', function () {
+        // Obtener los inputs de precio de compra y precio de venta
+        var inputPrecioCompra = document.getElementById("producto_precio_compra");
+        var inputPrecioVenta = document.getElementById("producto_precio_venta");
+
+        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de compra
+        inputPrecioCompra.addEventListener("input", function(event) {
+            // Obtener el valor actual del input
+            var valor = event.target.value;
+
+            // Remover cualquier caracter que no sea número
+            valor = valor.replace(/[^\d]/g, '');
+
+            // Añadir el signo de peso al inicio
+            valor = "$" + valor;
+
+            // Formatear el número con separador de miles
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+            // Asignar el valor formateado de vuelta al input
+            event.target.value = valor;
+        });
+
+        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de venta
+        inputPrecioVenta.addEventListener("input", function(event) {
+            // Obtener el valor actual del input
+            var valor = event.target.value;
+
+            // Remover cualquier caracter que no sea número
+            valor = valor.replace(/[^\d]/g, '');
+
+            // Añadir el signo de peso al inicio
+            valor = "$" + valor;
+
+            // Formatear el número con separador de miles
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+            // Asignar el valor formateado de vuelta al input
+            event.target.value = valor;
+        });
+
+        // Prevenir el envío del formulario si el valor de alguno de los campos no es válido
+        document.getElementById("formCaja").addEventListener("submit", function(event) {
+            // Obtener el valor actual del input de precio de compra
+            var valorCompra = inputPrecioCompra.value;
+
+            // Obtener el valor actual del input de precio de venta
+            var valorVenta = inputPrecioVenta.value;
+
+            // Remover cualquier caracter que no sea número
+            valorCompra = valorCompra.replace(/[^\d]/g, '');
+            valorVenta = valorVenta.replace(/[^\d]/g, '');
+
+            // Si alguno de los valores es vacío o no es un número válido, prevenir el envío del formulario
+            if (valorCompra === '' || isNaN(parseInt(valorCompra)) || valorVenta === '' || isNaN(parseInt(valorVenta))) {
+                event.preventDefault();
+                alert("Ingrese un monto válido en precio de compra y precio de venta.");
+            }
+        });
+    });
 </script>
-
-
-
-
-
-
 </body>
 </html>

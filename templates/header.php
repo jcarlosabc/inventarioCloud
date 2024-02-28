@@ -1,5 +1,6 @@
 <?php 
 $url_base = "http://localhost/inventariocloud/";
+$url_base = "http://localhost/inventariocloud/";
 ?>
 
 <!DOCTYPE html>
@@ -7,8 +8,8 @@ $url_base = "http://localhost/inventariocloud/";
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Inventario | Cloud</title>
-
+  <title>Inventario Cloud</title>
+  <link rel="icon" type="image/x-icon" href="dist/img/logos/logo_nube.png">
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
@@ -29,15 +30,15 @@ $url_base = "http://localhost/inventariocloud/";
   <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
+  <!-- <link rel="stylesheet" href="dist/css/estilos_content.css"> -->
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 
 <div class="wrapper">
-    <!-- Preloader -->
-    <!-- <div class="preloader flex-column justify-content-center align-items-center">
-        <img class="animation__shake" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
-    </div> -->
-
+  <!-- Preloader -->
+  <div class="preloader flex-column justify-content-center align-items-center">
+    <img class="animation__shake" src="dist/img/logo_nube.png" alt="AdminLTELogo" height="60" width="80">
+  </div>
   
   <?php if ($_SESSION['logueado']) { ?>
     <!-- Navbar -->
@@ -49,13 +50,12 @@ $url_base = "http://localhost/inventariocloud/";
         </li>
         <li class="nav-item d-none d-sm-inline-block">
           <a href="index3.html" class="nav-link">Inicio</a>
-          
         </li>
         <li>
-        <a href="<?php echo $url_base;?>cerrar.php" class="nav-link">Cerrar Sesion</a>
-  </li>
+          <a href="<?php echo $url_base;?>cerrar.php" class="nav-link" style="background: #17A2B8; border-radius: 17px;font-size: 15px;
+            color: white;">Cerrar Sesion</a>
+        </li>
       </ul>
-  
   
       <!-- Right navbar links -->
       <ul class="navbar-nav ml-auto">
@@ -90,8 +90,8 @@ $url_base = "http://localhost/inventariocloud/";
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
       <a href="index3.html" class="brand-link">
-        <img src="dist/img/InnovaCLoudLogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">Innnova Cloud</span>
+        <img src="dist/img/logo_nube.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">Inventario Cloud</span>
       </a>
     
       <!-- Sidebar -->
@@ -105,8 +105,6 @@ $url_base = "http://localhost/inventariocloud/";
             <a href="#" class="d-block h5" ><?php echo $_SESSION['usuario_nombre']?></a>
           </div>
         </div>
-  
-        
   
         <!-- SidebarSearch Form -->
         <div class="form-inline">
@@ -162,7 +160,7 @@ $url_base = "http://localhost/inventariocloud/";
             <!-- SECCIÓN DE CLIENTES -->
             <li class="nav-item">
               <a href="#" class="nav-link">
-                <i class="fas fa-address-book"></i>
+                <i class="nav-icon fas fa-address-book fa-lg mr-2"></i>
                 <p>
                   CLIENTES
                   <i class="fas fa-angle-left right"></i>
@@ -187,7 +185,7 @@ $url_base = "http://localhost/inventariocloud/";
           <!-- SECCIÓN DE PRODUCTOS -->
             <li class="nav-item">
               <a href="#" class="nav-link">
-                <i class="fas fa-shopping-basket"></i>
+                <i class="nav-icon fas fa-shopping-basket fa-lg mr-2"></i>
                 <p>
                   PRODUCTOS
                   <i class="fas fa-angle-left right"></i>
@@ -218,7 +216,7 @@ $url_base = "http://localhost/inventariocloud/";
           <!-- SECCIÓN DE CAJAS -->
             <li class="nav-item">
               <a href="#" class="nav-link">
-              <i class="fas fa-cash-register"></i>
+              <i class="nav-icon fas fa-cash-register fa-lg mr-2"></i>
                 <p>
                   CAJAS
                   <i class="fas fa-angle-left right"></i>
@@ -237,6 +235,31 @@ $url_base = "http://localhost/inventariocloud/";
                     <p>Lista de Caja</p>
                   </a>
                 </li>              
+              </ul>
+            </li>
+
+          <!-- SECCIÓN DE USUARIO -->
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fa fa-users fa-lg mr-2"></i>
+                <p>
+                  USUARIO
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Crear usuario</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Usuario</p>
+                  </a>
+                </li>
               </ul>
             </li>
             

@@ -45,8 +45,9 @@ if ($_POST) {
   <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="dist/css/estilos.css">
 </head>
-<body class="hold-transition login-page">
+<body class="hold-transition login-page fondoLogin">
 <div class="login-box">
   <!-- /.login-logo -->
   <div class="card card-outline">

@@ -137,7 +137,7 @@ if ($_POST) {
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
-                  <button type="submit" class="btn btn-primary">Guardar</button>
+                  <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
                   <a role="button"  href="index.php" class="btn btn-danger">Cancelar</a>
                 </div>
               </form>
