@@ -191,7 +191,7 @@ echo '<script>
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
-                    <button type="submit" class="btn btn-primary" id="guardar">Guardar</button>
+                    <button type="submit" class="btn btn-primary btn-lg" id="guardar">Guardar</button>
                 </div>
         </form>
     </div>

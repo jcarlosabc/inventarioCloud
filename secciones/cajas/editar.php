@@ -144,8 +144,8 @@ $resultado_edit = $sentencia_edit->execute();
           </div>
           <!-- /.card-body -->
           <div class="card-footer" style="text-align:center">
-              <button type="submit"  class="btn btn-primary">Guardar</button>
-              <a role="button"  href="index.php" class="btn btn-danger">Cancelar</a>
+              <button type="submit"  class="btn btn-primary btn-lg">Guardar</button>
+              <a role="button" href="index.php" class="btn btn-danger btn-lg">Cancelar</a>
           </div>
       </form>
   </div>
