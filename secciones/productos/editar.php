@@ -21,7 +21,6 @@ if(isset($_GET['txtID'])){
     $categoria_id=$registro["categoria_id"];  
 }
 
-
     // Obtener la categoría actual del producto
     $sentencia_categoria = $conexion->prepare("SELECT p.categoria_id, c.categoria_nombre 
                                             FROM producto p
@@ -101,66 +100,7 @@ if ($_POST) {
 ?>
 <br>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-        // Obtener los inputs de precio de compra y precio de venta
-        var inputPrecioCompra = document.getElementById("producto_precio_compra");
-        var inputPrecioVenta = document.getElementById("producto_precio_venta");
 
-        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de compra
-        inputPrecioCompra.addEventListener("input", function(event) {
-            // Obtener el valor actual del input
-            var valor = event.target.value;
-
-            // Remover cualquier caracter que no sea número
-            valor = valor.replace(/[^\d]/g, '');
-
-            // Añadir el signo de peso al inicio
-            valor = "$" + valor;
-
-            // Formatear el número con separador de miles
-            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-            // Asignar el valor formateado de vuelta al input
-            event.target.value = valor;
-        });
-
-        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de venta
-        inputPrecioVenta.addEventListener("input", function(event) {
-            // Obtener el valor actual del input
-            var valor = event.target.value;
-
-            // Remover cualquier caracter que no sea número
-            valor = valor.replace(/[^\d]/g, '');
-
-            // Añadir el signo de peso al inicio
-            valor = "$" + valor;
-
-            // Formatear el número con separador de miles
-            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-            // Asignar el valor formateado de vuelta al input
-            event.target.value = valor;
-        });
-
-        // Prevenir el envío del formulario si el valor de alguno de los campos no es válido
-        document.getElementById("formCaja").addEventListener("submit", function(event) {
-            // Obtener el valor actual del input de precio de compra
-            var valorCompra = inputPrecioCompra.value;
-
-            // Obtener el valor actual del input de precio de venta
-            var valorVenta = inputPrecioVenta.value;
-
-            // Remover cualquier caracter que no sea número
-            valorCompra = valorCompra.replace(/[^\d]/g, '');
-            valorVenta = valorVenta.replace(/[^\d]/g, '');
-
-            // Si alguno de los valores es vacío o no es un número válido, prevenir el envío del formulario
-            if (valorCompra === '' || isNaN(parseInt(valorCompra)) || valorVenta === '' || isNaN(parseInt(valorVenta))) {
-                event.preventDefault();
-                alert("Ingrese un monto válido en precio de compra y precio de venta.");
-            }
-        });
-    });
 </script>
 
           <!-- left column -->
@@ -242,83 +182,45 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" class="form-control camposTabla_dinero" placeholder="$000.00" name="producto_precio_compra" id="producto_precio_compra"
+                                <input type="texto" class="form-control camposTabla_dinero" placeholder="$000.00" name="producto_precio_compra" id="producto_precio_compra"
                                 value="<?php echo '$' . number_format($producto_precio_compra, 2, '.', ','); ?>">
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" 
-                                class="form-control camposTabla_dinero"
-                                placeholder="$000.00"
-                                 
-                                name="producto_precio_venta"
-                                id="producto_precio_venta"
-                                value="<?php echo '$' . number_format($producto_precio_venta, 2, '.', ','); ?>">                                 
-
+                                <input type="texto" class="form-control camposTabla_dinero"placeholder="$000.00" name="producto_precio_venta"id="producto_precio_venta"
+                                    value="<?php echo '$' . number_format($producto_precio_venta, 2, '.', ','); ?>">                                 
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" 
-                                class="form-control camposTabla_stock" 
-                                 
-                                name="producto_stock_total"
-                                id="producto_stock_total"
-                                value="<?php echo $producto_stock_total;?>"
-                                >
+                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total"
+                                    value="<?php echo $producto_stock_total;?>" >
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" 
-                                class="form-control camposTabla" 
-                                
-                                name="producto_marca"
-                                id="producto_marca"
-                                value="<?php echo $producto_marca;?>"
-                                >
+                                <input type="text" class="form-control camposTabla" name="producto_marca" id="producto_marca" value="<?php echo $producto_marca;?>" >
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="num" 
-                                class="form-control camposTabla" 
-                                
-                                name="producto_modelo"
-                                id="producto_modelo"
-                                value="<?php echo $producto_modelo;?>">
+                                <input type="text" class="form-control camposTabla" name="producto_modelo" id="producto_modelo" value="<?php echo $producto_modelo;?>">
                             </div>
                         </div>
-                        
                     </div>
-                
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
-                
-                <button
-                 type="submit"
-                 class="btn btn-success">
-                 Actualizar
-                </button>
-
-                 <a            
-                 class="btn btn-danger"
-                href="index.php"
-                role="button"
-                >Cancelar</a>
-
+                    <button type="submit" class="btn btn-success btn-lg"> Actualizar </button>
+                    <a class="btn btn-danger btn-lg" href="index.php" role="button">Cancelar</a>
                 </div>
               </form>
             </div>
             <!-- /.card -->
           </div>
-
-
-
 <?php include("../../templates/footer_content.php") ?>

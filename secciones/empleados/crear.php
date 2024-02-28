@@ -146,7 +146,7 @@ echo '';
                 </div>
 
                 <div class="card-footer" style="text-align:center">
-                    <button type="submit" class="btn btn-primary" id="guardar" name="guardar">Guardar</button>
+                    <button type="submit" class="btn btn-primary btn-lg" id="guardar" name="guardar">Guardar</button>
                 </div>
         </form>
     </div>

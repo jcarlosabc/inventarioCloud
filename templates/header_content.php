@@ -14,7 +14,7 @@ if (!isset($_SESSION['usuario_nombre'])) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Inventario | Cloud</title>
-
+  <link rel="icon" type="image/x-icon" href="../../dist/img/logos/logo_nube.png">
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
@@ -52,8 +52,8 @@ if (!isset($_SESSION['usuario_nombre'])) {
 <div class="wrapper">
     <!-- Preloader -->
     <!-- <div class="preloader flex-column justify-content-center align-items-center">
-    <img class="animation__shake" src="../../dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
-  </div> -->
+      <img class="animation__shake" src="../../dist/img/logo_nube.png" alt="AdminLTELogo" height="60" width="80">
+    </div> -->
 
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -63,12 +63,13 @@ if (!isset($_SESSION['usuario_nombre'])) {
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item">
-        <a href="http://localhost/inventariocloud/" class="nav-link" style="background: #dc5bf3; color: white;">Inicio</a>
+        <a href="http://localhost/inventariocloud/" class="nav-link" style="background: #dc5bf3; color: white; border-radius: 17px ">Inicio</a>
         
       </li>
       <li>
-      <a href="<?php echo $url_base;?>cerrar.php" class="nav-link">Cerrar Sesion</a>
-</li>
+        <a href="<?php echo $url_base;?>cerrar.php" style="background: #17A2B8; border-radius: 17px; font-size: 15px;
+          color: white;margin-left: 10px;" class="nav-link">Cerrar Sesion</a>
+      </li>
     </ul>
 
     <!-- Right navbar links -->
@@ -103,8 +104,8 @@ if (!isset($_SESSION['usuario_nombre'])) {
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">AdminLTE 3</span>
+      <img src="../../dist/img/logo_nube.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">Inventario Cloud</span>
     </a>
 
     <!-- Sidebar -->
@@ -173,7 +174,7 @@ if (!isset($_SESSION['usuario_nombre'])) {
           <!-- SECCIÓN DE CLIENTES -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="fas fa-address-book"></i>
+              <i class="nav-icon fas fa-address-book fa-lg mr-2"></i>
               <p>
                 CLIENTES
                 <i class="fas fa-angle-left right"></i>
@@ -198,7 +199,7 @@ if (!isset($_SESSION['usuario_nombre'])) {
         <!-- SECCIÓN DE PRODUCTO -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="fas fa-shopping-basket"></i>
+              <i class="nav-icon fas fa-shopping-basket fa-lg mr-2"></i>
               <p>
                 PRODUCTOS
                 <i class="fas fa-angle-left right"></i>
@@ -229,7 +230,7 @@ if (!isset($_SESSION['usuario_nombre'])) {
         <!-- SECCIÓN DE CAJAS -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-            <i class="fas fa-cash-register"></i>
+            <i class="nav-icon fas fa-cash-register fa-lg mr-2"></i>
               <p>
                 CAJAS
                 <i class="fas fa-angle-left right"></i>
@@ -250,13 +251,11 @@ if (!isset($_SESSION['usuario_nombre'])) {
               </li>
             </ul>
           </li>
-
-
           
         <!-- SECCIÓN DE USUARIO -->
         <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="fa fa-users" aria-hidden="true"></i>
+              <i class="nav-icon fa fa-users fa-lg mr-2"></i>
               <p>
                  USUARIO
                  <i class="fas fa-angle-left right"></i>
@@ -277,8 +276,6 @@ if (!isset($_SESSION['usuario_nombre'])) {
               </li>
             </ul>
           </li>
-
-
 
           <li class="nav-item">
             <a href="#" class="nav-link">
