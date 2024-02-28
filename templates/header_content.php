@@ -103,8 +103,8 @@ if (!isset($_SESSION['usuario_nombre'])) {
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">AdminLTE 3</span>
+      <img src="../../dist/img/InnovaCLoudLogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">Innnova Cloud</span>
     </a>
 
     <!-- Sidebar -->
@@ -115,7 +115,7 @@ if (!isset($_SESSION['usuario_nombre'])) {
           <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block"><?php echo $_SESSION['usuario_nombre']?></a>
+          <a href="#" class="d-block h5"><?php echo $_SESSION['usuario_nombre']?></a>
         </div>
       </div>
 

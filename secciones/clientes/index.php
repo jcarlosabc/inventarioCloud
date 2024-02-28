@@ -19,7 +19,8 @@ $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="card card-primary">
         <div class="card-header">
-          <h2 class="card-title">LISTA DE CLIENTES</h2>
+          <h2 class="card-title">LISTA DE CLIENTES &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="crear.php" role="button">Crear Cliente</a></h2>
+          
         </div>
         <!-- /.card-header -->
         <div class="card-body">

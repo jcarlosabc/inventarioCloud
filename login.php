@@ -18,6 +18,7 @@ if ($_POST) {
     
     if ($lista_usuario["n_usuario"]>0) {
         $_SESSION['usuario_nombre']=$lista_usuario["usuario_nombre"];
+        $_SESSION['usuario_id'] = $lista_usuario["usuario_id"];
         $_SESSION['logueado']=true;
 
         //die(print_r($_SESSION));
@@ -34,7 +35,7 @@ if ($_POST) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | Log in (v2)</title>
+  <title>Innova CLoud | Log in </title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -48,9 +49,10 @@ if ($_POST) {
 <body class="hold-transition login-page">
 <div class="login-box">
   <!-- /.login-logo -->
-  <div class="card card-outline card-primary">
+  <div class="card card-outline">
+    <img src="dist/img/InnovaCLoudLogo.png">
     <div class="card-header text-center">
-      <a href="index2.html" class="h2"><b>Inventario </b>Cloud</a>
+      <a href="login.php" class="h2"><b>Inventario </b>Cloud</a>
     </div>
     <div class="card-body">
     <?php if (isset($mensaje)) { ?>
