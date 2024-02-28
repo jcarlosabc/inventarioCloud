@@ -2,7 +2,7 @@
 session_start();
 $url_base = "http://localhost/inventariocloud/";
 
-if (!isset($_SESSION['usuario_nombre'])) {
+if (!isset($_SESSION['usuario_usuario'])) {
   header("Location:".$url_base."login.php");
 }
 
