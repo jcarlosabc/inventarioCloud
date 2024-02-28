@@ -102,7 +102,7 @@ $url_base = "http://localhost/inventariocloud/";
             <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
-            <a href="#" class="d-block"><?php echo $_SESSION['usuario_nombre']?></a>
+            <a href="#" class="d-block h5" ><?php echo $_SESSION['usuario_nombre']?></a>
           </div>
         </div>
   
