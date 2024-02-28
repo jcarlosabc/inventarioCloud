@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="producto_marca" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="number" class="form-control camposTabla" name="producto_marca" id="producto_marca">
+                                <input type="text" class="form-control camposTabla" name="producto_marca" id="producto_marca">
                             </div>
                         </div>
                         <div class="col-sm-2">
