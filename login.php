@@ -8,15 +8,16 @@ if ($_POST) {
 
     $sentencia=$conexion ->prepare("SELECT *,count(*) as n_usuario 
     FROM usuario 
-    WHERE usuario_nombre=:usuario_nombre AND usuario_clave=:usuario_clave");
+    WHERE usuario_usuario=:usuario_usuario AND usuario_clave=:usuario_clave");
       
-    $sentencia->bindParam("usuario_nombre",$usuario_nombre);
+    $sentencia->bindParam("usuario_usuario",$usuario_nombre);
     $sentencia->bindParam("usuario_clave",$usuario_clave);
 
     $sentencia->execute();
     $lista_usuario = $sentencia->fetch(PDO::FETCH_ASSOC);
     
     if ($lista_usuario["n_usuario"]>0) {
+      $_SESSION['id'] =  $lista_usuario["usuario_id"];
         $_SESSION['usuario_nombre']=$lista_usuario["usuario_nombre"];
         $_SESSION['logueado']=true;
 

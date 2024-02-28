@@ -6,10 +6,7 @@ if (isset($_GET['txtID'])) {
 
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
     // Obtener la categoría actual del producto
-    $datos_usuario = $conexion->prepare("SELECT usuario.*, caja.*
-     FROM usuario
-     INNER JOIN caja ON usuario.caja_id = caja.caja_id
-     WHERE usuario.usuario_id =:usuario_id");
+    $datos_usuario = $conexion->prepare("SELECT * FROM usuario  WHERE usuario.usuario_id =:usuario_id");
 
     $datos_usuario->bindParam(":usuario_id", $txtID);
     $datos_usuario->execute();
@@ -20,9 +17,9 @@ if (isset($_GET['txtID'])) {
     $usuario_email = $registro["usuario_email"];
     $usuario_clave = $registro["usuario_clave"];
     $usuario_tipo = $registro["usuario_usuario"];
-    $usuario_caja_actual = $registro["caja_nombre"];
 
     $usuario_caja_actual_id = $registro["caja_id"];
+   
 
     if ($_POST) {
         $txtID = (isset($_POST['txtID'])) ? $_POST['txtID'] : "";
@@ -33,7 +30,9 @@ if (isset($_GET['txtID'])) {
         $usuario_rol = isset($_POST["usuario_rol"]) ? $_POST["usuario_rol"] : "";
         $usuario_caja = isset($_POST["usuario_caja"]) ? $_POST["usuario_caja"] : "";
 
-        $username = "u" + $usuario_apellido; 
+        $username = "u" . $usuario_apellido;
+        $responsable = isset($_SESSION['id']) ?   $_SESSION['id']  : 0;
+
         $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
         usuario_nombre=:usuario_nombre,
         usuario_apellido=:usuario_apellido,
@@ -41,7 +40,8 @@ if (isset($_GET['txtID'])) {
         usuario_usuario =:usuario_usuario,
         usuario_clave=:usuario_clave,
         rol=:rol,
-        caja_id = :caja_id
+        caja_id = :caja_id,
+        responsable = :responsable
         WHERE usuario_id =:usuario_id");
 
         $sentencia_edit->bindParam(":usuario_id", $txtID);
@@ -52,6 +52,8 @@ if (isset($_GET['txtID'])) {
         $sentencia_edit->bindParam(":usuario_clave", $usuario_clave);
         $sentencia_edit->bindParam(":rol", $usuario_rol);
         $sentencia_edit->bindParam(":caja_id", $usuario_caja);
+        $sentencia_edit->bindParam(":responsable", $responsable);
+
 
         $resultado_edit = $sentencia_edit->execute();
         if ($resultado_edit) {
@@ -76,36 +78,17 @@ if (isset($_GET['txtID'])) {
         </script>';
         }
     }
-    $sentencia = $conexion->prepare("SELECT * FROM `caja` ");
+
+
+    $sentencia = $conexion->prepare("SELECT usuario.*, caja.*  FROM usuario
+    INNER JOIN caja ON usuario.caja_id = caja.caja_id
+    WHERE usuario.usuario_id =:usuario_id");
+
+    $sentencia->bindParam(":usuario_id", $txtID);
     $sentencia->execute();
-    $lista_cajas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+    $lista_cajas = $sentencia->fetch(PDO::FETCH_ASSOC);
+
 }
-
-echo '<script>  
-        document.addEventListener("DOMContentLoaded", function() {
-            pass1 = document.getElementById("usuario_clave_1");
-            pass2 = document.getElementById("usuario_clave_2");
-            var mensaje = document.getElementById("mensaje");
-
-            pass1.addEventListener("input", function() {
-                if (pass1.value === pass2.value) {
-                    mensaje.textContent = "Las contraseñas coinciden.";
-                } else {
-                    mensaje.textContent = "Las contraseñas no coinciden.";
-                }
-            });
-            pass2.addEventListener("input", function() {
-                if (pass1.value === pass2.value) {
-                    mensaje.textContent = "Las contraseñas coinciden.";
-                    document.getElementById("guardar").disabled = false;
-
-                } else {
-                    mensaje.textContent = "Las contraseñas no coinciden.";
-                    document.getElementById("guardar").disabled = true;
-                }
-            });
-        });
-    </script>';
 
 ?>
 
@@ -115,9 +98,11 @@ echo '<script>
 <div class="">
     <!-- general form elements -->
     <div class="card card-warning" style="margin-top:7%">
-        <div class="card-header">
-            <h3 class="card-title textTabla">EDITAR USUARIO</h3>
+        <div class="card-header text-center">
+            <h2 class="card-title textTabla">EDITAR USUARIO &nbsp; 
+            </h2>
         </div>
+       
         <!-- /.card-header -->
         <!-- form start -->
         <form action=" " method="post" enctype="multipart/form-data">
@@ -179,11 +164,17 @@ echo '<script>
                         <div class="form-group">
                             <label class="textLabel">Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <div class="form-group">
-                                <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja">
-                                    <?php foreach ($lista_cajas as $registro) {
-                                        $selected = ($usuario_caja_actual_id == $registro["caja_id"]) ? "selected" : "";
-                                        echo '<option value="' . $registro["caja_id"] . '" ' . $selected . '>' . $registro["caja_nombre"] . '</option>';
-                                    } ?>
+                                <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja" <?php echo empty($lista_cajas) ? 'disabled' : ''; ?>>
+                                    <?php
+                                    if (empty($lista_cajas)) {
+                                        echo '<option value="" disabled>No hay cajas disponibles</option>';
+                                    } else {
+                                        foreach ($lista_cajas as $registro) {
+                                            $selected = ($usuario_caja_actual_id == $registro["caja_id"]) ? "selected" : "";
+                                            echo '<option value="' . $registro["caja_id"] . '" ' . $selected . '>' . $registro["caja_nombre"] . '</option>';
+                                        }
+                                    }
+                                    ?>
                                 </select>
                             </div>
                         </div>
@@ -197,5 +188,31 @@ echo '<script>
     </div>
     <!-- /.card -->
 </div>
+
+<script>  
+        document.addEventListener("DOMContentLoaded", function() {
+            pass1 = document.getElementById("usuario_clave_1");
+            pass2 = document.getElementById("usuario_clave_2");
+            var mensaje = document.getElementById("mensaje");
+
+            pass1.addEventListener("input", function() {
+                if (pass1.value === pass2.value) {
+                   // mensaje.textContent = "Las contraseñas coinciden.";
+                } else {
+                 //   mensaje.textContent = "Las contraseñas no coinciden.";
+                }
+            });
+            pass2.addEventListener("input", function() {
+                if (pass1.value === pass2.value) {
+                    mensaje.textContent = "";
+                    document.getElementById("guardar").disabled = false;
+
+                } else {
+                    mensaje.textContent = "Las contraseñas no coinciden.";
+                    document.getElementById("guardar").disabled = true;
+                }
+            });
+        });
+    </script>
 
 <?php include("../../templates/footer_content.php") ?>

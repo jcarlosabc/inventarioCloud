@@ -18,9 +18,10 @@ if(isset($_GET['txtID'])){
 
 ?>
 
-      <div class="card card-primary">
-        <div class="card-header">
-          <h2 class="card-title">LISTA DE USUARIO</h2>
+      <div class="card card-primary ">
+        <div class="card-header text-center ">
+          <h2 class="card-title textTabla">LISTA DE USUARIO  &nbsp; <a href="<?=$url_base?>secciones/empleados/crear.php" class="btn btn-warning " style="color:black"> Nuevo usuario </a>
+          </h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -31,7 +32,7 @@ if(isset($_GET['txtID'])){
               <th>Nombre</th>
               <th>Usuario</th>
               <th>Correo</th>
-              <th>Tipo de usuario</th>
+              <th>Usuario</th>
               <!-- <th>Caja de usuario</th> -->
               <th>Opciones</th>
 
