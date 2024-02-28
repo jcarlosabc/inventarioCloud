@@ -3,9 +3,11 @@
 include("../../db.php");
 if ($_POST) {
     $nombre_categoria = isset($_POST['nueva_categoria']) ? $_POST['nueva_categoria'] : "";
-    
-    $sentencia = $conexion->prepare("INSERT INTO categoria(categoria_id, categoria_nombre) VALUES (null, :nueva_categoria)");
+    $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";
+
+    $sentencia = $conexion->prepare("INSERT INTO categoria(categoria_id, categoria_nombre, responsable) VALUES (null, :nueva_categoria,:responsable)");
     $sentencia->bindParam(":nueva_categoria", $nombre_categoria);
+    $sentencia->bindParam(":responsable", $idResponsable);
     
     $resultado = $sentencia->execute();
     if ($resultado) {
@@ -45,6 +47,7 @@ if ($_POST) {
                                 <div class="form-group">
                                     <!-- <label for="nuevaCategoria" class="textLabel">Nueva Categoria</label>  -->
                                     <input type="text" class="form-control camposTabla" name="nueva_categoria" required id="nuevaCategoria">
+                                    <input type="hidden" value="<?php echo $_SESSION['usuario_id'] ?>" name="idResponsable">
                                 </div>
                             </div>
                         </div>

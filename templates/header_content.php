@@ -3,7 +3,7 @@
 session_start();
 $url_base = "http://localhost/inventariocloud/";
 
-if (!isset($_SESSION['usuario_nombre'])) {
+if (!isset($_SESSION['usuario_usuario'])) {
     header("Location:".$url_base."login.php");
 }
 ?>
@@ -116,7 +116,7 @@ if (!isset($_SESSION['usuario_nombre'])) {
           <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block h5"><?php echo $_SESSION['usuario_nombre']?></a>
+          <a href="#" class="d-block h5"><?php echo $_SESSION['usuario_usuario']?></a>
         </div>
       </div>
 
@@ -226,7 +226,8 @@ if (!isset($_SESSION['usuario_nombre'])) {
               </li>              
             </ul>
           </li>
-
+          
+          <?php if ($_SESSION['rolEmpleado']) { ?>
         <!-- SECCIÓN DE CAJAS -->
           <li class="nav-item">
             <a href="#" class="nav-link">
@@ -252,30 +253,32 @@ if (!isset($_SESSION['usuario_nombre'])) {
             </ul>
           </li>
           
-        <!-- SECCIÓN DE USUARIO -->
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fa fa-users fa-lg mr-2"></i>
-              <p>
-                 USUARIO
-                 <i class="fas fa-angle-left right"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">              
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Crear usuario</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Lista de Usuario</p>
-                </a>
-              </li>
-            </ul>
-          </li>
+          <!-- SECCIÓN DE USUARIO -->
+          <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fa fa-users fa-lg mr-2"></i>
+                <p>
+                  USUARIO
+                  <i class="fas fa-angle-left right"></i>
+                  </p>
+              </a>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Crear usuario</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Usuario</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          <?php } ?>
+
 
           <li class="nav-item">
             <a href="#" class="nav-link">

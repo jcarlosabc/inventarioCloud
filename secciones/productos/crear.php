@@ -13,12 +13,11 @@ if ($_POST) {
     $producto_marca = isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
     $producto_modelo = isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
     $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";  
+    $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";  
     
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
     $producto_precio_compra = str_replace(array('$', ','), '', $producto_precio_compra);
     $producto_precio_venta = str_replace(array('$', ','), '', $producto_precio_venta);
-    
-    
     
     $sentencia = $conexion->prepare("INSERT INTO producto(
     producto_id,
@@ -29,8 +28,8 @@ if ($_POST) {
     producto_precio_venta,
     producto_marca,
     producto_modelo,
-    categoria_id) 
-    VALUES (NULL,:producto_codigo, :producto_nombre,:producto_stock_total,:producto_precio_compra,:producto_precio_venta,:producto_marca,:producto_modelo,:categoria_id)");
+    categoria_id, responsable) 
+    VALUES (NULL,:producto_codigo, :producto_nombre,:producto_stock_total,:producto_precio_compra,:producto_precio_venta,:producto_marca,:producto_modelo,:categoria_id,:responsable)");
    
    $sentencia->bindParam(":producto_codigo", $producto_codigo);
     $sentencia->bindParam(":producto_nombre", $producto_nombre);
@@ -40,6 +39,7 @@ if ($_POST) {
     $sentencia->bindParam(":producto_marca", $producto_marca);
     $sentencia->bindParam(":producto_modelo", $producto_modelo);
     $sentencia->bindParam(":categoria_id", $categoria_id);
+    $sentencia->bindParam(":responsable", $idResponsable);
     
     
     $resultado = $sentencia->execute();
@@ -143,11 +143,12 @@ document.addEventListener('DOMContentLoaded', function () {
             <!-- general form elements -->
             <div class="card card-primary" style="margin-top:7%">
                 <div class="card-header">
-                <h3 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO</h3>
-              </div>
+                    <h2 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO &nbsp;<a style="color:black" class="btn btn-warning" href="<?php echo $url_base;?>secciones/productos/">Lista de Productos</a></h2>
+               </div>
               <!-- /.card-header -->
               <!-- form start --> 
               <form action="" method="post" enctype="multipart/form-data">
+                  <input type="hidden" value="<?php $_SESSION['usuario_id'] ?>" name="idResponsable">
                 <div class="card-body ">
                     <div class="row">
                         <div class="col-sm-4">
@@ -212,13 +213,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_compra" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="number" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_compra" id="producto_precio_compra">
+                                <input type="text" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_compra" id="producto_precio_compra">
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_venta" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="number" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_venta" id="producto_precio_venta">
+                                <input type="text" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_venta" id="producto_precio_venta">
                             </div>
                         </div>
                         <div class="col-sm-2">
