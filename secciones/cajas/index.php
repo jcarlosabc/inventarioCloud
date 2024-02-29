@@ -42,7 +42,7 @@ $lista_caja=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                 <td  style="text-align: center;">
                     <div class="btn-group">
                         <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['caja_id']; ?>"role="button">Editar</a>
-                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['caja_id']; ?>" role="button">Eliminar</a>                    
+                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['caja_id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
                     </div>
                   </td>
                 </tr> 

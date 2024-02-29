@@ -160,7 +160,7 @@ if ($_POST) {
                                                     <td>TOTAL</td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a class="btn btn-danger" href="crear.php?txtID=<?php echo $registro['id']; ?>" role="button">Eliminar</a>                    
+                                                            <a class="btn btn-danger" href="crear.php?txtID=<?php echo $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
                                                         </div>
                                                     </td>
                                                 </tr>  

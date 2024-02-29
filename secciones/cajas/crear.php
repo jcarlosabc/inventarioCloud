@@ -5,7 +5,10 @@ if ($_POST) {
     $caja_numero = isset($_POST['caja_numero']) ? $_POST['caja_numero'] : "";
     $caja_nombre = isset($_POST['caja_nombre']) ? $_POST['caja_nombre'] : "";
     $caja_efectivo = isset($_POST['caja_efectivo']) ? $_POST['caja_efectivo'] : "";  
-    $responsable = $_SESSION['usuario_id']; 
+    $responsable = $_SESSION['usuario_id'];
+
+    // Eliminar el signo "$" y el separador de miles "." del valor del campo de entrada
+    $caja_efectivo = str_replace(array('$','.',','), '', $caja_efectivo); 
             
     $sentencia = $conexion->prepare("INSERT INTO caja(
         caja_numero, 
@@ -47,6 +50,45 @@ if ($_POST) {
 
 
 ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtener el input de efectivo en caja
+        var inputEfectivo = document.getElementById("caja_efectivo");
+
+        // Escuchar el evento 'input' para actualizar el valor formateado
+        inputEfectivo.addEventListener("input", function(event) {
+            // Obtener el valor actual del input
+            var valor = event.target.value;
+
+            // Remover cualquier caracter que no sea número
+            valor = valor.replace(/[^\d]/g, '');
+
+            // Añadir el signo de peso al inicio
+            valor = "$" + valor;
+
+            // Formatear el número con separador de miles
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+            // Asignar el valor formateado de vuelta al input
+            event.target.value = valor;
+        });
+
+        // Prevenir el envío del formulario si el valor de efectivo en caja no es válido
+        document.getElementById("formCaja").addEventListener("submit", function(event) {
+            // Obtener el valor actual del input
+            var valor = inputEfectivo.value;
+
+            // Remover cualquier caracter que no sea número
+            valor = valor.replace(/[^\d]/g, '');
+
+            // Si el valor es vacío o no es un número válido, prevenir el envío del formulario
+            if (valor === '' || isNaN(parseInt(valor))) {
+                event.preventDefault();
+                alert("Ingrese un monto válido en efectivo en caja.");
+            }
+        });
+    });
+</script>
 
 
 <br>
