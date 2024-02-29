@@ -1,4 +1,4 @@
-
+<?php include("../../templates/header_content.php") ?>
 <?php
 
 include("../../db.php");
@@ -16,9 +16,11 @@ if ($_POST) {
     $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";  
     
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
-    $producto_precio_compra = str_replace(array('$', ','), '', $producto_precio_compra);
-    $producto_precio_venta = str_replace(array('$', ','), '', $producto_precio_venta);
+    $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
+    $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
     
+   
+
     $sentencia = $conexion->prepare("INSERT INTO producto(
     producto_id,
     producto_codigo, 
@@ -31,7 +33,7 @@ if ($_POST) {
     categoria_id, responsable) 
     VALUES (NULL,:producto_codigo, :producto_nombre,:producto_stock_total,:producto_precio_compra,:producto_precio_venta,:producto_marca,:producto_modelo,:categoria_id,:responsable)");
    
-   $sentencia->bindParam(":producto_codigo", $producto_codigo);
+    $sentencia->bindParam(":producto_codigo", $producto_codigo);
     $sentencia->bindParam(":producto_nombre", $producto_nombre);
     $sentencia->bindParam(":producto_stock_total", $producto_stock_total);
     $sentencia->bindParam(":producto_precio_compra", $producto_precio_compra);
@@ -42,21 +44,20 @@ if ($_POST) {
     $sentencia->bindParam(":responsable", $idResponsable);
     
     
-    $resultado = $sentencia->execute();
+    $resultado = $sentencia->execute();    
     if ($resultado) {
         echo '<script>
+        // Código JavaScript para mostrar SweetAlert
         Swal.fire({
-            title: "¡Producto Creado Exitosamente!!",
+            title: "¡Producto creado Exitosamente!!",
             icon: "success",
             confirmButtonText: "¡Entendido!"
-        }).then((result)=>{
+        }).then((result) => {
             if(result.isConfirmed){
-                window.location.href="http://localhost:9090/admin/secciones/productos/"
+                window.location.href = "http://localhost/inventariocloud/secciones/productos/";
             }
         })
-
         </script>';
-        
     }else {
         echo '<script>
         Swal.fire({
@@ -71,7 +72,6 @@ $sentencia=$conexion->prepare("SELECT * FROM `categoria`");
 $sentencia->execute();
 $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<?php include("../../templates/header_content.php") ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
         // Obtener los inputs de precio de compra y precio de venta
@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <i class="fas fa-barcode"></i>
                                 </button>
                                 <input type="text" class="form-control camposTabla"  name="producto_codigo"  id="producto_codigo">
+                                <input type="text" class="form-control camposTabla"  name="producto_codigo"  id="producto_codigo">
                                 <div class="modal fade" id="modal-default">
                                     <div class="modal-dialog">
                                     <div class="modal-content bg-default" style="width: 115%;">
@@ -247,6 +248,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
                   <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+                  <a class="btn btn-danger btn-lg" href="index.php" role="button">Cancelar</a>
+
+                  
                 </div>
               </form>
             </div>

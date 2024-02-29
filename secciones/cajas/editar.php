@@ -123,19 +123,19 @@ $resultado_edit = $sentencia_edit->execute();
                   <div class="col-sm-4">
                       <div class="form-group">
                             <input type="hidden" class="textLabel" name="txtID" id="txtID" value="<?php echo $caja_id;?>" >
-                          <label for="caja_numero" class="textLabel">Numero de la Caja</label> 
+                          <label for="caja_numero" class="textLabel">Codigo</label> 
                           <input type="text" class="form-control camposTabla" name="caja_numero"  id="caja_numero" value="<?php echo $caja_numero;?>">
                       </div>                               
                    </div>
               <div class="col-sm-4">
                   <div class="form-group">
-                       <label for="caja_nombre" class="textLabel">Nombre de la Caja</label> 
+                       <label for="caja_nombre" class="textLabel">Nombre</label> 
                       <input type="text" class="form-control camposTabla" name="caja_nombre"  id="caja_nombre" value="<?php echo $caja_nombre;?>">
                   </div>                                
               </div>
               <div class="col-sm-4">
                   <div class="form-group">
-                       <label for="caja_efectivo" class="textLabel">Efectivo de la Caja</label> 
+                       <label for="caja_efectivo" class="textLabel">Efectivo</label> 
                       <input type="text" class="form-control camposTabla" name="caja_efectivo"  id="caja_efectivo" value="<?php echo '$' . number_format($caja_efectivo, 2, '.', ','); ?>">
                   </div>                                                               
               </div>
