@@ -50,7 +50,7 @@ if(isset($_GET['txtID'])){
 
                   <td>
                     <div class="btn-group">
-                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button">Editar</a>
+                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button"><i class="fas fa-edit"></i></a>
                         <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['usuario_id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
                       </div>
                     </td>
