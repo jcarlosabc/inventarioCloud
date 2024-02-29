@@ -183,14 +183,14 @@ if ($_POST) {
                             <div class="form-group">
                                 <label for="" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="texto" class="form-control camposTabla_dinero" placeholder="$000.00" name="producto_precio_compra" id="producto_precio_compra"
-                                value="<?php echo '$' . number_format($producto_precio_compra, 2, '.', ','); ?>">
+                                value="<?php echo '$' . number_format($producto_precio_compra, 0, '.', ','); ?>">
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="texto" class="form-control camposTabla_dinero"placeholder="$000.00" name="producto_precio_venta"id="producto_precio_venta"
-                                    value="<?php echo '$' . number_format($producto_precio_venta, 2, '.', ','); ?>">                                 
+                                    value="<?php echo '$' . number_format($producto_precio_venta, 0, '.', ','); ?>">                                 
                             </div>
                         </div>
                         <div class="col-sm-2">

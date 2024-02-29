@@ -51,7 +51,7 @@ $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['cliente_email']; ?></td>
                   <td>
                     <div class="btn-group">
-                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['cliente_id']; ?>"role="button">Editar</a>
+                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['cliente_id']; ?>"role="button"><i class="fas fa-edit"></i></a>
                         <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['cliente_id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
                       </div>
                     </td>

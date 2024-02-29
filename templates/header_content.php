@@ -161,7 +161,7 @@ if (!isset($_SESSION['usuario_usuario'])) {
                   <i class="far fa-circle nav-icon"></i>
                   <p>Nueva venta</p>
                 </a>
-              </li>
+              </li>             
               <li class="nav-item">
                 <a href="<?php echo $url_base;?>secciones/ventas/" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
