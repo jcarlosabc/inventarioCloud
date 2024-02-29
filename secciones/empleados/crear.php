@@ -167,6 +167,7 @@ echo '<script>
 
                 <div class="card-footer" style="text-align:center">
                     <button type="submit" class="btn btn-primary btn-lg" id="guardar" name="guardar">Guardar</button>
+                    <a role="button"  href="index.php" class="btn btn-danger btn-lg">Cancelar</a>
                 </div>
         </form>
     </div>
