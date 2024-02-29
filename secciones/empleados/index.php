@@ -30,7 +30,7 @@ if(isset($_GET['txtID'])){
             <tr>
               <th>#</th>
               <th>Nombre</th>
-              <th>Usuario</th>
+              <th>Apellidos</th>
               <th>Correo</th>
               <th>Usuario</th>
               <!-- <th>Caja de usuario</th> -->

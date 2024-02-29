@@ -11,7 +11,7 @@ if ($_POST) {
     $usuario_rol = isset($_POST['usuario_rol']) ? $_POST['usuario_rol'] : "";
     $usuario_caja = isset($_POST['usuario_caja']) ? $_POST['usuario_caja'] : 0;
     $username = "u" . $usuario_apellido;
-    $responsable = isset($_SESSION['id']) ?   $_SESSION['id']  : 0;
+    $responsable = isset($_SESSION['usuario_id']) ?   $_SESSION['usuario_id']  : 0;
 
     $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
         usuario_nombre,

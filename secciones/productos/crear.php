@@ -252,5 +252,27 @@ document.addEventListener('DOMContentLoaded', function () {
             <!-- /.card -->
           </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var numberInput = document.getElementById('producto_stock_total');
+    var numberInput_2 = document.getElementById('producto_modelo');
+
+    numberInput.addEventListener('focus', function() {
+        this.setAttribute('type', 'text');
+    });
+    numberInput.addEventListener('blur', function() {
+        this.setAttribute('type', 'number');
+    });
+
+    numberInput_2.addEventListener('focus', function() {
+        this.setAttribute('type', 'text');
+    });
+    numberInput_2.addEventListener('blur', function() {
+        this.setAttribute('type', 'number');
+    });
+
+});
+
+</script> 
 
 <?php include("../../templates/footer_content.php") ?>

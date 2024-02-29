@@ -31,7 +31,7 @@ if (isset($_GET['txtID'])) {
         $usuario_caja = isset($_POST["usuario_caja"]) ? $_POST["usuario_caja"] : "";
 
         $username = "u" . $usuario_apellido;
-        $responsable = isset($_SESSION['id']) ?   $_SESSION['id']  : 0;
+        $responsable = isset($_SESSION['usuario_id']) ?   $_SESSION['usuario_id']  : 0;
 
         $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
         usuario_nombre=:usuario_nombre,
