@@ -34,8 +34,6 @@ if ($_POST) {
     $cliente_direccion= isset($_POST['cliente_direccion']) ? $_POST['cliente_direccion'] : "";
     $cliente_telefono= isset($_POST['cliente_telefono']) ? $_POST['cliente_telefono'] : "";
     $cliente_email= isset($_POST['cliente_email']) ? $_POST['cliente_email'] : "";
-
-    print_r($_POST);
     
     $sentencia_edit = $conexion->prepare("UPDATE cliente SET 
     cliente_numero_documento=:cliente_numero_documento,

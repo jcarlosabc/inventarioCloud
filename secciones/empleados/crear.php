@@ -9,10 +9,10 @@ if ($_POST) {
     $usuario_email = isset($_POST['usuario_email']) ? $_POST['usuario_email'] : "";
     $usuario_clave =  hash('sha256', (isset($_POST['usuario_clave_1']) ? $_POST['usuario_clave_1'] : ""));
     $usuario_rol = isset($_POST['usuario_rol']) ? $_POST['usuario_rol'] : "";
+    $usuario_caja = isset($_POST['usuario_caja']) ? $_POST['usuario_caja'] : 0;
+    $username = "u" . $usuario_apellido;
+    $responsable = isset($_SESSION['usuario_id']) ?   $_SESSION['usuario_id']  : 0;
 
-    $usuario_caja = isset($_POST['usuario_caja']) ? $_POST['usuario_caja'] : "";
-
-    $username = "u" . $usuario_apellido; 
     $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
         usuario_nombre,
         usuario_apellido , 

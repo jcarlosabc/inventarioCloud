@@ -1,6 +1,5 @@
 <?php 
 $url_base = "http://localhost/inventariocloud/";
-$url_base = "http://localhost/inventariocloud/";
 ?>
 
 <!DOCTYPE html>
