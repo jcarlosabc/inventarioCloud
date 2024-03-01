@@ -166,7 +166,7 @@ if ($_POST) {
                             <div class="form-group">
                                 <label for="" class="textLabel">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
-                                    <select class="form-control select2 camposTabla" name="categoria_id" style="width: 100%" readonly onchange="this.selectedIndex = 0;">
+                                    <select class="form-control select2 camposTabla" name="categoria_id" style="width: 100%" readonly disabled>
                                     <?php
                                         foreach ($categorias_disponibles as $categoria) {
                                             $selected = ($categoria["categoria_id"] == $categoria_actual["categoria_id"]) ? "selected" : "";
