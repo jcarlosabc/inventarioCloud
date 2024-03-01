@@ -48,12 +48,15 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo '$' . number_format($registro['venta_total'], 0, '.', ','); ?></td>
                   <td><?php echo '$' . number_format($registro['venta_pagado'], 0, '.', ','); ?></td> 
                   <td><?php echo '$' . number_format($registro['venta_cambio'], 0, '.', ','); ?></td>
-                  <td><a href=""><?php echo $registro['cliente_nombre']; ?></a></td>
+                  <td><a href="../clientes/editar.php?txtID=<?php echo $registro['cliente_id']; ?>"><?php echo $registro['cliente_nombre']; ?></a></td>
                   <td><?php echo  $registro['usuario_nombre']; ?></td> 
-                  <td>
+                  <td class="text-center">
                     <div class="btn-group">
-                        <a class="btn btn-info"href="detalles.php?txtID=<?php echo $registro['venta_id']; ?>" role="button"><i class="fa fa-eye"></i></a> 
-                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['venta_id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
+                        <a class="btn btn-info"href="detalles.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Detalles"><i class="fa fa-eye"></i></a> 
+                        <?php if ($_SESSION['rolEmpleado']) { ?>
+                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Eliminar"><i class="far fa-trash-alt"></i></a>    
+                        <?php } ?>
+
                     </div>
                   </td>
                 </tr>  
