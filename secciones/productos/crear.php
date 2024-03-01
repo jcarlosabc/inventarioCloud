@@ -201,7 +201,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <label class="textLabel">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
                                 <select class="form-control select2 camposTabla" style="width: 100%;" name="categoria_id">                                    
-                                    <?php foreach ($lista_categoria as $registro) {?>                 
+                                    <option value="Sin Categoria">Escoger Categoria</option> 
+                                    <?php foreach ($lista_categoria as $registro) {?>   
                                         <option value="<?php echo $registro['categoria_id']; ?>"><?php echo $registro['categoria_nombre']; ?></option> 
                                     <?php } ?>
                                 </select>
