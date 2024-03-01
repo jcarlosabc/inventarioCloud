@@ -38,13 +38,18 @@ if (!isset($_SESSION['usuario_usuario'])) {
   <!-- Estilos Personalizados -->
   <link rel="stylesheet" href="../../dist/css/estilos_content.css">
   <!-- Agrega estos enlaces en la sección head de tu HTML -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
   <!-- DataTables -->
   <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+
+
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -64,7 +69,6 @@ if (!isset($_SESSION['usuario_usuario'])) {
       </li>
       <li class="nav-item">
         <a href="http://localhost/inventariocloud/" class="nav-link" style="background: #dc5bf3; color: white; border-radius: 17px ">Inicio</a>
-        
       </li>
       <li>
         <a href="<?php echo $url_base;?>cerrar.php" style="background: #17A2B8; border-radius: 17px; font-size: 15px;
@@ -103,6 +107,8 @@ if (!isset($_SESSION['usuario_usuario'])) {
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+      <img src="../../dist/img/logos/logo_nube.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
     <a href="#" class="brand-link">
       <img src="../../dist/img/logos/logo_nube.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">Inventario Cloud</span>
@@ -321,6 +327,7 @@ if (!isset($_SESSION['usuario_usuario'])) {
     </div>
     <!-- /.sidebar -->
   </aside>
+  
   <div class="content-wrapper">
   <!-- Main content -->
   <section class="content">

@@ -35,9 +35,9 @@ $url_base = "http://localhost/inventariocloud/";
 
 <div class="wrapper">
   <!-- Preloader -->
-  <div class="preloader flex-column justify-content-center align-items-center">
+  <!-- <div class="preloader flex-column justify-content-center align-items-center">
     <img class="animation__shake" src="dist/img/logos/logo_nube.png" alt="AdminLTELogo" height="60" width="80">
-  </div>
+  </div> -->
   
   <?php if ($_SESSION['logueado']) { ?>
     <!-- Navbar -->

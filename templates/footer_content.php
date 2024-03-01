@@ -104,33 +104,107 @@ function copiarContenido() {
 <script src="../../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
 <script src="../../plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="../../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<!-- Select2 -->
+<script src="../../plugins/select2/js/select2.full.min.js"></script>
+<!-- dropzonejs -->
+<script src="../../plugins/dropzone/min/dropzone.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.min.js"></script>
-<!-- Page specific script -->
+<script>
+  $(function () {
+  //Initialize Select2 Elements
+    $('.select2').select2()
+
+  //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+  })
+
+  function generarRandom(num) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const charactersLength = characters.length;
+    let result = "";
+      for (let i = 0; i < num; i++) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+
+  return result;
+}
+  $("#generador_codigo_factura").val(generarRandom(14))  
+</script>
 
 <script>
-  //  CONFIGURANDO TABLAS
-  $(function () {
-    $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-  });
+    
+    $(document).ready(function () {
+        // Función para calcular el total y asignarlo al TD
+        function actualizarTotal(fila) {
+            var cantidad = fila.find('.cantidad-input').val();
+            var precio = fila.find('td:eq(6)').text();
+            var total = cantidad * precio;
+            fila.find('.total-column').text(total);
+            fila.find('.total-input').val(total);
+            actualizarCampoTotalGlobal();
+        }
 
-  $(function () {
-    $("#vBuscar, #lista_usuario, #lista_cajas").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false
-    }).buttons().container().appendTo('#lista_usuario_wrapper .col-md-6:eq(0)');
-  });
+        // Función para actualizar el campo total global
+        function actualizarCampoTotalGlobal() {
+            var totalGlobal = 0;
+
+            // Suma todos los totales de las filas
+            $('.total-column').each(function () {
+                totalGlobal += parseFloat($(this).text()) || 0;
+            });
+
+            // Asigna el total global al campo de texto
+            $('.campo-total-global').val(totalGlobal.toFixed(0));
+
+            // Actualiza el campo de cambio
+            actualizarCampoCambio();
+        }
+
+        // Escucha los cambios en los campos de cantidad
+        $('.cantidad-input').on('input', function () {
+            var fila = $(this).closest('tr');
+            actualizarTotal(fila);
+        });
+
+        // Llama a la función al cargar la página para inicializar los totales
+        $('.cantidad-input').each(function () {
+            var fila = $(this).closest('tr');
+            actualizarTotal(fila);
+        });
+
+        // Escucha los cambios en el campo "Recibido"
+        $('#recibido').on('input', function () {
+            actualizarCampoCambio();
+        });
+
+        // Llama a la función al cargar la página para inicializar el campo de cambio
+        actualizarCampoCambio();
+    });
+
+    // Función para actualizar el campo de cambio
+    function actualizarCampoCambio() {
+        var totalCompra = parseFloat($('.campo-total-global').val()) || 0;
+        var recibido = parseFloat($('#recibido').val()) || 0;
+
+        // Calcula el cambio
+        var cambio = recibido - totalCompra;
+
+        // Actualiza el campo "Se devuelve"
+        $('#se_devuelve').val(cambio.toFixed(0));
+    }
+
+  //  CONFIGURANDO TABLAS
+  $(document).ready(function () {
+    var table = $("#vBuscar").DataTable({
+        "responsive": true,
+        "lengthChange": false,
+        "autoWidth": false
+    });
+    table.buttons().container().appendTo('#vBuscar_wrapper .col-md-6:eq(0)');
+});
 
   // MASCARAS DE DINERO
   document.addEventListener('DOMContentLoaded', function () {

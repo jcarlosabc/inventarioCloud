@@ -18,9 +18,10 @@ if ($_POST) {
     
     if ($lista_usuario["n_usuario"]>0) {
         $_SESSION['usuario_usuario']=$lista_usuario["usuario_usuario"];
-        $_SESSION['rol']=$lista_usuario["rol"];
         $_SESSION['usuario_id']=$lista_usuario["usuario_id"];
+        $_SESSION['rol']=$lista_usuario["rol"];
         $_SESSION['rol'] == 0 ? $_SESSION['rolEmpleado']=true : $_SESSION['rolEmpleado']=false ;
+        $_SESSION['caja_id']=$lista_usuario["caja_id"];
         $_SESSION['logueado']=true;
 
           // die(print_r($_SESSION));
