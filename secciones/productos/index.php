@@ -30,11 +30,11 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
             <thead>
             <tr>
               <th>Codigo</th>
-              <th>Producto</th>
-              <th>Precio Compra</th>
-              <th>Precio Venta</th>
-              <th>Marca Producto</th>
-              <th>Modelo Producto</th>                                    
+              <th>Nombre</th>
+              <th>Precio de compra</th>
+              <th>Precio de Venta</th>
+              <th>Marca</th>
+              <th>Modelo</th>                                    
               <th>Categoria</th>
               <th>Cantidad en Stock</th>
               <th>Editar</th>
@@ -51,11 +51,13 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['producto_modelo']; ?></td>
                   <td><?php echo $registro['categoria_nombre']; ?></td>
                   <td><?php echo $registro['producto_stock_total']; ?></td>
-                  <td>
+                  <td class="text-center">
                     <div class="btn-group">
-                        <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id']; ?>" role="button"><i class="fa fa-plus-circle"></i></a> 
-                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['producto_id']; ?>"role="button"><i class="fas fa-edit"></i></a>
-                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['producto_id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
+                        <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Añadir Stock"><i class="fa fa-plus-circle"></i></a> 
+                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['producto_id']; ?>"role="button" title="Editar"><i class="fas fa-edit"></i></a>
+                        <?php if ($_SESSION['rolEmpleado']) { ?>
+                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar"><i class="far fa-trash-alt"></i></a>  
+                        <?php } ?>                  
                     </div>
                   </td>
                 </tr>  

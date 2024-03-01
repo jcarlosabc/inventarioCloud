@@ -47,10 +47,10 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['usuario_usuario']; ?></td>
                   <!-- <td><?php echo $registro['caja_nombre']; ?></td> -->
 
-                  <td>
+                  <td class="text-center">
                     <div class="btn-group">
-                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button"><i class="fas fa-edit"></i></a>
-                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['usuario_id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
+                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button" title="Editar"><i class="fas fa-edit"></i></a>
+                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['usuario_id']; ?>" role="button" title="Eliminar"><i class="far fa-trash-alt"></i></a>                    
                       </div>
                     </td>
                 </tr>  
