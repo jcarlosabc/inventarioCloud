@@ -2,9 +2,41 @@
 session_start();
 $url_base = "http://localhost/inventariocloud/";
 
+include("db.php");
+
+
 if (!isset($_SESSION['usuario_usuario'])) {
   header("Location:".$url_base."login.php");
 }
+
+
+
+$sentencia=$conexion->prepare("SELECT COUNT(*) as total_usuarios FROM usuario");
+$sentencia->execute();
+$contardor_usuario=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+
+$sentencia=$conexion->prepare("SELECT COUNT(*) as total_producto FROM producto");
+$sentencia->execute();
+$contardor_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
+
+$sentencia=$conexion->prepare("SELECT COUNT(*) as total_ventas FROM venta");
+$sentencia->execute();
+$contardor_ventas =$sentencia->fetchAll(PDO::FETCH_ASSOC); 
+
+
+// consulta para el dinero de la caja que inicio secion 
+//$_SESSION['usuario_id']
+$usuario_sesion = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
+
+$sentencia=$conexion->prepare("SELECT * FROM usuario
+INNER JOIN caja ON usuario.caja_id = caja.caja_id 
+WHERE usuario.usuario_id = :usuario_id;");
+$sentencia->bindParam(":usuario_id", $usuario_sesion);
+$sentencia->execute();
+$total_dinero_caja =$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+
 
 ?>
 <?php include("templates/header.php") ?>
@@ -15,9 +47,9 @@ if (!isset($_SESSION['usuario_usuario'])) {
             <!-- small box -->
             <div class="small-box bg-info">
               <div class="inner">
-                <h3>150</h3>
+                <h3><?php echo (isset( $contardor_producto[0]['total_producto']))?$contardor_producto[0]['total_producto']: " ";?></h3>
 
-                <p>New Orders</p>
+                <p>Productos</p>
               </div>
               <div class="icon">
                 <i class="ion ion-bag"></i>
@@ -30,9 +62,9 @@ if (!isset($_SESSION['usuario_usuario'])) {
             <!-- small box -->
             <div class="small-box bg-success">
               <div class="inner">
-                <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-                <p>Bounce Rate</p>
+                <h3>  $ <?php echo  (isset($total_dinero_caja[0]['caja_efectivo']))?$total_dinero_caja[0]['caja_efectivo']: "Nah" ;?>
+                  <!--<sup style="font-size: 20px">%</sup>--></h3>
+                <p>Tota de dinero en la caja </p>
               </div>
               <div class="icon">
                 <i class="ion ion-stats-bars"></i>
@@ -45,9 +77,8 @@ if (!isset($_SESSION['usuario_usuario'])) {
             <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner">
-                <h3>44</h3>
-
-                <p>User Registrations</p>
+                <h3><?php echo  (isset($contardor_usuario[0]['total_usuarios']))?$contardor_usuario[0]['total_usuarios']: "" ;?></h3>
+                <p>Total de usuario</p>
               </div>
               <div class="icon">
                 <i class="ion ion-person-add"></i>
@@ -60,9 +91,9 @@ if (!isset($_SESSION['usuario_usuario'])) {
             <!-- small box -->
             <div class="small-box bg-danger">
               <div class="inner">
-                <h3>65</h3>
+                <h3><?php echo (isset( $contardor_ventas[0]['total_ventas']))?$contardor_ventas[0]['total_ventas']: " ";?></h3>
 
-                <p>Unique Visitors</p>
+                <p>Ventas del dia</p>
               </div>
               <div class="icon">
                 <i class="ion ion-pie-graph"></i>
