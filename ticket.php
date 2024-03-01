@@ -1,16 +1,18 @@
 <?php
 
+
 	# Incluyendo librerias necesarias #
-    require "./code128.php";
+    require ('code128.php');
+
 
     $pdf = new PDF_Code128('P','mm',array(80,258));
     $pdf->SetMargins(4,10,4);
     $pdf->AddPage();
-    
+    $hola = isset($_POST['hola']) ? $_POST['hola'] : '';
     # Encabezado y datos de la empresa #
     $pdf->SetFont('Arial','B',10);
     $pdf->SetTextColor(0,0,0);
-    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1",strtoupper("Nombre de empresa")),0,'C',false);
+    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1",strtoupper($hola)),0,'C',false);
     $pdf->SetFont('Arial','',9);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","RUC: 0000000000"),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Direccion San Salvador, El Salvador"),0,'C',false);
@@ -126,3 +128,4 @@
     
     # Nombre del archivo PDF #
     $pdf->Output("I","Ticket_Nro_1.pdf",true);
+
