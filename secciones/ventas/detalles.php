@@ -9,7 +9,7 @@ if(isset($_GET['txtID'])){
 
   $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
   FROM venta 
-  INNER JOIN usuario ON venta.usuario_id = usuario.usuario_id 
+  INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
   INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id; ");
 
   $sentencia->bindParam(":venta_id",$txtID);

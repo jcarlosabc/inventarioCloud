@@ -49,9 +49,9 @@ if ($_POST) {
     $categoria_id= isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";
 
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
-    $producto_precio_compra = str_replace(array('$', ','), '', $producto_precio_compra);
-    $producto_precio_venta = str_replace(array('$', ','), '', $producto_precio_venta);
-     print_r($_POST);
+    $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
+    $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
+    
      
     $sentencia_edit = $conexion->prepare("UPDATE producto SET 
     producto_codigo=:producto_codigo,
