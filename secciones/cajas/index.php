@@ -8,8 +8,7 @@ if(isset($_GET['txtID'])){
   
     $sentencia=$conexion->prepare("DELETE FROM caja WHERE caja_id=:caja_id");
     $sentencia->bindParam(":caja_id",$txtID);
-    $sentencia->execute();
-    header("Location:index.php");
+    $sentencia->execute();    
   }
 
 $sentencia=$conexion->prepare("SELECT * FROM `caja`");
