@@ -211,6 +211,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="producto_stock_total" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total">
+                            </div>
+                        </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_compra" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
@@ -221,12 +227,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="form-group">
                                 <label for="producto_precio_venta" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_venta" id="producto_precio_venta">
-                            </div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <label for="producto_stock_total" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total">
                             </div>
                         </div>
                         <div class="col-sm-2">

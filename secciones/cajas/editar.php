@@ -27,7 +27,7 @@ if ($_POST) {
     $caja_efectivo= isset($_POST['caja_efectivo']) ? $_POST['caja_efectivo'] : "";
 
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
-    $caja_efectivo = str_replace(array('$', ','), '', $caja_efectivo);
+    $caja_efectivo = str_replace(array('$','.', ','), '', $caja_efectivo);
      
     $sentencia_edit = $conexion->prepare("UPDATE caja SET 
     caja_numero=:caja_numero,
