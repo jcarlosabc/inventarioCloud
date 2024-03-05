@@ -164,7 +164,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <i class="fas fa-barcode"></i>
                                 </button>
                                 <input type="text" class="form-control camposTabla"  name="producto_codigo"  id="producto_codigo">
-                                <input type="text" class="form-control camposTabla"  name="producto_codigo"  id="producto_codigo">
                                 <div class="modal fade" id="modal-default">
                                     <div class="modal-dialog">
                                     <div class="modal-content bg-default" style="width: 115%;">
@@ -212,6 +211,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="producto_stock_total" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total">
+                            </div>
+                        </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_compra" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
@@ -222,12 +227,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="form-group">
                                 <label for="producto_precio_venta" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla_dinero" placeholder="000.000" name="producto_precio_venta" id="producto_precio_venta">
-                            </div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <label for="producto_stock_total" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total">
                             </div>
                         </div>
                         <div class="col-sm-2">
@@ -256,28 +255,5 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <!-- /.card -->
           </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    var numberInput = document.getElementById('producto_stock_total');
-    var numberInput_2 = document.getElementById('producto_modelo');
-
-    numberInput.addEventListener('focus', function() {
-        this.setAttribute('type', 'text');
-    });
-    numberInput.addEventListener('blur', function() {
-        this.setAttribute('type', 'number');
-    });
-
-    numberInput_2.addEventListener('focus', function() {
-        this.setAttribute('type', 'text');
-    });
-    numberInput_2.addEventListener('blur', function() {
-        this.setAttribute('type', 'number');
-    });
-
-});
-
-</script> 
 
 <?php include("../../templates/footer_content.php") ?>

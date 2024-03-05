@@ -1,17 +1,13 @@
 <?php 
 session_start();
 $url_base = "http://localhost/inventariocloud/";
-
 include("db.php");
-
 
 if (!isset($_SESSION['usuario_usuario'])) {
   header("Location:".$url_base."login.php");
 }
 
-
-
-$sentencia=$conexion->prepare("SELECT COUNT(*) as total_usuarios FROM usuario");
+$sentencia=$conexion->prepare("SELECT COUNT(*) as total_clientes FROM cliente WHERE cliente_id > 0");
 $sentencia->execute();
 $contardor_usuario=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
@@ -20,12 +16,14 @@ $sentencia=$conexion->prepare("SELECT COUNT(*) as total_producto FROM producto")
 $sentencia->execute();
 $contardor_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
 
-$sentencia=$conexion->prepare("SELECT COUNT(*) as total_ventas FROM venta");
+$fechaActual = date("d/m/Y");
+
+$sentencia=$conexion->prepare("SELECT COUNT(*) as total_ventas FROM venta WHERE venta_fecha = :fechaActual ");
+$sentencia->bindParam(":fechaActual", $fechaActual);
 $sentencia->execute();
 $contardor_ventas =$sentencia->fetchAll(PDO::FETCH_ASSOC); 
 
-
-// consulta para el dinero de la caja que inicio secion 
+// consulta para el dinero de la caja que inicio session 
 //$_SESSION['usuario_id']
 $usuario_sesion = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
 
@@ -35,8 +33,6 @@ WHERE usuario.usuario_id = :usuario_id;");
 $sentencia->bindParam(":usuario_id", $usuario_sesion);
 $sentencia->execute();
 $total_dinero_caja =$sentencia->fetchAll(PDO::FETCH_ASSOC);
-
-
 
 ?>
 <?php include("templates/header.php") ?>
@@ -54,7 +50,7 @@ $total_dinero_caja =$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <div class="icon">
                 <i class="ion ion-bag"></i>
               </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="<?php echo $url_base ?>secciones/productos/" class="small-box-footer">Ver Productos<i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
@@ -62,28 +58,28 @@ $total_dinero_caja =$sentencia->fetchAll(PDO::FETCH_ASSOC);
             <!-- small box -->
             <div class="small-box bg-success">
               <div class="inner">
-                <h3>  $ <?php echo  (isset($total_dinero_caja[0]['caja_efectivo']))?$total_dinero_caja[0]['caja_efectivo']: "Nah" ;?>
+                <h3> $ <?php echo  (isset($total_dinero_caja[0]['caja_efectivo']))?$total_dinero_caja[0]['caja_efectivo']: "Nah" ;?>
                   <!--<sup style="font-size: 20px">%</sup>--></h3>
-                <p>Tota de dinero en la caja </p>
+                <p>Dinero en Caja</p>
               </div>
               <div class="icon">
                 <i class="ion ion-stats-bars"></i>
               </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="#" class="small-box-footer">Traslado de Dinero <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
           <div class="col-lg-3 col-6">
             <!-- small box -->
             <div class="small-box bg-warning">
-              <div class="inner">
-                <h3><?php echo  (isset($contardor_usuario[0]['total_usuarios']))?$contardor_usuario[0]['total_usuarios']: "" ;?></h3>
-                <p>Total de usuario</p>
+              <div class="inner" style="color: white !important">
+                <h3 ><?php echo  (isset($contardor_usuario[0]['total_clientes']))?$contardor_usuario[0]['total_clientes']: "" ;?></h3>
+                <p>Clientes Registrados</p>
               </div>
               <div class="icon">
                 <i class="ion ion-person-add"></i>
               </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a style="color: white !important" href="<?php echo $url_base ?>secciones/clientes/" class="small-box-footer">Ver Clientes <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
@@ -92,13 +88,12 @@ $total_dinero_caja =$sentencia->fetchAll(PDO::FETCH_ASSOC);
             <div class="small-box bg-danger">
               <div class="inner">
                 <h3><?php echo (isset( $contardor_ventas[0]['total_ventas']))?$contardor_ventas[0]['total_ventas']: " ";?></h3>
-
                 <p>Ventas del dia</p>
               </div>
               <div class="icon">
                 <i class="ion ion-pie-graph"></i>
               </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="<?php echo $url_base ?>secciones/ventas/" class="small-box-footer">Ver ventas <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->

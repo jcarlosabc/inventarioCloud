@@ -196,7 +196,7 @@ if ($_POST) {
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total"
+                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total_add"
                                     value="<?php echo $producto_stock_total;?>"  pattern="[0-9]*">
                             </div>
                         </div>

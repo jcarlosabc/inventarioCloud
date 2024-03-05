@@ -22,11 +22,11 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
       <div class="card card-primary">
         <div class="card-header">
-          <h2 class="card-title">LISTA DE PRODUCTOS &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/productos/crear.php">Crear Producto</a></h2>
+          <h2 class="card-title textTabla">LISTA DE PRODUCTOS &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/productos/crear.php">Crear Producto</a></h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
-          <table id="example1" class="table table-bordered table-striped">
+          <table id="listaProductos" class="table table-bordered table-striped">
             <thead>
             <tr>
               <th>Codigo</th>
