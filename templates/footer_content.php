@@ -110,7 +110,10 @@ function copiarContenido() {
 <script src="../../plugins/dropzone/min/dropzone.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.min.js"></script>
+
 <script>
+
+  // Buscador en el select
   $(function () {
   //Initialize Select2 Elements
     $('.select2').select2()
@@ -121,6 +124,7 @@ function copiarContenido() {
     })
   })
 
+  // Generador de codigo de facturas 
   function generarRandom(num) {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     const charactersLength = characters.length;
@@ -198,7 +202,7 @@ function copiarContenido() {
 
   //  CONFIGURANDO TABLAS
   $(document).ready(function () {
-    var table = $("#vBuscar").DataTable({
+    var table = $("#vBuscar, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario").DataTable({
         "responsive": true,
         "lengthChange": false,
         "autoWidth": false
@@ -267,6 +271,35 @@ function copiarContenido() {
             }
         });
     });
+
+    // Quitar las flechas de los campos number
+    document.addEventListener('DOMContentLoaded', function() {
+      var numberInput = document.getElementById('producto_stock_total');
+      var numberInput_2 = document.getElementById('producto_modelo');
+      var numberInput_add = document.getElementById('producto_stock_total_add');
+
+      numberInput.addEventListener('focus', function() {
+          this.setAttribute('type', 'text');
+      });
+      numberInput.addEventListener('blur', function() {
+          this.setAttribute('type', 'number');
+      });
+
+      numberInput_2.addEventListener('focus', function() {
+          this.setAttribute('type', 'text');
+      });
+      numberInput_2.addEventListener('blur', function() {
+          this.setAttribute('type', 'number');
+      });
+
+      numberInput_add.addEventListener('focus', function() {
+          this.setAttribute('type', 'text');
+      });
+      numberInput_add.addEventListener('blur', function() {
+          this.setAttribute('type', 'number');
+      });
+    });
+
 </script>
 </body>
 </html>

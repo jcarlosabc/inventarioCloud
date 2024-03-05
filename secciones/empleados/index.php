@@ -12,7 +12,7 @@ if(isset($_GET['txtID'])){
   $sentencia->execute();
   
 }
-    $sentencia=$conexion->prepare("SELECT * FROM usuario");
+    $sentencia=$conexion->prepare("SELECT * FROM usuario WHERE usuario_id > 1 ");
     $sentencia->execute();
     $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
 
@@ -39,9 +39,10 @@ if(isset($_GET['txtID'])){
             </tr>
             </thead>
             <tbody>
-              <?php foreach ($lista_producto as $registro) {?>
+              <?php $count = 0;
+               foreach ($lista_producto as $registro) {?>
                 <tr class="">
-                  <td scope="row"><?php echo $registro['usuario_id']; ?></td>
+                  <td scope="row"><?php $count++; echo $count;  ?></td>
                   <td><?php echo $registro['usuario_nombre']; ?></td>
                   <td><?php echo $registro['usuario_apellido']; ?></td>
                   <td><?php echo $registro['usuario_email']; ?></td>                

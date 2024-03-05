@@ -7,6 +7,7 @@ if (isset($_GET['txtID'])) {
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
     // Obtener la categoría actual del producto
     $datos_usuario = $conexion->prepare("SELECT * FROM usuario  WHERE usuario.usuario_id =:usuario_id");
+    $datos_usuario = $conexion->prepare("SELECT * FROM usuario  WHERE usuario.usuario_id =:usuario_id");
 
     $datos_usuario->bindParam(":usuario_id", $txtID);
     $datos_usuario->execute();
@@ -27,7 +28,7 @@ if (isset($_GET['txtID'])) {
         $usuario_nombre = isset($_POST['usuario_nombre']) ? $_POST['usuario_nombre'] : "";
         $usuario_apellido = isset($_POST['usuario_apellido']) ? $_POST['usuario_apellido'] : "";
         $usuario_email = isset($_POST['usuario_email']) ? $_POST['usuario_email'] : "";
-        $usuario_clave = isset($_POST['usuario_clave_1']) ? $_POST['usuario_clave_1'] : "";
+        $usuario_clave = hash('sha256',isset($_POST['usuario_clave_1']) ? $_POST['usuario_clave_1'] : "");
         $usuario_rol = isset($_POST["usuario_rol"]) ? $_POST["usuario_rol"] : "";
         $usuario_caja = isset($_POST["usuario_caja"]) ? $_POST["usuario_caja"] : "";
 
@@ -43,6 +44,8 @@ if (isset($_GET['txtID'])) {
         rol=:rol,
         caja_id = :caja_id,
         responsable = :responsable
+        caja_id = :caja_id,
+        responsable = :responsable
         WHERE usuario_id =:usuario_id");
 
         $sentencia_edit->bindParam(":usuario_id", $txtID);
@@ -53,6 +56,8 @@ if (isset($_GET['txtID'])) {
         $sentencia_edit->bindParam(":usuario_clave", $usuario_clave);
         $sentencia_edit->bindParam(":rol", $usuario_rol);
         $sentencia_edit->bindParam(":caja_id", $usuario_caja);
+        $sentencia_edit->bindParam(":responsable", $responsable);
+
         $sentencia_edit->bindParam(":responsable", $responsable);
 
 
@@ -95,6 +100,9 @@ if (isset($_GET['txtID'])) {
 <div class="">
     <!-- general form elements -->
     <div class="card card-warning" style="margin-top:7%">
+        <div class="card-header text-center">
+            <h2 class="card-title textTabla">EDITAR USUARIO &nbsp; 
+            </h2>
         <div class="card-header text-center">
             <h2 class="card-title textTabla">EDITAR USUARIO &nbsp; 
             </h2>
@@ -187,6 +195,32 @@ if (isset($_GET['txtID'])) {
     </div>
     <!-- /.card -->
 </div>
+
+<script>  
+        document.addEventListener("DOMContentLoaded", function() {
+            pass1 = document.getElementById("usuario_clave_1");
+            pass2 = document.getElementById("usuario_clave_2");
+            var mensaje = document.getElementById("mensaje");
+
+            pass1.addEventListener("input", function() {
+                if (pass1.value === pass2.value) {
+                   // mensaje.textContent = "Las contraseñas coinciden.";
+                } else {
+                 //   mensaje.textContent = "Las contraseñas no coinciden.";
+                }
+            });
+            pass2.addEventListener("input", function() {
+                if (pass1.value === pass2.value) {
+                    mensaje.textContent = "";
+                    document.getElementById("guardar").disabled = false;
+
+                } else {
+                    mensaje.textContent = "Las contraseñas no coinciden.";
+                    document.getElementById("guardar").disabled = true;
+                }
+            });
+        });
+    </script>
 
 <script>  
         document.addEventListener("DOMContentLoaded", function() {

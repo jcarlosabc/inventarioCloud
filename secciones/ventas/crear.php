@@ -4,6 +4,7 @@ error_reporting(E_ERROR | E_PARSE);$caja_id = $_SESSION['caja_id'];
 // die(print_r($caja_id));
 include("../../db.php");
 //Eliminar Elementos
+echo $fecha_actual_colombia;
 if(isset($_GET['txtID'])){
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
 
@@ -11,6 +12,7 @@ if(isset($_GET['txtID'])){
   $sentencia->bindParam(":id",$txtID);
   $sentencia->execute();
 }
+
 // Mostrar datos de la tabla 
 $sentencia=$conexion->prepare("SELECT * FROM `producto`");
 $sentencia->execute();
@@ -20,12 +22,12 @@ $sentencia=$conexion->prepare("SELECT * FROM `categoria`");
 $sentencia->execute();
 $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
-$sentencia=$conexion->prepare("SELECT * FROM `cliente`");
+$sentencia=$conexion->prepare("SELECT * FROM `cliente` WHERE cliente_id > 0");
 $sentencia->execute();
 $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
-$fechaActual = date("d-m-Y");
-date_default_timezone_set('America/Bogota'); // Establecer la zona horaria de Colombia
+date_default_timezone_set('America/Bogota'); 
+$fechaActual = date("d/m/Y");
 $horaActual = date("h:i a");
 // ===========================================================
 
@@ -94,6 +96,9 @@ if(isset($_POST['productos_vendidos'])) {
     $sentencia_venta->bindParam(":user_id", $user_id);
     $sentencia_venta->execute();
 
+    // Obtener el ID de la última fila afectada
+    $ultimo_id_insertado = $conexion->lastInsertId();
+
     foreach ($cantidades as $id => $cantidad) {
         $total = $totales[$id] ?? 0;
 
@@ -106,12 +111,13 @@ if(isset($_POST['productos_vendidos'])) {
         $sentencia_edit->execute();
 
         // Obteniendo la cantidad y id producto vendidos
-        $sentencia_carrito = $conexion->prepare("SELECT cantidad, producto_id, producto FROM carrito WHERE id= $id");
+        $sentencia_carrito = $conexion->prepare("SELECT id, cantidad, producto_id, producto FROM carrito WHERE id= $id");
         $sentencia_carrito->execute();
         $row_carrito = $sentencia_carrito->fetch(PDO::FETCH_ASSOC);
         $producto_id = $row_carrito['producto_id'];
         $cantidad_vendida = $row_carrito['cantidad'];
         $producto = $row_carrito['producto'];
+        $id_carrito = $row_carrito['id'];
 
         // Buscandolos en la tabla productos para restar stock
         $sentencia_producto = $conexion->prepare("SELECT producto_stock_total, producto_precio_compra, producto_precio_venta FROM producto WHERE producto_id = :producto_id");
@@ -147,36 +153,38 @@ if(isset($_POST['productos_vendidos'])) {
         $sentencia_venta_detalle->bindParam(":user_id", $user_id);    
         $sentencia_venta_detalle->execute();
 
+        // Borrar los datos de carrito una ves se haya realizado el proceso anterior
+        $sentencia_delete_carrito=$conexion->prepare("DELETE FROM carrito WHERE estado = 1 AND responsable= :responsable");
+        $sentencia_delete_carrito->bindParam(":responsable", $user_id);
+        $sentencia_delete_carrito->execute();
 
-        // Validando que todo el proceso fue exitoso
-        $venta_realizada = true;
     }
-    // Redireccionar a la vista de detalle de ventas para generar factura
-    // if ($venta_realizada) {
-    //     echo '<script>
-    //     Swal.fire({
-    //         title: "¡Venta Realizada Exitosamente!",
-    //         icon: "success",
-    //         confirmButtonText: "¡Entendido!"
-    //     }).then((result)=>{
-    //         if(result.isConfirmed){
-    //             window.location.href="http://localhost:9090/admin/secciones/productos/"
-    //         }
-    //     })
+    // Validando que todo el proceso fue exitoso
+    $venta_realizada = true;
+  
 
-    //     </script>';
-        
-    // }else {
-    //     echo '<script>
-    //     Swal.fire({
-    //         title: "Error al Crear Producto",
-    //         icon: "error",
-    //         confirmButtonText: "¡Entendido!"
-    //     });
-    //     </script>';
-    // }
-   
-    
+    // Redireccionar a la vista de detalle de ventas para generar factura
+    if ($venta_realizada) {
+        echo '<script>
+        Swal.fire({
+            title: "¡Venta Realizada Exitosamente!",
+            icon: "success",
+            confirmButtonText: "¡Entendido!"
+        }).then((result)=>{
+            if(result.isConfirmed){
+                window.location.href="http://localhost/inventariocloud/detalles.php?txtID='.$ultimo_id_insertado.'";
+            }
+        })
+        </script>';
+    } else {
+        echo '<script>
+        Swal.fire({
+            title: "Error al Crear Producto",
+            icon: "error",
+            confirmButtonText: "¡Entendido!"
+        });
+        </script>';
+    }
 }
 
 ?>

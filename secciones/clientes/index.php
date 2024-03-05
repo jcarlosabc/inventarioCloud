@@ -10,7 +10,7 @@ if(isset($_GET['txtID'])){
     $sentencia->execute();
     
   }
-  $sentencia=$conexion->prepare("SELECT * FROM `cliente`");
+  $sentencia=$conexion->prepare("SELECT * FROM `cliente` WHERE cliente_id > 0");
 
 $sentencia->execute();
 $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -19,12 +19,12 @@ $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="card card-primary">
         <div class="card-header">
-          <h2 class="card-title">LISTA DE CLIENTES &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="crear.php" role="button">Crear Cliente</a></h2>
+          <h2 class="card-title textTabla">LISTA DE CLIENTES &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="crear.php" role="button">Crear Cliente</a></h2>
           
         </div>
         <!-- /.card-header -->
         <div class="card-body">
-          <table id="example1" class="table table-bordered table-striped">
+          <table id="listaClientes" class="table table-bordered table-striped">
             <thead>
             <tr>
               <th>Identificacion</th>

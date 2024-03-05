@@ -88,13 +88,13 @@ if ($_POST) {
                                 <input required type="num" class="form-control camposTabla" name="cliente_numero_documento" id="cliente_numero_documento">
                             </div>                       
                         </div> 
-                        <div class="col-sm-4">
+                        <div class="col-4">
                             <div class="form-group">
                                 <label for="cliente_nombre" class="textLabel">Nombre</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla" name="cliente_nombre" id="cliente_nombre">
                             </div>
                         </div>                     
-                        <div class="col-sm-4">
+                        <div class="col-4">
                             <div class="form-group">
                                 <label for="cliente_apellido" class="textLabel">Apellidos</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla" name="cliente_apellido" id="cliente_apellido">
@@ -102,13 +102,13 @@ if ($_POST) {
                         </div>                        
                     
                     <div class="row">
-                        <div class="col-sm-2">
+                        <div class="col-2">
                             <div class="form-group">
                                 <label for="cliente_ciudad" class="textLabel">Ciudad</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla"  name="cliente_ciudad" id="cliente_ciudad">
                             </div>
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-2">
                             <div class="form-group">
                                 <label for="cliente_provincia" class="textLabel">Providencia</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla"  name="cliente_provincia" id="cliente_provincia">
