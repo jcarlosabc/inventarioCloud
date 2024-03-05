@@ -8,6 +8,9 @@ if (!isset($_SESSION['usuario_usuario'])) {
 }
 
 $sentencia=$conexion->prepare("SELECT COUNT(*) as total_clientes FROM cliente WHERE cliente_id > 0");
+
+
+$sentencia=$conexion->prepare("SELECT COUNT(*) as total_usuarios FROM usuario");
 $sentencia->execute();
 $contardor_usuario=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
@@ -33,6 +36,28 @@ WHERE usuario.usuario_id = :usuario_id;");
 $sentencia->bindParam(":usuario_id", $usuario_sesion);
 $sentencia->execute();
 $total_dinero_caja =$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+
+if ($_POST) {
+
+  $rad_factura = isset($_POST['rad_factura']) ? $_POST['rad_factura'] : "";
+
+  $sentencia=$conexion->prepare("SELECT * from venta where venta_codigo = :venta_codigo");
+  $sentencia->bindParam(":venta_codigo", $rad_factura);
+  $sentencia->execute();
+  $rad_factura_list =$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+  $dato = $rad_factura_list[0]['venta_id'];
+
+  if (isset($dato)) {
+    header("Location: http://localhost/inventariocloud/secciones/ventas/detalles.php?txtID=".$dato);
+  }else{
+    header("Location: http://localhost/inventariocloud/");
+  }
+
+}
+
+
 
 ?>
 <?php include("templates/header.php") ?>
@@ -95,6 +120,23 @@ $total_dinero_caja =$sentencia->fetchAll(PDO::FETCH_ASSOC);
               </div>
               <a href="<?php echo $url_base ?>secciones/ventas/" class="small-box-footer">Ver ventas <i class="fas fa-arrow-circle-right"></i></a>
             </div>
+          </div>
+
+
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>Factura</h3>
+
+                <form action="" method="post" class="text-center">
+                    <input type="text" class="form-control " name="rad_factura" id="rad_factura" >
+                  </div>
+                  <!-- <button type="submit" class="btn btn-primary btn-lg" id="guardar" name="guardar">Guardar</button>-->
+                    <button  class="btn btn-primary text-center" id="guardar" name="guardar" type="submit">Ir a la factura</button>  
+                    
+                </div>
+              </form>
           </div>
           <!-- ./col -->
         </div>

@@ -16,9 +16,10 @@ if (isset($_GET['txtID'])) {
     $usuario_apellido = $registro["usuario_apellido"];
     $usuario_email = $registro["usuario_email"];
     $usuario_clave = $registro["usuario_clave"];
-    $usuario_tipo = $registro["usuario_usuario"];
+   
+    $usuario_tipo = $registro["rol"] ;
 
-    $usuario_caja_actual_id = $registro["caja_id"];
+    $usuario_caja_actual_id = isset($registro["caja_id"])?$registro["caja_id"]:0;
    
 
     if ($_POST) {
@@ -78,15 +79,11 @@ if (isset($_GET['txtID'])) {
         </script>';
         }
     }
-
-
-    $sentencia = $conexion->prepare("SELECT usuario.*, caja.*  FROM usuario
-    INNER JOIN caja ON usuario.caja_id = caja.caja_id
-    WHERE usuario.usuario_id =:usuario_id");
-
-    $sentencia->bindParam(":usuario_id", $txtID);
-    $sentencia->execute();
-    $lista_cajas = $sentencia->fetch(PDO::FETCH_ASSOC);
+        
+    // Obtener todas las cajas disponibles
+    $sentencia_cajas = $conexion->prepare("SELECT * FROM caja");
+    $sentencia_cajas->execute();
+    $lista_cajas = $sentencia_cajas->fetchAll(PDO::FETCH_ASSOC);
 
 }
 
@@ -150,29 +147,31 @@ if (isset($_GET['txtID'])) {
                             <label class="textLabel">Rol de usuario</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <div class="form-group">
                                 <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_rol">
-
-                                    <option value="<?= $usuario_tipo ?>" selected><?= $usuario_tipo ?></option>
-                                    <option value="1">Empleado</option>
-                                    <option value="0">Administrador</option>
+                                    <option value="<?= $usuario_tipo ?>" selected><?= ($usuario_tipo == 1) ? 'Administrador' : 'Empleado' ?></option>
+                                    <?php if($usuario_tipo == 1){ ?>
+                                        <option value="1">Empleado</option>
+                                  <?php  } else { ?>
+                                        <option value="0">Administrador</option>
+                                 <?php } ?>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-
                     <div class="col-sm-4">
                         <div class="form-group">
                             <label class="textLabel">Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <div class="form-group">
-                                <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja" <?php echo empty($lista_cajas) ? 'disabled' : ''; ?>>
+                                <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja">
                                     <?php
-                                    if (empty($lista_cajas)) {
-                                        echo '<option value="" disabled>No hay cajas disponibles</option>';
-                                    } else {
-                                        foreach ($lista_cajas as $registro) {
-                                            $selected = ($usuario_caja_actual_id == $registro["caja_id"]) ? "selected" : "";
-                                            echo '<option value="' . $registro["caja_id"] . '" ' . $selected . '>' . $registro["caja_nombre"] . '</option>';
+                                    if (!empty($lista_cajas)) {
+                                        foreach ($lista_cajas as $caja) {
+                                            // Comprobar si la caja actual es la caja del usuario
+                                            $selected = ($usuario_caja_actual_id == $caja["caja_id"]) ? "selected" : "";
+                                            echo '<option value="' . $caja["caja_id"] . '" ' . $selected . '>' . $caja["caja_nombre"] . '</option>';
                                         }
+                                    } else {
+                                        echo '<option value="" disabled>No hay cajas disponibles</option>';
                                     }
                                     ?>
                                 </select>

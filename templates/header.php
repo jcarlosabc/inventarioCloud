@@ -1,5 +1,17 @@
 <?php 
-$url_base = "http://localhost/inventariocloud/";
+
+    $url_base = "http://localhost/inventariocloud/";
+    
+    $sentencia=$conexion->prepare("SELECT empresa_logo, empresa_nombre FROM empresa LIMIT 1 ");
+    $sentencia->execute();
+    $lista_empresa=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
+
+
+
+
+    $logo_empresa = isset($lista_empresa[0]['empresa_logo'])? $lista_empresa[0]['empresa_logo']:'';
+    $nombre_empresa = isset($lista_empresa[0]['empresa_nombre'])? $lista_empresa[0]['empresa_nombre'] : '';
+
 ?>
 
 <!DOCTYPE html>
@@ -91,8 +103,8 @@ $url_base = "http://localhost/inventariocloud/";
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
       <a href="#" class="brand-link">
-        <img src="dist/img/logos/logo_nube.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">Inventario Cloud</span>
+        <img src="<?php echo "data:image/png;base64,".$logo_empresa;?>" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light"><?php echo $nombre_empresa;?></span>
       </a>
     
       <!-- Sidebar -->
@@ -270,6 +282,27 @@ $url_base = "http://localhost/inventariocloud/";
                     </li>
                   </ul>
                 </li>
+
+
+             <!-- menu de configuraciones -->
+            <li class="nav-item">
+            <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-cash-register fa-lg mr-2"></i>
+              <p>
+                Configuracion
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">              
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/configuracion/crear.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crear</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          
             <?php } ?>
             
             <li class="nav-item">
