@@ -232,6 +232,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total">
                             </div>
                         </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="producto_stock_total" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total">
+                            </div>
+                        </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_compra" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
@@ -267,29 +273,5 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <!-- /.card -->
           </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    var numberInput = document.getElementById('producto_stock_total');
-    var numberInput_2 = document.getElementById('producto_modelo');
-
-    numberInput.addEventListener('focus', function() {
-        this.setAttribute('type', 'text');
-    });
-    numberInput.addEventListener('blur', function() {
-        this.setAttribute('type', 'number');
-    });
-
-    numberInput_2.addEventListener('focus', function() {
-        this.setAttribute('type', 'text');
-    });
-    numberInput_2.addEventListener('blur', function() {
-        this.setAttribute('type', 'number');
-    });
-
-});
-
-</script> 
-
 
 <?php include("../../templates/footer_content.php") ?>

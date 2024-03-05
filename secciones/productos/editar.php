@@ -216,6 +216,25 @@ if ($_POST) {
                                     value="<?php echo '$' . number_format($producto_precio_venta, 0, '.', ','); ?>">                                 
                             </div>
                         </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total_add"
+                                    value="<?php echo $producto_stock_total;?>"  pattern="[0-9]*">
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text" class="form-control camposTabla" name="producto_marca" id="producto_marca" value="<?php echo $producto_marca;?>" >
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text" class="form-control camposTabla" name="producto_modelo" id="producto_modelo" value="<?php echo $producto_modelo;?>">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- /.card-body -->

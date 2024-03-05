@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_usuario'])) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,9 +47,6 @@ if (!isset($_SESSION['usuario_usuario'])) {
   <!-- Select2 -->
   <link rel="stylesheet" href="../../plugins/select2/css/select2.min.css">
   <link rel="stylesheet" href="../../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
-
-
-
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
