@@ -16,6 +16,16 @@ if (!isset($_SESSION['usuario_usuario'])) {
   $nombre_empresa = isset($lista_empresa[0]['empresa_nombre']) ? $lista_empresa[0]['empresa_nombre'] : ' ';
 
 
+
+  include("../../db.php");
+  $sentencia=$conexion->prepare("SELECT empresa_logo, empresa_nombre FROM empresa LIMIT 1 ");
+  $sentencia->execute();
+  $lista_empresa=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
+
+  $logo_empresa = isset($lista_empresa[0]['empresa_logo']) ? $lista_empresa[0]['empresa_logo']:'';
+  $nombre_empresa = isset($lista_empresa[0]['empresa_nombre']) ? $lista_empresa[0]['empresa_nombre'] : ' ';
+
+
 ?>
 
 <!DOCTYPE html>
@@ -117,6 +127,8 @@ if (!isset($_SESSION['usuario_usuario'])) {
     <a href="#" class="brand-link">
       <img src="<?php echo "data:image/png;base64,".$logo_empresa;?>" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light"><?php echo $nombre_empresa; ?></span>
+      <img src="<?php echo "data:image/png;base64,".$logo_empresa;?>" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light"><?php echo $nombre_empresa; ?></span>
     </a>
   
 
@@ -198,6 +210,7 @@ if (!isset($_SESSION['usuario_usuario'])) {
                   <i class="far fa-circle nav-icon"></i>
                   <p>Crear Cliente</p>
                 </a>
+              </li>                          
               </li>                          
             </ul>
           </li>

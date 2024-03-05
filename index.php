@@ -56,6 +56,26 @@ if ($_POST) {
 }
 
 
+if ($_POST) {
+
+  $rad_factura = isset($_POST['rad_factura']) ? $_POST['rad_factura'] : "";
+
+  $sentencia=$conexion->prepare("SELECT * from venta where venta_codigo = :venta_codigo");
+  $sentencia->bindParam(":venta_codigo", $rad_factura);
+  $sentencia->execute();
+  $rad_factura_list =$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+  $dato = $rad_factura_list[0]['venta_id'];
+
+  if (isset($dato)) {
+    header("Location: http://localhost/inventariocloud/secciones/ventas/detalles.php?txtID=".$dato);
+  }else{
+    header("Location: http://localhost/inventariocloud/");
+  }
+
+}
+
+
 
 ?>
 <?php include("templates/header.php") ?>
