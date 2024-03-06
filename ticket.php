@@ -17,6 +17,7 @@
     $venta_codigo = isset($_POST['venta_codigo']) ? $_POST['venta_codigo'] : "No hay nada";
     $fechaActual = isset($_POST['fechaActual']) ? $_POST['fechaActual'] : "No hay nada";
     $caja_id = isset($_POST['caja_id']) ? $_POST['caja_id'] : "No hay nada";
+    $venta_metodo_pago = isset($_POST['venta_metodo_pago']) ? $_POST['venta_metodo_pago'] : "No hay nada";
     // Datos del empleado
     $usuario_nombre = isset($_POST['usuario_nombre']) ? $_POST['usuario_nombre'] : "No hay nada";
     // Datos del cliente
@@ -43,7 +44,7 @@
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","RUC: 0000000000"),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Direccion " . $empresa_direccion),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Teléfono: " . $empresa_telefono),0,'C',false);
-    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Email: correo@ejemplo.com"),0,'C',false);
+    // $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Email: correo@ejemplo.com"),0,'C',false);
    
     $pdf->Ln(1);
     $pdf->Cell(0,5,iconv("UTF-8", "ISO-8859-1","------------------------------------------------------"),0,0,'C');
@@ -51,6 +52,7 @@
 
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Fecha: " . $fechaActual ),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Caja Nro: ". $caja_id),0,'C',false);
+    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Método de Pago: " . $venta_metodo_pago),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Cajero: ". $usuario_nombre ),0,'C',false);
     $pdf->SetFont('Arial','B',10);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1",strtoupper("Ticket Nro: " . $venta_id)),0,'C',false);
@@ -61,7 +63,7 @@
     $pdf->Ln(5);
 
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Cliente: ". $nombre_cliente),0,'C',false);
-    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Documento: ". $cliente_numero_documento),0,'C',false);
+    // $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Documento: ". $cliente_numero_documento),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Teléfono: ". $cliente_telefono),0,'C',false);
 
     $pdf->Ln(1);
@@ -95,7 +97,7 @@
             $pdf->Cell(28,4,iconv("UTF-8", "ISO-8859-1"," " . $detalle_total),0,0,'C');
             $pdf->Ln(4);
             $pdf->MultiCell(0,4,iconv("UTF-8", "ISO-8859-1","Garantía " . $detalle['fecha_garantia']),0,'C',false);
-            $pdf->Cell(72,5,iconv("UTF-8", "ISO-8859-1","----------------------"),0,0,'C');
+            // $pdf->Cell(72,5,iconv("UTF-8", "ISO-8859-1","----------------------"),0,0,'C');
 
             $pdf->Ln(7);
             /*----------  Fin Detalles de la tabla  ----------*/

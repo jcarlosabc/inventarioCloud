@@ -27,6 +27,15 @@ if(isset($_GET['txtID'])){
   $venta_total=$registro["venta_total"];
   $venta_pagado=$registro["venta_pagado"];  
   $venta_cambio=$registro["venta_cambio"];  
+  $venta_metodo_pago=$registro["venta_metodo_pago"];  
+
+  if ($venta_metodo_pago == 0) {
+    $venta_metodo_pago = "Efectivo";
+  }else if($venta_metodo_pago == 1){
+    $venta_metodo_pago = "Transferencia";
+  }else{
+    $venta_metodo_pago = "Credito";
+  }
 
   $caja_id=$registro["caja_id"];  
   $usuario_nombre=$registro["usuario_nombre"];  
@@ -174,6 +183,7 @@ if(isset($_GET['txtID'])){
               <input type="hidden" name="venta_codigo" value="<?php echo $venta_codigo ?>">
               <input type="hidden" name="fechaActual" value="<?php echo $fechaActual;?>">
               <input type="hidden" name="caja_id" value="<?php echo $caja_id ?>">
+              <input type="hidden" name="venta_metodo_pago" value="<?php echo $venta_metodo_pago ?>">
               <!-- Datos del empleado  -->
               <input type="hidden" name="usuario_nombre" value="<?php echo $usuario_nombre ?>">
               <!-- Datos del cliente -->
