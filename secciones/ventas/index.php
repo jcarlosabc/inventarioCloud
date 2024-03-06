@@ -53,7 +53,8 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo  $registro['usuario_nombre']; ?></td> 
                   <td class="text-center">
                     <div class="btn-group">
-                        <a class="btn btn-info"href=" <?php echo $url_base?>detalles.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Detalles"><i class="fa fa-eye"></i></a> 
+                      <a class="btn btn-info"href="detalles.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Detalles"><i class="fa fa-eye"></i></a> 
+                      <a class="btn btn-warning"href="devolucion.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Devolucion"><i class="fa fa-retweet"></i></a> 
                         <?php if ($_SESSION['rolEmpleado']) { ?>
                         <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Eliminar"><i class="far fa-trash-alt"></i></a>    
                         <?php } ?>

@@ -1,6 +1,7 @@
 <?php include("../../templates/header_content.php") ?>
 <?php 
 include("../../db.php");
+$fechaActual = date("d/m/Y");
 
 if(isset($_GET['txtID'])){
 
@@ -55,6 +56,7 @@ if ($_POST) {
      
     $sentencia_edit = $conexion->prepare("UPDATE producto SET 
     producto_codigo=:producto_codigo,
+    producto_fecha_editado=:producto_fecha_editado,
     producto_nombre=:producto_nombre,
     producto_stock_total=:producto_stock_total,
     producto_precio_compra=:producto_precio_compra,
@@ -66,6 +68,7 @@ if ($_POST) {
 
     $sentencia_edit->bindParam(":producto_id", $txtID);
     $sentencia_edit->bindParam(":producto_codigo", $codigo_barra);
+    $sentencia_edit->bindParam(":producto_fecha_editado", $fechaActual);
     $sentencia_edit->bindParam(":producto_nombre", $producto_nombre);
     $sentencia_edit->bindParam(":producto_stock_total", $producto_stock_total);
     $sentencia_edit->bindParam(":producto_precio_compra", $producto_precio_compra);
@@ -117,13 +120,8 @@ if ($_POST) {
                     <div class="row">
                     <input type="hidden" class="form-control" name="txtID"id="txtID"value="<?php echo $producto_id;?>" >
                     <input type="hidden" class="form-control" name="categoria_id" id="categoria_id" value="<?php echo $categoria_id;?>" >
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <label for="" class="textLabel">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="text"class="form-control camposTabla" name="producto_nombre" id="producto_nombre"value="<?php echo $producto_nombre;?>">
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
+                        
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_edit_qr">
@@ -162,7 +160,13 @@ if ($_POST) {
                             <!-- /.modal -->
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text"class="form-control camposTabla" name="producto_nombre" id="producto_nombre"value="<?php echo $producto_nombre;?>">
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="" class="textLabel">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
@@ -177,8 +181,27 @@ if ($_POST) {
                                 </div>
                             </div>
                         </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text" class="form-control camposTabla" name="producto_marca" id="producto_marca" value="<?php echo $producto_marca;?>" >
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text" class="form-control camposTabla" name="producto_modelo" id="producto_modelo" value="<?php echo $producto_modelo;?>">
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total"
+                                    value="<?php echo $producto_stock_total;?>"  pattern="[0-9]*">
+                            </div>
+                        </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 

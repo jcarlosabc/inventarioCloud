@@ -37,6 +37,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Modelo</th>                                    
               <th>Categoria</th>
               <th>Cantidad en Stock</th>
+              <th>Garantia</th>
               <th>Editar</th>
             </tr>
             </thead>
@@ -51,6 +52,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['producto_modelo']; ?></td>
                   <td><?php echo $registro['categoria_nombre']; ?></td>
                   <td><?php echo $registro['producto_stock_total']; ?></td>
+                  <td><?php echo $registro['producto_fecha_garantia']; ?></td>
                   <td class="text-center">
                     <div class="btn-group">
                         <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Añadir Stock"><i class="fa fa-plus-circle"></i></a> 
