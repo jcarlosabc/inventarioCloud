@@ -2,10 +2,12 @@
 <?php
 
 include("../../db.php");
+$fechaActual = date("d/m/Y");
 
 if ($_POST) {
-    
+
     $producto_codigo = isset($_POST['producto_codigo']) ? $_POST['producto_codigo'] : "";
+    $fechaGarantia =  isset($_POST['fechaGarantia']) ? $_POST['fechaGarantia'] : "";
     $producto_nombre = isset($_POST['producto_nombre']) ? $_POST['producto_nombre'] : "";
     $producto_stock_total = isset($_POST['producto_stock_total']) ? $_POST['producto_stock_total'] : "";
     $producto_precio_compra = isset($_POST['producto_precio_compra']) ? $_POST['producto_precio_compra'] : "";
@@ -16,7 +18,6 @@ if ($_POST) {
     $proveedor_id = isset($_POST['proveedor_id']) ? $_POST['proveedor_id'] : "";  
 
     $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";  
-    
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
     $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
     $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
@@ -25,7 +26,9 @@ if ($_POST) {
 
     $sentencia = $conexion->prepare("INSERT INTO producto(
     producto_id,
-    producto_codigo, 
+    producto_codigo,
+    producto_fecha_creacion,
+    producto_fecha_garantia, 
     producto_nombre,
     producto_stock_total,
     producto_precio_compra,
@@ -35,8 +38,12 @@ if ($_POST) {
     categoria_id,
     proveedor_id, responsable) 
     VALUES (NULL,:producto_codigo, :producto_nombre,:producto_stock_total,:producto_precio_compra,:producto_precio_venta,:producto_marca,:producto_modelo,:categoria_id, :proveedor_id ,:responsable)");
+    categoria_id, responsable) 
+    VALUES (NULL,:producto_codigo,:producto_fecha_creacion,:fechaGarantia, :producto_nombre,:producto_stock_total,:producto_precio_compra,:producto_precio_venta,:producto_marca,:producto_modelo,:categoria_id,:responsable)");
    
     $sentencia->bindParam(":producto_codigo", $producto_codigo);
+    $sentencia->bindParam(":producto_fecha_creacion", $fechaActual);
+    $sentencia->bindParam(":fechaGarantia", $fechaGarantia);
     $sentencia->bindParam(":producto_nombre", $producto_nombre);
     $sentencia->bindParam(":producto_stock_total", $producto_stock_total);
     $sentencia->bindParam(":producto_precio_compra", $producto_precio_compra);
@@ -148,8 +155,6 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <br>
-
-
           <!-- left column -->
           <div class="">
             <!-- general form elements -->
@@ -162,14 +167,8 @@ document.addEventListener('DOMContentLoaded', function () {
               <form action="" method="post" enctype="multipart/form-data">
                   <input type="hidden" value="<?php $_SESSION['usuario_id'] ?>" name="idResponsable">
                 <div class="card-body ">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <label for="producto_nombre" class="textLabel">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="text" class="form-control camposTabla" name="producto_nombre" id="producto_nombre">
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
+                    <div class="row">                        
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-default">
@@ -208,10 +207,16 @@ document.addEventListener('DOMContentLoaded', function () {
                             <!-- /.modal -->
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="producto_nombre" class="textLabel">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text" class="form-control camposTabla" name="producto_nombre" id="producto_nombre">
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
                             <div class="form-group">
                                 <label class="textLabel">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <div class="form-group">
+                                <div class="form-group camposTabla">
                                 <select class="form-control select2 camposTabla" style="width: 100%;" name="categoria_id">                                    
                                     <option value="Sin Categoria">Escoger Categoria</option> 
                                     <?php foreach ($lista_categoria as $registro) {?>   
@@ -219,6 +224,18 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <?php } ?>
                                 </select>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="producto_marca" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text" class="form-control camposTabla" name="producto_marca" id="producto_marca">
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="producto_modelo" class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="number" class="form-control camposTabla"  name="producto_modelo" id="producto_modelo">
                             </div>
                         </div>
                     </div>
@@ -241,16 +258,15 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta" id="producto_precio_venta">
                             </div>
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <div class="form-group">
-                                <label for="producto_marca" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="text" class="form-control camposTabla" name="producto_marca" id="producto_marca">
-                            </div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <label for="producto_modelo" class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="number" class="form-control camposTabla"  name="producto_modelo" id="producto_modelo">
+                                <label class="textLabel">Fecha de Garantía</label>
+                                <div class="input-group date" id="fechaGarantia" data-target-input="nearest">
+                                    <input name ="fechaGarantia" type="text" class="form-control datetimepicker-input camposTabla" data-target="#fechaGarantia"/>
+                                    <div class="input-group-append" data-target="#fechaGarantia" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -281,5 +297,29 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <!-- /.card -->
           </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var numberInput = document.getElementById('producto_stock_total');
+    var numberInput_2 = document.getElementById('producto_modelo');
+
+    numberInput.addEventListener('focus', function() {
+        this.setAttribute('type', 'text');
+    });
+    numberInput.addEventListener('blur', function() {
+        this.setAttribute('type', 'number');
+    });
+
+    numberInput_2.addEventListener('focus', function() {
+        this.setAttribute('type', 'text');
+    });
+    numberInput_2.addEventListener('blur', function() {
+        this.setAttribute('type', 'number');
+    });
+
+});
+
+</script> 
+
 
 <?php include("../../templates/footer_content.php") ?>

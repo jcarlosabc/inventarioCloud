@@ -1,12 +1,15 @@
 <?php include("../../templates/header_content.php") ?>
 <?php
 include("../../db.php");
+$fechaActual = date("d/m/Y");
+
 if ($_POST) {
     $nombre_categoria = isset($_POST['nueva_categoria']) ? $_POST['nueva_categoria'] : "";
     $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";
 
-    $sentencia = $conexion->prepare("INSERT INTO categoria(categoria_id, categoria_nombre, responsable) VALUES (null, :nueva_categoria,:responsable)");
+    $sentencia = $conexion->prepare("INSERT INTO categoria(categoria_id, categoria_nombre,categoria_fecha_creacion, responsable) VALUES (null, :nueva_categoria,:categoria_fecha_creacion,:responsable)");
     $sentencia->bindParam(":nueva_categoria", $nombre_categoria);
+    $sentencia->bindParam(":categoria_fecha_creacion", $fechaActual);
     $sentencia->bindParam(":responsable", $idResponsable);
     
     $resultado = $sentencia->execute();
@@ -14,10 +17,14 @@ if ($_POST) {
         echo '<script>
         // Código JavaScript para mostrar SweetAlert
         Swal.fire({
-            title: "¡Categoria Creada Exitosamente!!",
+            title: "¡Categoria creada Exitosamente!!",
             icon: "success",
             confirmButtonText: "¡Entendido!"
-        });
+        }).then((result) => {
+            if(result.isConfirmed){
+                window.location.href = "http://localhost/inventariocloud/secciones/productos/lista_categoria.php";
+            }
+        })
         </script>';
     }else {
         echo '<script>

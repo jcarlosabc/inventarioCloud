@@ -227,6 +227,12 @@
                   </a>
                 </li>
                 <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/productos/lista_categoria.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Categorias</p>
+                  </a>
+                </li> 
+                <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/productos/crear.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Crear Productos</p>
