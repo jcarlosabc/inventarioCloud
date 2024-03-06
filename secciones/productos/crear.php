@@ -15,6 +15,8 @@ if ($_POST) {
     $producto_marca = isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
     $producto_modelo = isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
     $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";  
+    $proveedor_id = isset($_POST['proveedor_id']) ? $_POST['proveedor_id'] : "";  
+
     $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";  
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
     $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
@@ -33,8 +35,9 @@ if ($_POST) {
     producto_precio_venta,
     producto_marca,
     producto_modelo,
-    categoria_id, responsable) 
-    VALUES (NULL,:producto_codigo,:producto_fecha_creacion,:fechaGarantia, :producto_nombre,:producto_stock_total,:producto_precio_compra,:producto_precio_venta,:producto_marca,:producto_modelo,:categoria_id,:responsable)");
+    categoria_id,
+    proveedor_id, responsable) 
+    VALUES (NULL,:producto_codigo, :producto_nombre,:producto_stock_total,:producto_precio_compra,:producto_precio_venta,:producto_marca,:producto_modelo,:categoria_id, :proveedor_id ,:responsable)");
    
     $sentencia->bindParam(":producto_codigo", $producto_codigo);
     $sentencia->bindParam(":producto_fecha_creacion", $fechaActual);
@@ -46,6 +49,8 @@ if ($_POST) {
     $sentencia->bindParam(":producto_marca", $producto_marca);
     $sentencia->bindParam(":producto_modelo", $producto_modelo);
     $sentencia->bindParam(":categoria_id", $categoria_id);
+    $sentencia->bindParam(":proveedor_id", $proveedor_id);
+
     $sentencia->bindParam(":responsable", $idResponsable);
     
     
@@ -73,9 +78,16 @@ if ($_POST) {
         </script>';
     }
 }
+
 $sentencia=$conexion->prepare("SELECT * FROM `categoria`");
 $sentencia->execute();
 $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+$sentencia_prove = $conexion->prepare("SELECT * FROM proveedores");
+$sentencia_prove->execute();
+$lista_proveedores = $sentencia_prove->fetchAll(PDO::FETCH_ASSOC);
+
+
 ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -261,6 +273,22 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="textLabel">Proveedor</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <div class="form-group">
+                                <select class="form-control select2 camposTabla" style="width: 100%;" name="proveedor_id">                                    
+                                    <option value="Sin Categoria">Escoger tu proveedor</option> 
+                                    <?php foreach ($lista_proveedores as $registro) {?>   
+                                        <option value="<?php echo $registro['id_proveedores']; ?>"><?php echo $registro['nombre_proveedores']; ?></option> 
+                                    <?php } ?>
+                                </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">

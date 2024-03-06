@@ -125,7 +125,7 @@ if ($_POST) {
             <!-- small box -->
             <div class="small-box bg-info">
               <div class="inner">
-                <h3>Factura</h3>
+                <h3>Facturas</h3>
 
                 <form action="" method="post" class="text-center">
                     <input type="text" class="form-control " name="rad_factura" id="rad_factura" >
