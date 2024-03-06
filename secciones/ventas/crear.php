@@ -68,21 +68,25 @@ if(isset($_POST['producto_seleccionado'])) {
 if(isset($_POST['productos_vendidos'])) {
     $cantidades = isset($_POST['cantidad']) ? $_POST['cantidad'] : array();
     $totales = isset($_POST['total']) ? $_POST['total'] : array();
-
+    $totales = str_replace(array('$','.', ','), '', $totales);
     $codigo_factura = isset($_POST['codigo_factura']) ? $_POST['codigo_factura'] : $_POST['codigo_factura'];
     $total_dinero = isset($_POST['total_dinero']) ? $_POST['total_dinero'] : $_POST['total_dinero'];
+    $total_dinero = str_replace(array('$','.', ','), '', $total_dinero);
     $recibe_dinero = isset($_POST['recibe_dinero']) ? $_POST['recibe_dinero'] : $_POST['recibe_dinero'];
+    $recibe_dinero = str_replace(array('$','.', ','), '', $recibe_dinero);
     $cambio_dinero = isset($_POST['cambio_dinero']) ? $_POST['cambio_dinero'] : $_POST['cambio_dinero'];
+    $cambio_dinero = str_replace(array('$','.', ','), '', $cambio_dinero);
     $cliente_id = isset($_POST['cliente_id']) ? $_POST['cliente_id'] : $_POST['cliente_id'];
     $metodo_pago = isset($_POST['metodo_pago']) ? $_POST['metodo_pago'] : $_POST['metodo_pago'];
+    $partes = isset($_POST['partes']) ? $_POST['partes'] : $_POST['partes'];
+   
     $user_id = $_SESSION['usuario_id'];
-
     $venta_realizada = false;
-
+    
     // Guardar la venta
     $sentencia_venta = $conexion->prepare("INSERT INTO venta(venta_id,venta_codigo, venta_fecha, venta_hora,
-        venta_total, venta_pagado, venta_cambio, venta_metodo_pago, cliente_id, caja_id, responsable ) 
-    VALUES (NULL,:codigo_factura,:fechaActual, :horaActual, :total_dinero, :recibe_dinero, :cambio_dinero, :metodo_pago , :cliente_id , :caja_id, :user_id)");
+        venta_total, venta_pagado, venta_cambio, venta_metodo_pago, partes, cliente_id, caja_id, responsable ) 
+    VALUES (NULL,:codigo_factura,:fechaActual, :horaActual, :total_dinero, :recibe_dinero, :cambio_dinero, :metodo_pago, :partes , :cliente_id , :caja_id, :user_id)");
 
     $sentencia_venta->bindParam(":codigo_factura", $codigo_factura);
     $sentencia_venta->bindParam(":fechaActual", $fechaActual);
@@ -91,6 +95,7 @@ if(isset($_POST['productos_vendidos'])) {
     $sentencia_venta->bindParam(":recibe_dinero", $recibe_dinero);
     $sentencia_venta->bindParam(":cambio_dinero", $cambio_dinero);
     $sentencia_venta->bindParam(":metodo_pago", $metodo_pago);
+    $sentencia_venta->bindParam(":partes", $partes);
     $sentencia_venta->bindParam(":cliente_id", $cliente_id);
     $sentencia_venta->bindParam(":caja_id", $caja_id);
     $sentencia_venta->bindParam(":user_id", $user_id);
@@ -165,21 +170,47 @@ if(isset($_POST['productos_vendidos'])) {
 
     // Redireccionar a la vista de detalle de ventas para generar factura
     if ($venta_realizada) {
-        echo '<script>
-        Swal.fire({
-            title: "¡Venta Realizada Exitosamente!",
-            icon: "success",
-            confirmButtonText: "¡Entendido!"
-        }).then((result)=>{
-            if(result.isConfirmed){
-                window.location.href="http://localhost/inventariocloud/detalles.php?txtID='.$ultimo_id_insertado.'";
-            }
-        })
-        </script>';
+        if ($metodo_pago == 0) {
+            echo '<script>
+            Swal.fire({
+                title: "¡Venta Realizada Exitosamente!",
+                icon: "success",
+                confirmButtonText: "¡Entendido!"
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    window.location.href="http://localhost/inventariocloud/detalles.php?txtID='.$ultimo_id_insertado.'";
+                }
+            })
+            </script>';
+        } else if($metodo_pago == 1){
+            echo '<script>
+            Swal.fire({
+                title: "¡Venta Exitosa: recuerda que el dinero lo tendras en la cuenta del local!",
+                icon: "success",
+                confirmButtonText: "¡Entendido!"
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    window.location.href="http://localhost/inventariocloud/detalles.php?txtID='.$ultimo_id_insertado.'";
+                }
+            })
+            </script>'; 
+        } else {
+            echo '<script>
+            Swal.fire({
+                title: "¡Venta Exitosa a Credito en: ' . $partes .' partes!",
+                icon: "success",
+                confirmButtonText: "¡Entendido!"
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    window.location.href="http://localhost/inventariocloud/detalles.php?txtID='.$ultimo_id_insertado.'";
+                }
+            })
+            </script>'; 
+        }
     } else {
         echo '<script>
         Swal.fire({
-            title: "Error al Crear Producto",
+            title: "Error en la Venta",
             icon: "error",
             confirmButtonText: "¡Entendido!"
         });
@@ -213,15 +244,27 @@ if(isset($_POST['productos_vendidos'])) {
                                 <tr>
                                     <td scope="row"><?php echo $registro['producto_codigo']; ?></td>
                                     <td><?php echo $registro['producto_nombre']; ?></td>
-                                    <td><?php echo $registro['producto_stock_total']; ?></td>
-                                    <td><?php echo $registro['producto_precio_venta']; ?></td>
+                                    <td>
+                                        <?php if ($registro['producto_stock_total'] == 2) {?>
+                                            <span class="text-danger"> El producto está por agotar existencias</span>
+                                            <br>
+                                            <span class="text-info">Comuníquese con su proveedor, quedan:  </span>
+                                        <?php }else if($registro['producto_stock_total'] == 0) { ?>
+                                            <span class="text-danger"> Producto Agotado, quedan:  </span>
+                                        <?php } ?>
+                                        <?php  echo $registro['producto_stock_total']; ?></td>
+                                    <td class="text-success"><?php echo '$ ' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
                                     <td><?php echo $registro['producto_marca']; ?></td>
                                     <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td>
                                         <form action="crear.php" method="POST">
                                             <input type="hidden" name="producto_id" value="<?php echo $registro['producto_id']; ?>">
                                             <input type="hidden" name="producto_codigo" value="<?php echo $registro['producto_codigo']; ?>">
-                                            <button type="submit" name="producto_seleccionado" value="<?php echo base64_encode(serialize($registro)); ?>" class="btn btn-primary">Escoger <i class="fas fa-chevron-right"></i></button>
+                                            <?php if($registro['producto_stock_total'] == 0) { ?>
+                                                <button type="button" class="btn btn-warning">Agotado</button>
+                                            <?php }else { ?>
+                                                <button type="submit" name="producto_seleccionado" value="<?php echo base64_encode(serialize($registro)); ?>" class="btn btn-primary">Escoger <i class="fas fa-chevron-right"></i></button>
+                                            <?php } ?>
                                         </form>
                                     </td>
                                 </tr>  
@@ -265,11 +308,10 @@ if(isset($_POST['productos_vendidos'])) {
                                                 <td><?php echo $registro['modelo']; ?></td>
                                                 <td><input style="width: 63px" type="number" class="cantidad-input" name="cantidad[<?php echo $registro['id']; ?>]" value="<?php echo $registro['cantidad']; ?>"></td>
                                                 <td>X</td>
-                                                <td><?php echo $registro['precio']; ?></td>
+                                                <td style="font-weight: 800;"><?php echo number_format($registro['precio'], 0, '.', ','); ?></td>
                                                 <td>=</td>
-                                                <td class="total-column"></td>
-                                                <td>
-                                                    <input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
+                                                <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
+                                                <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
                                                     <div class="btn-group">
                                                         <a class="btn btn-danger btn-sm" href="crear.php?txtID=<?php echo $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
                                                     </div>
@@ -294,7 +336,7 @@ if(isset($_POST['productos_vendidos'])) {
                                         <div class="form-group">
                                             <label class="textLabel">Métodos de Pago</label> 
                                             <div class="form-group">
-                                                <select class="form-control camposTabla" name="metodo_pago">                                    
+                                                <select class="form-control camposTabla" id="metodoPago" name="metodo_pago" onchange="mostrarOcultarPartes()">                                    
                                                     <option value="0" style="color:green">Efectivo</option> 
                                                     <option value="1" style="color:blue">Transferencia</option> 
                                                     <option value="2" style="color:#fb7e35">A Crédito</option> 
@@ -303,13 +345,17 @@ if(isset($_POST['productos_vendidos'])) {
                                         </div>
                                     </div>
                                     <style>
+                                        #partes {
+                                            display: none;
+                                        }
                                         span.select2-selection.select2-selection--single{
                                             height: 38px;
                                         }
-                                    </style>
+                                        </style>
                                     <div class="col-5">
                                         <div class="form-group">
-                                        <label class="textLabel">Cliente</label> 
+                                            <span id="partes"> Partes a pagar: <br><input type="number" name="partes"></span>
+                                            <label class="textLabel">Cliente</label> 
                                             <select class="form-control select2" name="cliente_id" style="height: 20px">
                                                 <option value="0">Público General </option> 
                                                 <?php foreach ($lista_cliente as $registro) {?>   
@@ -329,18 +375,18 @@ if(isset($_POST['productos_vendidos'])) {
                                 <br>
                                 <div class="row">
                                     <div class="col-4">
-                                        <label for="" class="textLabel">Total</label>
-                                        <input type="text" class="form-control camposTabla_dinero campo-total-global" name="total_dinero" value="<?php echo $total ?>" readonly>
+                                        <label class="textLabel">Total</label>
+                                        <input type="text" class="form-control camposTabla_dinero campo-total-global" name="total_dinero" readonly>
                                     </div>
                                     <div class="col-4">
                                         <label for="recibido" class="textLabel">Recibido</label>
-                                        <input type="number" class="form-control camposTabla_dinero" name="recibe_dinero" id="recibido" required>
+                                        <input type="text" class="form-control camposTabla_dinero" name="recibe_dinero" id="recibido" required>
                                     </div>
                                     <div class="col-4">
-                                        <label for="se_devuelve" class="textLabel">Se devuelve</label>
-                                        <input type="number" class="form-control camposTabla_dinero" id="se_devuelve" name="cambio_dinero" readonly>
-                                        <input type="hidden" id="generador_codigo_factura" name="codigo_factura">
+                                        <label class="textLabel">Se devuelve</label>
+                                        <input type="text" class="form-control camposTabla_dinero se_devuelve" name="cambio_dinero" readonly>
                                     </div>
+                                    <input type="hidden" id="generador_codigo_factura" name="codigo_factura">
                                 </div>
                                 <br>
                                 <div class="row" style="justify-content:center">

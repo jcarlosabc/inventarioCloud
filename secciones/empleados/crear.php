@@ -154,30 +154,4 @@ echo '';
     <!-- /.card -->
 </div>
 
-<script>  
-        document.addEventListener("DOMContentLoaded", function() {
-            pass1 = document.getElementById("usuario_clave_1");
-            pass2 = document.getElementById("usuario_clave_2");
-            var mensaje = document.getElementById("mensaje");
-
-            pass1.addEventListener("input", function() {
-                if (pass1.value === pass2.value) {
-                   // mensaje.textContent = "Las contraseñas coinciden.";
-                } else {
-                 //   mensaje.textContent = "Las contraseñas no coinciden.";
-                }
-            });
-            pass2.addEventListener("input", function() {
-                if (pass1.value === pass2.value) {
-                    mensaje.textContent = "";
-                    document.getElementById("guardar").disabled = false;
-
-                } else {
-                    mensaje.textContent = "Las contraseñas no coinciden.";
-                    document.getElementById("guardar").disabled = true;
-                }
-            });
-        });
-    </script>
-
 <?php include("../../templates/footer_content.php") ?>
