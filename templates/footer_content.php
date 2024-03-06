@@ -19,14 +19,10 @@
 <script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-
-  
+  // Escaneo de código de barras
   $.widget.bridge('uibutton', $.ui.button);
-
   var sound = new Audio("../../dist/sound/barcode.wav");
-
   $(document).ready(function() {
-
     barcode.config.start = 0.1;
     barcode.config.end = 0.9;
     barcode.config.video = '#barcodevideo';
@@ -41,27 +37,19 @@
       sound.play();	
     });
 });
-
-function copiarContenido() {
-            // Selecciona el contenido del div
-            var contenido = document.getElementById('result').innerText;
-
-            // Crea un elemento de texto temporal
-            var elementoTemporal = document.createElement('textarea');
-            elementoTemporal.value = contenido;
-
-            // Añade el elemento temporal al documento
-            document.body.appendChild(elementoTemporal);
-
-            // Selecciona y copia el contenido del elemento temporal
-            elementoTemporal.select();
-            document.execCommand('copy');
-
-            // Elimina el elemento temporal
-            document.body.removeChild(elementoTemporal);
-
-            alert('Contenido copiado!');
-        }
+// Función para realizar el copiado 
+  function copiarContenido() {
+    var contenido = document.getElementById('result').innerText;
+    var elementoTemporal = document.createElement('textarea');
+    elementoTemporal.value = contenido;
+    // Añade el elemento temporal al documento
+    document.body.appendChild(elementoTemporal);
+    elementoTemporal.select();
+    document.execCommand('copy');
+    // Elimina el elemento temporal
+    document.body.removeChild(elementoTemporal);
+    alert('Contenido copiado!');
+  }
 </script>
 <!-- Bootstrap 4 -->
 <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -158,13 +146,17 @@ function copiarContenido() {
 <script>
     
     $(document).ready(function () {
-        // Función para calcular el total y asignarlo al TD
+        // Función para calcular el total
         function actualizarTotal(fila) {
             var cantidad = fila.find('.cantidad-input').val();
-            var precio = fila.find('td:eq(6)').text();
-            var total = cantidad * precio;
-            fila.find('.total-column').text(total);
-            fila.find('.total-input').val(total);
+            var precio_fila = fila.find('td:eq(6)').text();
+
+            let precio_formateado = precio_fila.replace(/[$,]/g, "");
+            var total = cantidad * precio_formateado;
+            var total_formateado = total.toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0});
+            
+            fila.find('.total-column').text(total_formateado);
+            fila.find('.total-input').val(total_formateado);
             actualizarCampoTotalGlobal();
         }
 
@@ -174,11 +166,14 @@ function copiarContenido() {
 
             // Suma todos los totales de las filas
             $('.total-column').each(function () {
-                totalGlobal += parseFloat($(this).text()) || 0;
+                // Obtén el texto sin el formato de dinero y luego conviértelo a punto flotante
+                var totalSinFormato = $(this).text().replace(/[$,]/g, "");
+                totalGlobal += parseFloat(totalSinFormato) || 0;
             });
 
             // Asigna el total global al campo de texto
-            $('.campo-total-global').val(totalGlobal.toFixed(0));
+            let total_factura = totalGlobal.toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0});
+            $('.campo-total-global').val(total_factura);
 
             // Actualiza el campo de cambio
             actualizarCampoCambio();
@@ -197,96 +192,89 @@ function copiarContenido() {
         });
 
         // Escucha los cambios en el campo "Recibido"
-        $('#recibido').on('input', function () {
+        $('.recibido').on('input', function () {
             actualizarCampoCambio();
         });
 
         // Llama a la función al cargar la página para inicializar el campo de cambio
         actualizarCampoCambio();
     });
+    // Mascara para el campo recibido
+      document.addEventListener('DOMContentLoaded', function () {
+        var campoRecibido = document.getElementById("recibido");
+        campoRecibido.addEventListener("input", function(event) {
+            var valor = event.target.value;
+            valor = valor.replace(/[^\d]/g, '');
+            valor = "$" + valor;
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            event.target.value = valor;
+            actualizarCampoCambio();
+        });
+      });
 
     // Función para actualizar el campo de cambio
     function actualizarCampoCambio() {
-        var totalCompra = parseFloat($('.campo-total-global').val()) || 0;
-        var recibido = parseFloat($('#recibido').val()) || 0;
+        let total_factura = $(".campo-total-global").val();
+        total_factura = total_factura.replace(/[$,]/g, "");
+        let recibido = $("#recibido").val();
+        recibido = recibido.replace(/[$,.]/g, "");
 
         // Calcula el cambio
-        var cambio = recibido - totalCompra;
-
+        let cambio = recibido - total_factura;
         // Actualiza el campo "Se devuelve"
-        $('#se_devuelve').val(cambio.toFixed(0));
+        let cambioFormateado = cambio.toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0});
+        // Actualiza el campo "Se devuelve"
+        $('.se_devuelve').val(cambioFormateado);
     }
-
-  //  CONFIGURANDO TABLAS
-  $(document).ready(function () {
+ 
+    //  CONFIGURANDO TABLAS
+    $(document).ready(function () {
     var table = $("#vBuscar, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario").DataTable({
         "responsive": true,
         "lengthChange": false,
         "autoWidth": false
     });
     table.buttons().container().appendTo('#vBuscar_wrapper .col-md-6:eq(0)');
-});
+    });
 
-  // MASCARAS DE DINERO
-  document.addEventListener('DOMContentLoaded', function () {
-        // Obtener los inputs de precio de compra y precio de venta
-        var inputPrecioCompra = document.getElementById("producto_precio_compra");
-        var inputPrecioVenta = document.getElementById("producto_precio_venta");
+    // MASCARAS DE DINERO
+    document.addEventListener('DOMContentLoaded', function () {
+      var inputPrecioCompra = document.getElementById("producto_precio_compra");
+      var inputPrecioVenta = document.getElementById("producto_precio_venta");
+      var campoRecibido = document.getElementById("recibido");
 
-        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de compra
-        inputPrecioCompra.addEventListener("input", function(event) {
-            // Obtener el valor actual del input
-            var valor = event.target.value;
+      // Valor formateado para el precio de compra
+      inputPrecioCompra.addEventListener("input", function(event) {
+          var valor = event.target.value;
+          valor = valor.replace(/[^\d]/g, '');
+          valor = "$" + valor;
+          valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          event.target.value = valor;
+      });
 
-            // Remover cualquier caracter que no sea número
-            valor = valor.replace(/[^\d]/g, '');
+      // Valor formateado para el precio de venta
+      inputPrecioVenta.addEventListener("input", function(event) {
+          var valor = event.target.value;
+          valor = valor.replace(/[^\d]/g, '');
+          valor = "$" + valor;
+          valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          event.target.value = valor;
+      });
 
-            // Añadir el signo de peso al inicio
-            valor = "$" + valor;
+      // Prevenir el envío del formulario si el valor de alguno de los campos no es válido
+      document.getElementById("formCaja").addEventListener("submit", function(event) {
+          var valorCompra = inputPrecioCompra.value;
+          var valorVenta = inputPrecioVenta.value;
+          // Remover cualquier caracter que no sea número
+          valorCompra = valorCompra.replace(/[^\d]/g, '');
+          valorVenta = valorVenta.replace(/[^\d]/g, '');
 
-            // Formatear el número con separador de miles
-            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-            // Asignar el valor formateado de vuelta al input
-            event.target.value = valor;
-        });
-
-        // Escuchar el evento 'input' para actualizar el valor formateado para el precio de venta
-        inputPrecioVenta.addEventListener("input", function(event) {
-            // Obtener el valor actual del input
-            var valor = event.target.value;
-
-            // Remover cualquier caracter que no sea número
-            valor = valor.replace(/[^\d]/g, '');
-
-            // Añadir el signo de peso al inicio
-            valor = "$" + valor;
-
-            // Formatear el número con separador de miles
-            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-            // Asignar el valor formateado de vuelta al input
-            event.target.value = valor;
-        });
-
-        // Prevenir el envío del formulario si el valor de alguno de los campos no es válido
-        document.getElementById("formCaja").addEventListener("submit", function(event) {
-            // Obtener el valor actual del input de precio de compra
-            var valorCompra = inputPrecioCompra.value;
-
-            // Obtener el valor actual del input de precio de venta
-            var valorVenta = inputPrecioVenta.value;
-
-            // Remover cualquier caracter que no sea número
-            valorCompra = valorCompra.replace(/[^\d]/g, '');
-            valorVenta = valorVenta.replace(/[^\d]/g, '');
-
-            // Si alguno de los valores es vacío o no es un número válido, prevenir el envío del formulario
-            if (valorCompra === '' || isNaN(parseInt(valorCompra)) || valorVenta === '' || isNaN(parseInt(valorVenta))) {
-                event.preventDefault();
-                alert("Ingrese un monto válido en precio de compra y precio de venta.");
-            }
-        });
+          // Si alguno de los valores es vacío o no es un número válido, prevenir el envío del formulario
+          if (valorCompra === '' || isNaN(parseInt(valorCompra)) || valorVenta === '' || isNaN(parseInt(valorVenta))) {
+              event.preventDefault();
+              alert("Ingrese un monto válido en precio de compra y precio de venta.");
+          }
+      });
     });
 
     // Quitar las flechas de los campos number
@@ -317,6 +305,45 @@ function copiarContenido() {
       });
     });
 
+    // Ocultar y mostrar campo de cuotas cuando pagan a credito
+    document.addEventListener("DOMContentLoaded", function () {
+      mostrarOcultarPartes(); 
+    });
+    function mostrarOcultarPartes() {
+        var metodoPago = document.getElementById("metodoPago");
+        var partesCampo = document.getElementById("partes");
+
+        if (metodoPago.value == "2") { // "2" es el valor de "A Crédito"
+            partesCampo.style.display = "block";
+        } else {
+            partesCampo.style.display = "none";
+        }
+    }
+
+    // Validando que la clave sean iguales para la vista de crear productos
+    document.addEventListener("DOMContentLoaded", function() {
+        pass1 = document.getElementById("usuario_clave_1");
+        pass2 = document.getElementById("usuario_clave_2");
+        var mensaje = document.getElementById("mensaje");
+
+        pass1.addEventListener("input", function() {
+            if (pass1.value === pass2.value) {
+                // mensaje.textContent = "Las contraseñas coinciden.";
+            } else {
+              //   mensaje.textContent = "Las contraseñas no coinciden.";
+            }
+        });
+        pass2.addEventListener("input", function() {
+            if (pass1.value === pass2.value) {
+                mensaje.textContent = "";
+                document.getElementById("guardar").disabled = false;
+
+            } else {
+                mensaje.textContent = "Las contraseñas no coinciden.";
+                document.getElementById("guardar").disabled = true;
+            }
+        });
+    });
 </script>
 </body>
 </html>
