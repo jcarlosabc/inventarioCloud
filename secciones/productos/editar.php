@@ -36,6 +36,20 @@ if(isset($_GET['txtID'])){
     $sentencia_todas->execute();
     $categorias_disponibles = $sentencia_todas->fetchAll(PDO::FETCH_ASSOC);
 
+   // Consulta para obtener el proveedor actual del producto
+    $sentencia_proveedor = $conexion->prepare("SELECT p.proveedor_id, pro.nombre_proveedores
+    FROM producto p
+    JOIN proveedores pro ON p.proveedor_id = pro.id_proveedores
+    WHERE p.producto_id = :producto_id");
+    $sentencia_proveedor->bindParam(":producto_id", $producto_id);
+    $sentencia_proveedor->execute();
+    $proveedor_actual = $sentencia_proveedor->fetch(PDO::FETCH_ASSOC);
+
+    // Consulta para obtener todos los proveedores disponibles
+    $sentencia_todas = $conexion->prepare("SELECT id_proveedores, nombre_proveedores FROM proveedores");
+    $sentencia_todas->execute();
+    $proveedores_disponibles = $sentencia_todas->fetchAll(PDO::FETCH_ASSOC);
+
 
 
 if ($_POST) {
@@ -48,6 +62,9 @@ if ($_POST) {
     $producto_marca= isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
     $producto_modelo= isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
     $categoria_id= isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";
+
+    $proveedor_id= isset($_POST['proveedor_id']) ? $_POST['proveedor_id'] : "";
+
 
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
     $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
@@ -63,7 +80,8 @@ if ($_POST) {
     producto_precio_venta=:producto_precio_venta,
     producto_marca=:producto_marca,
     producto_modelo=:producto_modelo,
-    categoria_id=:categoria_id
+    categoria_id=:categoria_id,
+    proveedor_id=:proveedor_id
     WHERE producto_id =:producto_id");
 
     $sentencia_edit->bindParam(":producto_id", $txtID);
@@ -76,6 +94,8 @@ if ($_POST) {
     $sentencia_edit->bindParam(":producto_marca", $producto_marca);
     $sentencia_edit->bindParam(":producto_modelo", $producto_modelo);
     $sentencia_edit->bindParam(":categoria_id", $categoria_id);
+
+    $sentencia_edit->bindParam(":proveedor_id", $proveedor_id);
     
     $resultado_edit = $sentencia_edit->execute();
     if ($resultado_edit) {
@@ -100,6 +120,11 @@ if ($_POST) {
         </script>';
     }
 }
+
+
+
+
+
 ?>
 <br>
 <script>
@@ -229,12 +254,29 @@ if ($_POST) {
                                 <input type="text" class="form-control camposTabla" name="producto_marca" id="producto_marca" value="<?php echo $producto_marca;?>" >
                             </div>
                         </div>
+
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla" name="producto_modelo" id="producto_modelo" value="<?php echo $producto_modelo;?>">
                             </div>
                         </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Proveedor</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <div class="form-group">
+                                <select class="form-control select2 camposTabla" name="proveedor_id" style="width: 100%">
+                                    <?php foreach ($proveedores_disponibles as $proveedor) {
+                                        $selected = ($proveedor["id_proveedores"] == $proveedor_actual["proveedor_id"]) ? "selected" : "";
+                                        echo '<option value="' . $proveedor["id_proveedores"] . '" ' . $selected . '>' . $proveedor["nombre_proveedores"] . '</option>';
+                                    } ?>
+                                </select>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div>
                 <!-- /.card-body -->
