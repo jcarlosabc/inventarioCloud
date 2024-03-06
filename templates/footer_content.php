@@ -76,6 +76,7 @@ function copiarContenido() {
 <script src="../../plugins/jquery-knob/jquery.knob.min.js"></script>
 <!-- daterangepicker -->
 <script src="../../plugins/moment/moment.min.js"></script>
+<script src="../../plugins/moment/locales.js"></script>
 <script src="../../plugins/daterangepicker/daterangepicker.js"></script>
 <!-- Tempusdominus Bootstrap 4 -->
 <script src="../../plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
@@ -110,7 +111,25 @@ function copiarContenido() {
 <script src="../../plugins/dropzone/min/dropzone.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.min.js"></script>
+
 <script>
+
+  //calendario
+  $(function () {
+    $('#fechaGarantia').datetimepicker({
+      locale: 'es',
+      format: 'DD/MM/YYYY',
+      daysOfWeekDisabled: [6],
+      //defaultDate: "11/1/2013",
+      disabledDates: [
+        // moment("12/25/2013"),
+        "11-11-2021",
+        "11-10-2021",
+        "11-05-2021"
+      ], });
+});
+
+
   $(function () {
   //Initialize Select2 Elements
     $('.select2').select2()

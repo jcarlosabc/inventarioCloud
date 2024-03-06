@@ -65,16 +65,16 @@ if(isset($_GET['txtID'])){
                 <div class="col-sm-4 invoice-col">
                   <br>                
                   <address>
-                    <strong>Fecha de la Venta: </strong> <?php echo $venta_fecha;?><br>                    
                     <strong>Nro. de Factura: </strong><?php echo $venta_id;?><br>
                     <strong>Codigo de Venta: </strong><?php echo $venta_codigo;?><br>
+                    <strong>Fecha de la Venta: </strong> <?php echo $venta_fecha;?><br>                                      
                   </address>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-4 invoice-col">
                   <address>
-                    <strong>Caja: </strong><?php echo $caja_numero;?><br>
                     <strong>Vendedor: </strong><?php echo $usuario_nombre;?><br>
+                    <strong>Caja: </strong><?php echo $caja_numero;?><br>
                     <strong>Cliente: </strong><?php echo $cliente_nombre;?> <?php echo $cliente_apellido;?><br>
                     <strong>CC: </strong><?php echo $cliente_numero_documento;?>                    
                   </address>
@@ -132,7 +132,7 @@ if(isset($_GET['txtID'])){
                         <td></strong><?php echo '$' . number_format($venta_pagado, 0, '.', ','); ?></td>
                       </tr>                      
                       <tr>
-                        <th>Total:</th>
+                        <th>Detalles:</th>
                         <td></strong><?php echo '$' . number_format($venta_cambio, 0, '.', ','); ?></td>
                       </tr>
                     </table>

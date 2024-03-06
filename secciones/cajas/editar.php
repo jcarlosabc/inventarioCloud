@@ -136,7 +136,7 @@ $resultado_edit = $sentencia_edit->execute();
               <div class="col-sm-4">
                   <div class="form-group">
                        <label for="caja_efectivo" class="textLabel">Efectivo</label> 
-                      <input type="text" class="form-control camposTabla" name="caja_efectivo"  id="caja_efectivo" value="<?php echo '$' . number_format($caja_efectivo, 2, '.', ','); ?>">
+                      <input type="text" class="form-control camposTabla" name="caja_efectivo"  id="caja_efectivo" value="<?php echo '$' . number_format($caja_efectivo, 0, '.', ','); ?>">
                   </div>                                                               
               </div>
 

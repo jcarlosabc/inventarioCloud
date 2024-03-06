@@ -38,6 +38,8 @@ if(isset($_GET['txtID'])){
 
 
 if ($_POST) {
+    $fechaActual = date("d/m/Y");
+
     $txtID = (isset($_POST['txtID'])) ? $_POST['txtID'] : "";
     $codigo_barra= isset($_POST['producto_codigo']) ? $_POST['producto_codigo'] : "";
     $producto_nombre= isset($_POST['producto_nombre']) ? $_POST['producto_nombre'] : "";
@@ -55,6 +57,7 @@ if ($_POST) {
      
     $sentencia_edit = $conexion->prepare("UPDATE producto SET 
     producto_codigo=:producto_codigo,
+    producto_fecha_ingreso=:producto_fecha_ingreso,
     producto_nombre=:producto_nombre,
     producto_stock_total=producto_stock_total+:producto_stock_total,
     producto_precio_compra=:producto_precio_compra,
@@ -66,6 +69,7 @@ if ($_POST) {
 
     $sentencia_edit->bindParam(":producto_id", $txtID);
     $sentencia_edit->bindParam(":producto_codigo", $codigo_barra);
+    $sentencia_edit->bindParam(":producto_fecha_ingreso", $fechaActual);
     $sentencia_edit->bindParam(":producto_nombre", $producto_nombre);
     $sentencia_edit->bindParam(":producto_stock_total", $producto_stock_total);
     $sentencia_edit->bindParam(":producto_precio_compra", $producto_precio_compra);
@@ -117,13 +121,8 @@ if ($_POST) {
                     <div class="row">
                     <input type="hidden" class="form-control" name="txtID"id="txtID"value="<?php echo $producto_id;?>" >
                     <input type="hidden" class="form-control" name="categoria_id" id="categoria_id" value="<?php echo $categoria_id;?>" >
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <label for="" class="textLabel">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="text"class="form-control camposTabla" name="producto_nombre" id="producto_nombre" readonly value="<?php echo $producto_nombre;?>">
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
+                        
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Codigo de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_edit_qr">
@@ -162,7 +161,13 @@ if ($_POST) {
                             <!-- /.modal -->
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="text"class="form-control camposTabla" name="producto_nombre" id="producto_nombre" readonly value="<?php echo $producto_nombre;?>">
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="" class="textLabel">Categoria</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
@@ -177,26 +182,6 @@ if ($_POST) {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <label for="" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="texto" class="form-control camposTabla_dinero" placeholder="$000.00" name="producto_precio_compra" id="producto_precio_compra" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <label for="" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="texto" class="form-control camposTabla_dinero"placeholder="$000.00" name="producto_precio_venta"id="producto_precio_venta" required>                                 
-                            </div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <label for="" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total" required >
-                            </div>
-                        </div>
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
@@ -209,6 +194,28 @@ if ($_POST) {
                                 <input type="text" class="form-control camposTabla" name="producto_modelo" id="producto_modelo" readonly value="<?php echo $producto_modelo;?>">
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total" required >
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="texto" class="form-control camposTabla_dinero" placeholder="$000.00" name="producto_precio_compra" id="producto_precio_compra" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="texto" class="form-control camposTabla_dinero"placeholder="$000.00" name="producto_precio_venta"id="producto_precio_venta" required>                                 
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
                 <!-- /.card-body -->
