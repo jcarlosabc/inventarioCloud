@@ -287,10 +287,36 @@ if (!isset($_SESSION['usuario_usuario'])) {
               </ul>
             </li>
 
+
+              <!-- menu de proveedores -->
+              <li class="nav-item">
+            <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-truck fa-lg mr-2"></i>
+              <p>
+                PROVEEDORES  
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">              
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/proveedores/crear.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crear Proveedores</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/proveedores/" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Lista Proveedores</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
             <!-- menu de configuraciones -->
             <li class="nav-item">
             <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-cog fa-lg mr-2"></i>
+            <i class="nav-icon fas  fa-cog fa-lg mr-2"></i>
               <p>
                 Configuracion
                 <i class="fas fa-angle-left right"></i>
