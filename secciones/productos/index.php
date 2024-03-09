@@ -19,48 +19,57 @@ INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id");
 $sentencia->execute();
 $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+      <br>
       <div class="card card-primary">
         <div class="card-header">
           <h2 class="card-title textTabla">LISTA DE PRODUCTOS &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/productos/crear.php">Crear Producto</a></h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
-          <table id="listaProductos" class="table table-bordered table-striped">
+          <table id="listaProductos" class="table table-bordered table-striped" style="text-align:center">
             <thead>
             <tr>
-              <th>Codigo</th>
+              <th>#</th>
+              <th>Código</th>
               <th>Nombre</th>
-              <th>Precio de compra</th>
+              <?php if ($_SESSION['rolEmpleado']) { ?> <th>Precio de compra</th> <?php } ?>
               <th>Precio de Venta</th>
               <th>Marca</th>
               <th>Modelo</th>                                    
-              <th>Categoria</th>
+              <th>Categoría</th>
               <th>Cantidad en Stock</th>
-              <th>Garantia</th>
+              <th>Garantía</th>
               <th>Editar</th>
             </tr>
             </thead>
             <tbody>
-              <?php foreach ($lista_producto as $registro) {?>
+              <?php $count = 0;
+              foreach ($lista_producto as $registro) {?>
                 <tr class="">
-                  <td scope="row"><?php echo $registro['producto_codigo']; ?></td>
+                  <td scope="row"><?php $count++; echo $count; ?></td>
+                  <td><?php echo $registro['producto_codigo']; ?></td>
                   <td><?php echo $registro['producto_nombre']; ?></td>
-                  <td><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
-                  <td><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>                
+                  <?php if ($_SESSION['rolEmpleado']) { ?>
+                    <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
+                  <?php } ?>
+                  <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>                
                   <td><?php echo $registro['producto_marca']; ?></td>
                   <td><?php echo $registro['producto_modelo']; ?></td>
                   <td><?php echo $registro['categoria_nombre']; ?></td>
                   <td><?php echo $registro['producto_stock_total']; ?></td>
                   <td><?php echo $registro['producto_fecha_garantia']; ?></td>
-                  <td class="text-center">
-                    <div class="btn-group">
-                        <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Añadir Stock"><i class="fa fa-plus-circle"></i></a> 
-                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['producto_id']; ?>"role="button" title="Editar"><i class="fas fa-edit"></i></a>
-                        <?php if ($_SESSION['rolEmpleado']) { ?>
-                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar"><i class="far fa-trash-alt"></i></a>  
-                        <?php } ?>                  
-                    </div>
+                  <td>
+                    <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Añadir Stock">
+                      <i class="fa fa-plus-circle"></i> Añadir Stock
+                    </a>
+                    <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['producto_id']; ?>"role="button" title="Editar">
+                        <i class="fas fa-edit"></i>Editar
+                    </a>
+                    <?php if ($_SESSION['rolEmpleado']) { ?>
+                    <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar">
+                      <i class="far fa-trash-alt"></i>Eliminar 
+                    </a>
+                    <?php } ?>
                   </td>
                 </tr>  
               <?php } ?>

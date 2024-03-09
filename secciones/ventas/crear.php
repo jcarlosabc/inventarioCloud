@@ -230,7 +230,7 @@ if(isset($_POST['productos_vendidos'])) {
                     <table id="vBuscar" class="table table-bordered table-striped" style="text-align:center">
                         <thead>
                             <tr>
-                                <th>Codigo</th>
+                                <th>Código</th>
                                 <th>Nombre</th>
                                 <th>Existencias</th>
                                 <th>Precio</th>
@@ -253,7 +253,7 @@ if(isset($_POST['productos_vendidos'])) {
                                             <span class="text-danger"> Producto Agotado, quedan:  </span>
                                         <?php } ?>
                                         <?php  echo $registro['producto_stock_total']; ?></td>
-                                    <td class="text-success"><?php echo '$ ' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
+                                    <td class="tdColor"><?php echo '$ ' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
                                     <td><?php echo $registro['producto_marca']; ?></td>
                                     <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td>
@@ -354,7 +354,7 @@ if(isset($_POST['productos_vendidos'])) {
                                         </style>
                                     <div class="col-5">
                                         <div class="form-group">
-                                            <span id="partes"> Partes a pagar: <br><input type="number" name="partes"></span>
+                                            <span id="partes"> Número de Cuotas: <br><input type="number" required name="partes" value="0"></span>
                                             <label class="textLabel">Cliente</label> 
                                             <select class="form-control select2" name="cliente_id" style="height: 20px">
                                                 <option value="0">Público General </option> 

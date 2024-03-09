@@ -7,11 +7,9 @@ if (!isset($_SESSION['usuario_usuario'])) {
   header("Location:".$url_base."login.php");
 }
 
-
-$sentencia=$conexion->prepare("SELECT COUNT(*) as total_usuarios FROM usuario");
+$sentencia=$conexion->prepare("SELECT COUNT(*) as total_clientes FROM cliente");
 $sentencia->execute();
 $contardor_usuario=$sentencia->fetchAll(PDO::FETCH_ASSOC);
-
 
 $sentencia=$conexion->prepare("SELECT COUNT(*) as total_producto FROM producto");
 $sentencia->execute();
@@ -34,6 +32,24 @@ WHERE usuario.usuario_id = :usuario_id;");
 $sentencia->bindParam(":usuario_id", $usuario_sesion);
 $sentencia->execute();
 $total_dinero_caja =$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+//total de devoluciones  
+$sentencia=$conexion->prepare("SELECT COUNT(*) as total_devolucion FROM devolucion");
+$sentencia->execute();
+$contardor_deboluciones=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+
+$sentencia=$conexion->prepare("SELECT COUNT(*) as total_cuentas_pendiente_clientes FROM venta WHERE venta_metodo_pago = 2 and estado_venta = 0;");
+$sentencia->execute();
+$lista_clientes_cuentas_pendientes=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
+
+$total_cuentas_p_clientes = $lista_clientes_cuentas_pendientes[0]['total_cuentas_pendiente_clientes'];
+
+
+
+
+
+
 
 
 if ($_POST) {
@@ -66,7 +82,7 @@ if ($_POST) {
             <!-- small box -->
             <div class="small-box bg-info">
               <div class="inner">
-                <h3><?php echo (isset( $contardor_producto[0]['total_producto']))?$contardor_producto[0]['total_producto']: " ";?></h3>
+                <h3><?php echo (isset( $contardor_producto[0]['total_producto']))?$contardor_producto[0]['total_producto']: 0;?></h3>
 
                 <p>Productos</p>
               </div>
@@ -96,7 +112,7 @@ if ($_POST) {
             <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner" style="color: white !important">
-                <h3 ><?php echo  (isset($contardor_usuario[0]['total_clientes']))?$contardor_usuario[0]['total_clientes']: "" ;?></h3>
+                <h3 ><?php echo  (isset($contardor_usuario[0]['total_clientes']))?$contardor_usuario[0]['total_clientes']: 0 ;?></h3>
                 <p>Clientes Registrados</p>
               </div>
               <div class="icon">
@@ -110,7 +126,7 @@ if ($_POST) {
             <!-- small box -->
             <div class="small-box bg-danger">
               <div class="inner">
-                <h3><?php echo (isset( $contardor_ventas[0]['total_ventas']))?$contardor_ventas[0]['total_ventas']: " ";?></h3>
+                <h3><?php echo (isset( $contardor_ventas[0]['total_ventas']))?$contardor_ventas[0]['total_ventas']: 0;?></h3>
                 <p>Ventas del dia</p>
               </div>
               <div class="icon">
@@ -121,6 +137,9 @@ if ($_POST) {
           </div>
 
 
+          
+
+
           <div class="col-lg-3 col-6">
             <!-- small box -->
             <div class="small-box bg-info">
@@ -129,13 +148,48 @@ if ($_POST) {
 
                 <form action="" method="post" class="text-center">
                     <input type="text" class="form-control " name="rad_factura" id="rad_factura" >
-                  </div>
-                  <!-- <button type="submit" class="btn btn-primary btn-lg" id="guardar" name="guardar">Guardar</button>-->
-                    <button  class="btn btn-primary text-center" id="guardar" name="guardar" type="submit">Ir a la factura</button>  
+                  
+                    <!-- <button type="submit" class="btn btn-primary btn-lg" id="guardar" name="guardar">Guardar</button>-->
+                    <button  class="btn btn-secondary text-center mt-2" id="guardar" name="guardar" type="submit">Ir a la factura</button>  
                     
+                  </form>
                 </div>
-              </form>
+              </div>
           </div>
+
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3> <?php echo  (isset($contardor_deboluciones[0]['total_devolucion']))?$contardor_deboluciones[0]['total_devolucion']: 0 ;?>
+                  <!--<sup style="font-size: 20px">%</sup>--></h3>
+                <p>Devoluciones Realizar por mes  </p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <a href="#" class="small-box-footer"> Ver mas  <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h4> Cuentas pendiente
+                  <!--<sup style="font-size: 20px">%</sup>--></h4>
+                <p>Cliente : <?php echo isset($total_cuentas_p_clientes) ? $total_cuentas_p_clientes : 0 ?> </p>
+                <!-- <p>Proveedores : 00000  </p> -->
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <!-- <a href="#" class="small-box-footer"> <i class="fas fa-arrow-circle-right"></i></a> -->
+            </div>
+          </div>
+
+
+
           <!-- ./col -->
         </div>
         <!-- /.row -->

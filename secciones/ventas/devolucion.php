@@ -7,7 +7,6 @@ $horaActual = date("h:i a");
 
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-
     $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
     FROM venta 
     INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
@@ -23,42 +22,31 @@ if(isset($_GET['txtID'])){
     $venta_total=$registro["venta_total"];
     $venta_pagado=$registro["venta_pagado"];  
     $venta_cambio=$registro["venta_cambio"];  
-    
     $caja_id=$registro["caja_id"];  
     $usuario_nombre=$registro["usuario_nombre"];  
-
     $cliente_numero_documento=$registro["cliente_numero_documento"];  
     $cliente_nombre=$registro["cliente_nombre"];  
     $cliente_apellido=$registro["cliente_apellido"];  
 
     // PRINCIPAL
-    $sentencia_venta=$conexion->prepare("SELECT venta.*, venta_detalle.*, producto.*, producto.producto_codigo, devolucion.devolucion_serial, devolucion.devolucion_motivo
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto.*, producto.producto_codigo, devolucion.devolucion_serial, devolucion.devolucion_motivo
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo
     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
-    LEFT JOIN devolucion ON devolucion.venta_codigo = venta_detalle.venta_codigo
+    LEFT JOIN devolucion ON devolucion.venta_codigo = venta_detalle.venta_codigo AND devolucion.producto_id = producto.producto_id
     WHERE venta_detalle.venta_codigo = :venta_codigo 
     GROUP BY producto.producto_id;");
 
     $sentencia_venta->bindParam(":venta_codigo",$venta_codigo);
     $sentencia_venta->execute();
     $detalle_venta = $sentencia_venta;
-
-    // foreach ($detalle_venta as $venta) {
-    //     echo "Venta Código: " . $venta['venta_codigo'] . "<br>";
-    //     echo "Producto Código: " . $venta['producto_codigo'] . "<br>";
-    //     echo "serial: " . $venta['devolucion_serial'] . "<br>";
-    //     echo "<hr>";
-    // }
-
 }
 if ($_POST) {
     $devolucion_motivos = isset($_POST['devolucion_motivo']) ? $_POST['devolucion_motivo'] : array();
     $devolucion_seriales = isset($_POST['devolucion_serial']) ? $_POST['devolucion_serial'] : array();
     $productos_a_devolver = isset($_POST['productos_a_devolver']) ? $_POST['productos_a_devolver'] : array();
+    $producto_ids = isset($_POST['producto_id']) ? $_POST['producto_id'] : array();
     $venta_codigo = isset($_POST['venta_codigo']) ? $_POST['venta_codigo'] : "";
-    $producto_id = isset($_POST['producto_id']) ? $_POST['producto_id'] : "";
-    
     $responsable = $_SESSION['usuario_id'];
 
     // Iterar sobre los productos seleccionados
@@ -66,7 +54,8 @@ if ($_POST) {
         // Obtener los datos correspondientes al producto
         $index = array_search($producto_codigo, $_POST['producto_codigo']);
         $devolucion_motivo = $devolucion_motivos[$index];
-        $devolucion_serial = $devolucion_seriales[$index];       
+        $devolucion_serial = $devolucion_seriales[$index];
+        $producto_id = $producto_ids[$index];       
 
         // Insertar los datos de la devolución en la base de datos para este producto
         $sentencia_devolucion = $conexion->prepare("INSERT INTO devolucion(
@@ -84,16 +73,14 @@ if ($_POST) {
         $sentencia_devolucion->bindParam(":responsable",$responsable);
         $resultado= $sentencia_devolucion->execute();
 
-        // $estado_devolucion = $conexion->prepare("UPDATE venta_detalle 
-        // SET estado_devolucion = '1'
-        // WHERE venta_codigo = :venta_codigo AND producto_id = :producto_id");
+        //UPDATE DE ESTADO
+        $estado_devolucion = $conexion->prepare("UPDATE venta_detalle 
+        SET estado_devolucion = '1'
+        WHERE venta_codigo = :venta_codigo AND producto_id = :producto_id");
 
-        // //no esta pillando el id correctamente
-        // $estado_devolucion->bindParam(":venta_codigo",$venta_codigo);
-        // $estado_devolucion->bindParam(":producto_id",$producto_id);
-        // print_r($producto_id);
-        // $estado_devolucion->execute();
-    
+        $estado_devolucion->bindParam(":venta_codigo", $venta_codigo);    
+        $estado_devolucion->bindParam(":producto_id", $producto_id);
+        $estado_devolucion->execute();
     }
     if ($resultado) {
         echo '<script>
@@ -118,9 +105,7 @@ if ($_POST) {
         </script>';
     }
 }
-
 ?>
-
 <br>
 <!-- Main content -->
 <div class="invoice p-3 mb-3">
@@ -155,8 +140,6 @@ if ($_POST) {
                 </address>
             </div>               
         </div>
-        <!-- /.row -->
-
         <!-- Table row -->
         <div class="row">
             <div class="col-12 table-responsive">
@@ -166,16 +149,21 @@ if ($_POST) {
                           <th>Qty</th>
                           <th>PRODUCTO</th>
                           <th>CANTIDAD</th>
-                          <th>GARANTIA</th>
+                          <th>GARANTíA</th>
                           <th>MOTIVO</th>
                           <th>SERIAL</th>
                           <th>ESTADO</th>
-                          <th>Seleccionar</th>
+                          <th>SElECCIONAR</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($detalle_venta as $registro) {?>
-                            <tr class="">
+                        <?php foreach ($detalle_venta as $registro) { 
+                            $fecha_actual_str = date('d/m/Y');
+                            $fecha_actual = DateTime::createFromFormat('d/m/Y', $fecha_actual_str);
+                            $fecha_garantia_str = $registro['producto_fecha_garantia'];
+                            $fecha_garantia = DateTime::createFromFormat('d/m/Y', $fecha_garantia_str);
+                            ?>
+                            <tr>
                                 <td scope="row"><?php echo $registro['venta_id']; ?></td>
                                 <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
                                 <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
@@ -183,16 +171,17 @@ if ($_POST) {
                                 <?php if ($registro['estado_devolucion'] == 1) {  ?>   
                                     <td><?php echo $registro['devolucion_motivo']; ?></td>  
                                     <td><?php echo $registro['devolucion_serial']; ?></td>
-                                <?php } else { ?>       
-                                    <td><textarea name="devolucion_motivo[]" rows="2" > </textarea></td>  
-                                    <td><input type="number" placeholder="" name="devolucion_serial[]" ></td>
+                                <?php } else  { ?> 
+                                    <?php if ($fecha_actual <= $fecha_garantia) {  ?>  
+                                        <td><textarea name="devolucion_motivo[]" rows="2" ></textarea></td>  
+                                        <td><input type="number" placeholder="" name="devolucion_serial[]"></td>
+                                    <?php } else { 
+                                            echo '<td></td>';                         
+                                            echo '<td></td>';
+                                        } ?>
                                 <?php } ?>       
                                 <td>
                                     <?php
-                                        $fecha_actual_str = date('d/m/Y');
-                                        $fecha_actual = DateTime::createFromFormat('d/m/Y', $fecha_actual_str);
-                                        $fecha_garantia_str = $registro['producto_fecha_garantia'];
-                                        $fecha_garantia = DateTime::createFromFormat('d/m/Y', $fecha_garantia_str);
                                         // Comparar las fechas
                                         if ($fecha_actual <= $fecha_garantia) {
                                             if ($registro['estado_devolucion']==0) {
@@ -209,7 +198,7 @@ if ($_POST) {
                                     ?>
                                 </td>
                                 <input type="hidden" name="venta_codigo" value="<?php echo $registro['venta_codigo']; ?>"> 
-                                <input type="hidden" name="producto_id" value="<?php echo $registro['producto_id']; ?>">  
+                                <input type="hidden" name="producto_id[]" value="<?php echo $registro['producto_id']; ?>">  
                                 <input type="hidden" name="producto_codigo[]" value="<?php echo $registro['producto_codigo']; ?>">                                
                             </tr>  
                         <?php } ?>
@@ -244,7 +233,6 @@ if ($_POST) {
         <!-- this row will not appear when printing -->
         <div class="row no-print">
             <div class="col-12">
-                
                 <button type="submit" class="btn btn-primary float-right" style="margin-right: 5px;">
                     <i class="fa fa-retweet"></i> Guardar Devolución
                 </button>
@@ -252,13 +240,5 @@ if ($_POST) {
         </div>
     </form>
 </div>
-<!-- /.invoice -->
-</div><!-- /.col -->
-</div><!-- /.row -->
-</div><!-- /.container-fluid -->
-</section>
-<!-- /.content -->
-
-
 
 <?php include("../../templates/footer_content.php") ?>

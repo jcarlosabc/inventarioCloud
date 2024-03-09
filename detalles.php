@@ -11,7 +11,6 @@ if (!isset($_SESSION['usuario_usuario'])) {
 if(isset($_GET['txtID'])){
 
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-  
   $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
   FROM venta 
   INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
@@ -39,7 +38,6 @@ if(isset($_GET['txtID'])){
 
   $caja_id=$registro["caja_id"];  
   $usuario_nombre=$registro["usuario_nombre"];  
-
   $cliente_numero_documento=$registro["cliente_numero_documento"];  
   $cliente_nombre=$registro["cliente_nombre"];  
   $cliente_apellido=$registro["cliente_apellido"];  

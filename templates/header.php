@@ -170,32 +170,7 @@
               </ul>
             </li>
   
-            <!-- SECCIÓN DE CLIENTES -->
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-address-book fa-lg mr-2"></i>
-                <p>
-                  CLIENTES
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-              <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/clientes/crear.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Crear Cliente</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/clientes/index.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Lista de Clientes</p>
-                  </a>
-                </li>                          
-              </ul>
-            </li>
-  
-          <!-- SECCIÓN DE PRODUCTOS -->
+            <!-- SECCIÓN DE PRODUCTOS -->
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-shopping-basket fa-lg mr-2"></i>
@@ -220,7 +195,7 @@
                 <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/productos/crear.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Crear Productos</p>
+                    <p>Crear Producto</p>
                   </a>
                 </li>
                 <li class="nav-item">
@@ -231,7 +206,57 @@
                 </li>              
               </ul>
             </li>
-  
+
+            <!-- SECCIÓN DE CLIENTES -->
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-address-book fa-lg mr-2"></i>
+                <p>
+                  CLIENTES
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+              <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/clientes/crear.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Crear Cliente</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/clientes/index.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Clientes</p>
+                  </a>
+                </li>                          
+              </ul>
+            </li>
+            
+          <!-- menu de proveedores -->
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-truck fa-lg mr-2"></i>
+              <p>
+                PROVEEDORES  
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">              
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/proveedores/crear.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crear Proveedor</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/proveedores/" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Lista Proveedores</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
           <?php if ($_SESSION['rolEmpleado']) { ?>
           <!-- SECCIÓN DE CAJAS -->
             <li class="nav-item">
@@ -252,70 +277,72 @@
                 <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/cajas/" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Lista de Caja</p>
+                    <p>Lista de Cajas</p>
                   </a>
                 </li>              
               </ul>
             </li>
 
-              <!-- SECCIÓN DE USUARIO -->
+          <!-- SECCIÓN DE USUARIO -->
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fa fa-users fa-lg mr-2"></i>
+                <p>
+                  EMPLEADOS
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">              
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="nav-icon fa fa-users fa-lg mr-2"></i>
-                    <p>
-                      USUARIO
-                      <i class="fas fa-angle-left right"></i>
-                    </p>
+                  <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Crear Empleado</p>
                   </a>
-                  <ul class="nav nav-treeview">              
-                    <li class="nav-item">
-                      <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Crear usuario</p>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Lista de Usuario</p>
-                      </a>
-                    </li>
-                  </ul>
                 </li>
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Empleados</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
 
+            <!-- SECCIÓN DE PENDIENTES -->
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-money-bill fa-lg mr-2"></i>
+                <p>
+                MORAS PENDIENTES
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/pendientes/" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Cuentas Clientes</p>
+                  </a>
+                </li>
+              </ul>
+              <?php if ($_SESSION['rolEmpleado']) { ?>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/pendientes/" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Cuentas Proveedores</p>
+                  </a>
+                </li>
+              </ul>
+              <?php } ?>
+            </li>
 
-              <!-- menu de proveedores -->
-              <li class="nav-item">
-            <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-truck fa-lg mr-2"></i>
-              <p>
-              PROVEEDORES   
-                <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">              
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/proveedores/crear.php" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Crear Proveedores </p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/proveedores/" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Lista Proveedores </p>
-                </a>
-              </li>
-            </ul>
-          </li>
-
-
-             <!-- menu de configuraciones -->
+             <!-- CONFIGURACIÓNES -->
             <li class="nav-item">
             <a href="#" class="nav-link">
             <i class="nav-icon fas  fa-cog fa-lg mr-2"></i>
               <p>
-                Configuracion
+                Configuración
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -323,13 +350,13 @@
               <li class="nav-item">
                 <a href="<?php echo $url_base;?>secciones/configuracion/crear.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Crear</p>
+                  <p>Configurar Empresa</p>
                 </a>
               </li>
             </ul>
           </li>
           
-            <?php } ?>
+          <?php } ?>
             
             <li class="nav-item">
               <a href="#" class="nav-link">

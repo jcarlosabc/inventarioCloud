@@ -2,6 +2,7 @@
 <?php 
 session_start();
 $url_base = "http://localhost/inventariocloud/";
+$url_base2 = "http://localhost/inventariocloud/";
 
 if (!isset($_SESSION['usuario_usuario'])) {
     header("Location:".$url_base."login.php");
@@ -46,7 +47,7 @@ if (!isset($_SESSION['usuario_usuario'])) {
   <!-- summernote -->
   <link rel="stylesheet" href="../../plugins/summernote/summernote-bs4.min.css">
   <!-- Estilos Personalizados -->
-  <link rel="stylesheet" href="../../dist/css/estilos_content.css">
+  <link rel="stylesheet" href="../../dist/css/custom_content.css">
   <!-- Agrega estos enlaces en la sección head de tu HTML -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
@@ -118,8 +119,6 @@ if (!isset($_SESSION['usuario_usuario'])) {
       <img src="<?php echo "data:image/png;base64,".$logo_empresa;?>" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light"><?php echo $nombre_empresa; ?></span>
     </a>
-  
-
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
@@ -182,27 +181,8 @@ if (!isset($_SESSION['usuario_usuario'])) {
               </li>
             </ul>
           </li>
-
-          <!-- SECCIÓN DE CLIENTES -->
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-address-book fa-lg mr-2"></i>
-              <p>
-                CLIENTES
-                <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/clientes/crear.php" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Crear Cliente</p>
-                </a>
-              </li>                          
-            </ul>
-          </li>
-
-        <!-- SECCIÓN DE PRODUCTO -->
+      
+          <!-- SECCIÓN DE PRODUCTO -->
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-shopping-basket fa-lg mr-2"></i>
@@ -227,7 +207,7 @@ if (!isset($_SESSION['usuario_usuario'])) {
               <li class="nav-item">
                 <a href="<?php echo $url_base;?>secciones/productos/crear.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Crear Productos</p>
+                  <p>Crear Producto</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -236,6 +216,56 @@ if (!isset($_SESSION['usuario_usuario'])) {
                   <p>Lista de Productos</p>
                 </a>
               </li>              
+            </ul>
+          </li>
+
+          <!-- SECCIÓN DE CLIENTES -->
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-address-book fa-lg mr-2"></i>
+              <p>
+                CLIENTES
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/clientes/crear.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crear Cliente</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/clientes/index.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Clientes</p>
+                  </a>
+                </li>                          
+            </ul>
+          </li>
+          
+          <!-- PROVEEDORES -->
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-truck fa-lg mr-2"></i>
+              <p>
+                PROVEEDORES  
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">              
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/proveedores/crear.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crear Proveedor</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/proveedores/" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Lista Proveedores</p>
+                </a>
+              </li>
             </ul>
           </li>
           
@@ -259,7 +289,7 @@ if (!isset($_SESSION['usuario_usuario'])) {
               <li class="nav-item">
                 <a href="<?php echo $url_base;?>secciones/cajas/" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Lista de Caja</p>
+                  <p>Lista de Cajas</p>
                 </a>
               </li>
             </ul>
@@ -270,7 +300,7 @@ if (!isset($_SESSION['usuario_usuario'])) {
               <a href="#" class="nav-link">
                 <i class="nav-icon fa fa-users fa-lg mr-2"></i>
                 <p>
-                  USUARIO
+                  EMPLEADOS
                   <i class="fas fa-angle-left right"></i>
                   </p>
               </a>
@@ -278,50 +308,54 @@ if (!isset($_SESSION['usuario_usuario'])) {
                 <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Crear usuario</p>
+                    <p>Crear Empleado</p>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Lista de Usuario</p>
+                    <p>Lista de Empleados</p>
                   </a>
                 </li>
               </ul>
             </li>
 
+            <!-- SECCIÓN DE PENDIENTES -->
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-money-bill fa-lg mr-2"></i>
+                <p>
+                  MORAS PENDIENTES
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/pendientes/" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Cuentas Clientes</p>
+                  </a>
+                </li>
+              </ul>
+              <?php if ($_SESSION['rolEmpleado']) { ?>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/pendientes/" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Cuentas Clientes</p>
+                  </a>
+                </li>
+              </ul>
+              <?php } ?>
 
-              <!-- menu de proveedores -->
-              <li class="nav-item">
-            <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-truck fa-lg mr-2"></i>
-              <p>
-                PROVEEDORES  
-                <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">              
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/proveedores/crear.php" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Crear Proveedores</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/proveedores/" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Lista Proveedores</p>
-                </a>
-              </li>
-            </ul>
-          </li>
+            </li>
 
-            <!-- menu de configuraciones -->
+            <!-- CONFIGURACIÓN -->
             <li class="nav-item">
             <a href="#" class="nav-link">
             <i class="nav-icon fas  fa-cog fa-lg mr-2"></i>
               <p>
-                Configuracion
+                Configuración
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -329,12 +363,10 @@ if (!isset($_SESSION['usuario_usuario'])) {
               <li class="nav-item">
                 <a href="<?php echo $url_base;?>secciones/configuracion/crear.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Crear</p>
+                  <p>Configurar Empresa</p>
                 </a>
               </li>
-          
           <?php } ?>
-
 
           <li class="nav-item">
             <a href="#" class="nav-link">
@@ -382,4 +414,3 @@ if (!isset($_SESSION['usuario_usuario'])) {
   <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
-        

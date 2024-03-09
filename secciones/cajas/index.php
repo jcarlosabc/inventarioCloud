@@ -2,18 +2,15 @@
 <?php 
 include("../../db.php");
 
-if(isset($_GET['txtID'])){
-
+  if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-  
     $sentencia=$conexion->prepare("DELETE FROM caja WHERE caja_id=:caja_id");
     $sentencia->bindParam(":caja_id",$txtID);
     $sentencia->execute();    
   }
-
-$sentencia=$conexion->prepare("SELECT * FROM `caja`");
-$sentencia->execute();
-$lista_caja=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+  $sentencia=$conexion->prepare("SELECT * FROM `caja`");
+  $sentencia->execute();
+  $lista_caja=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 <br>
@@ -23,27 +20,32 @@ $lista_caja=$sentencia->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <!-- /.card-header -->
         <div class="card-body">
-          <table id="lista_cajas" class="table table-bordered table-striped">
+          <table id="lista_cajas" class="table table-bordered table-striped" style="text-align:center">
             <thead>
             <tr>
+                <th>#</th>
                 <th>Código </th>
                 <th>Nombre </th>
                 <th>Efectivo </th> 
-                <th>Opciones</th> 
+                <th>Opciónes</th> 
             </tr>
             </thead>
             <tbody>
-              <?php foreach ($lista_caja as $registro) {?>
-                <tr class="">
-                <td scope="row"><?php echo $registro['caja_numero']; ?></td>
+              <?php $count = 0;
+              foreach ($lista_caja as $registro) {?>
+                <tr>
+                <td scope="row"><?php $count++; echo $count; ?></td>
+                <td><?php echo $registro['caja_numero']; ?></td>
                 <td><?php echo $registro['caja_nombre']; ?></td>
-                <td><?php echo '$' . number_format($registro['caja_efectivo'], 0, '.', ','); ?></td>
-                <td  style="text-align: center;">
-                    <div class="btn-group">
-                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['caja_id']; ?>"role="button"title="Editar"><i class="fas fa-edit"></i></a>
-                        <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['caja_id']; ?>" role="button"title="Eliminar"><i class="far fa-trash-alt"></i></a>                    
-                    </div>
-                  </td>
+                <td class="tdColor"><?php echo '$' . number_format($registro['caja_efectivo'], 0, '.', ','); ?></td>
+                <td class="text-center">
+                  <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['caja_id']; ?>"role="button"title="Editar">
+                    <i class="fas fa-edit"></i>Editar
+                  </a>
+                  <a class="btn btn-danger"href="index.php?txtID=<?php echo $registro['caja_id']; ?>" role="button"title="Eliminar">
+                      <i class="fas fa-trash-alt"></i>Eliminar
+                  </a>
+                </td>
                 </tr> 
               <?php } ?>
             </tbody>                  

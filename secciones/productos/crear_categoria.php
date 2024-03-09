@@ -1,6 +1,7 @@
 <?php include("../../templates/header_content.php") ?>
 <?php
 include("../../db.php");
+date_default_timezone_set('America/Bogota'); 
 $fechaActual = date("d/m/Y");
 
 if ($_POST) {
@@ -11,13 +12,13 @@ if ($_POST) {
     $sentencia->bindParam(":nueva_categoria", $nombre_categoria);
     $sentencia->bindParam(":categoria_fecha_creacion", $fechaActual);
     $sentencia->bindParam(":responsable", $idResponsable);
-    
     $resultado = $sentencia->execute();
+
     if ($resultado) {
         echo '<script>
         // Código JavaScript para mostrar SweetAlert
         Swal.fire({
-            title: "¡Categoria creada Exitosamente!!",
+            title: "¡Categoría creada Exitosamente!",
             icon: "success",
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
@@ -37,37 +38,27 @@ if ($_POST) {
     }
 }
 ?>
-<br>
-          <!-- left column -->
-          <div class="">
-            <!-- general form elements -->
-            <div class="card card-primary" style="margin-top:7%">
-                <div class="card-header">
-                    <h3 class="card-title textTabla">REGISTRE NUEVA CATEGORIA</h3>
-                </div>
-              <!-- /.card-header -->
-              <!-- form start --> 
-                <form action="" method="POST" id="formCategoria">
-                    <div class="card-body ">
-                        <div class="row" style="justify-content:center">
-                            <div class="col-sm-4" style="justify-content:center">
-                                <div class="form-group">
-                                    <!-- <label for="nuevaCategoria" class="textLabel">Nueva Categoria</label>  -->
-                                    <input type="text" class="form-control camposTabla" name="nueva_categoria" required id="nuevaCategoria">
-                                    <input type="hidden" value="<?php echo $_SESSION['usuario_id'] ?>" name="idResponsable">
-                                </div>
-                            </div>
+    <br>
+    <div class="card card-primary" style="margin-top:7%">
+        <div class="card-header">
+            <h2 class="card-title textTabla">REGISTRE NUEVA CATEGORÍA  &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/productos/lista_categoria.php">Lista Categorías</a></h2>
+        </div>
+        <form action="" method="POST" id="formCategoria">
+            <div class="card-body ">
+                <div class="row" style="justify-content:center">
+                    <div class="col-sm-3" style="justify-content:center">
+                        <div class="form-group">
+                            <input type="text" class="form-control camposTabla" name="nueva_categoria" required >
+                            <input type="hidden" value="<?php echo $_SESSION['usuario_id'] ?>" name="idResponsable">
                         </div>
                     </div>
-                    <!-- /.card-body -->
-                    <div class="card-footer" style="text-align:center">
-                        <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
-                        <a role="button"  href="index.php" class="btn btn-danger btn-lg">Cancelar</a>
-                    </div>
-                </form>
+                </div>
             </div>
-            <!-- /.card -->
-          </div>
-
-
+            <!-- /.card-body -->
+            <div class="card-footer" style="text-align:center">
+                <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+                <a role="button"  href="index.php" class="btn btn-danger btn-lg">Cancelar</a>
+            </div>
+        </form>
+    </div>
 <?php include("../../templates/footer_content.php") ?>

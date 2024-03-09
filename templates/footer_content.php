@@ -1,4 +1,4 @@
-      </div><!-- /.container-fluid -->
+</div><!-- /.container-fluid -->
     </section>
 </div>
  <!-- /.content-wrapper -->
@@ -66,6 +66,7 @@
 <script src="../../plugins/moment/moment.min.js"></script>
 <script src="../../plugins/moment/locales.js"></script>
 <script src="../../plugins/daterangepicker/daterangepicker.js"></script>
+<script src="../../plugins/inputmask/jquery.inputmask.min.js"></script>
 <!-- Tempusdominus Bootstrap 4 -->
 <script src="../../plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 <!-- Summernote -->
@@ -99,13 +100,22 @@
 <script src="../../plugins/dropzone/min/dropzone.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.min.js"></script>
-
-
 <script>
+  // Mascara para el input de edit fecha de producto
+  $(function () {
+      //Datemask dd/mm/yyyy
+      $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+      //Datemask2 mm/dd/yyyy
+      $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+      //Money Euro
+      $('[data-mask]').inputmask()
+
+    })
+
 
   //calendario
   $(function () {
-    $('#fechaGarantia').datetimepicker({
+    $('#fechaGarantia, #fechaGarantia_edit').datetimepicker({
       locale: 'es',
       format: 'DD/MM/YYYY',
       daysOfWeekDisabled: [6],
@@ -117,7 +127,6 @@
         "11-05-2021"
       ], });
 });
-
 
   $(function () {
   //Initialize Select2 Elements
@@ -229,53 +238,39 @@
  
     //  CONFIGURANDO TABLAS
     $(document).ready(function () {
-    var table = $("#vBuscar, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario").DataTable({
+    var table = $("#vBuscar, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario, #lista_categoria").DataTable({
         "responsive": true,
         "lengthChange": false,
-        "autoWidth": false
+        "autoWidth": false,
+        "language": {
+            "decimal":        ",",
+            "thousands":      ".",
+            "emptyTable":     "No hay datos disponibles en la tabla",
+            "info":           "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+            "infoEmpty":      "Mostrando 0 a 0 de 0 Páginas",
+            "infoFiltered":   "(filtrado de _MAX_ entradas totales)",
+            "infoPostFix":    "",
+            "thousands":      ",",
+            "lengthMenu":     "Mostrar _MENU_ entradas",
+            "loadingRecords": "Cargando...",
+            "processing":     "Procesando...",
+            "search":         "Buscar:",
+            "zeroRecords":    "No se encontraron registros coincidentes",
+            "paginate": {
+                "first":      "Primero",
+                "last":       "Último",
+                "next":       "Siguiente",
+                "previous":   "Anterior"
+            },
+            "aria": {
+                "sortAscending":  ": Activar para ordenar la columna en orden ascendente",
+                "sortDescending": ": Activar para ordenar la columna en orden descendente"
+            }
+        }
     });
+
     table.buttons().container().appendTo('#vBuscar_wrapper .col-md-6:eq(0)');
-    });
-
-    // MASCARAS DE DINERO
-    document.addEventListener('DOMContentLoaded', function () {
-      var inputPrecioCompra = document.getElementById("producto_precio_compra");
-      var inputPrecioVenta = document.getElementById("producto_precio_venta");
-      var campoRecibido = document.getElementById("recibido");
-
-      // Valor formateado para el precio de compra
-      inputPrecioCompra.addEventListener("input", function(event) {
-          var valor = event.target.value;
-          valor = valor.replace(/[^\d]/g, '');
-          valor = "$" + valor;
-          valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          event.target.value = valor;
-      });
-
-      // Valor formateado para el precio de venta
-      inputPrecioVenta.addEventListener("input", function(event) {
-          var valor = event.target.value;
-          valor = valor.replace(/[^\d]/g, '');
-          valor = "$" + valor;
-          valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          event.target.value = valor;
-      });
-
-      // Prevenir el envío del formulario si el valor de alguno de los campos no es válido
-      document.getElementById("formCaja").addEventListener("submit", function(event) {
-          var valorCompra = inputPrecioCompra.value;
-          var valorVenta = inputPrecioVenta.value;
-          // Remover cualquier caracter que no sea número
-          valorCompra = valorCompra.replace(/[^\d]/g, '');
-          valorVenta = valorVenta.replace(/[^\d]/g, '');
-
-          // Si alguno de los valores es vacío o no es un número válido, prevenir el envío del formulario
-          if (valorCompra === '' || isNaN(parseInt(valorCompra)) || valorVenta === '' || isNaN(parseInt(valorVenta))) {
-              event.preventDefault();
-              alert("Ingrese un monto válido en precio de compra y precio de venta.");
-          }
-      });
-    });
+});
 
     // Quitar las flechas de los campos number
     document.addEventListener('DOMContentLoaded', function() {
@@ -343,6 +338,108 @@
                 document.getElementById("guardar").disabled = true;
             }
         });
+    });
+
+    // Función formato dinero 
+    // campos agregados: cajas, caja_edit, producto_precio_compra, producto_precio_venta, producto_precio_compra_edit
+    // 
+  $(document).ready(function() {
+      function formatDineroSinDecimales(valor) {
+          return "$" + parseFloat(valor).toFixed(0).replace(/\d(?=(\d{3})+$)/g, "$&,");
+      }
+      $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta, " + 
+        "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock").on("input", function() {
+          var valor = $(this).val().replace(/[^0-9]/g, '');
+          $(this).val(formatDineroSinDecimales(valor));
+      });
+
+      // Evento al enviar el formulario
+      $("form").submit(function() {
+          var valor = $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta," +
+          "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock").val().replace(/[^0-9]/g, ''); 
+          $("#cajaEfectivo").val(valor);
+      });
+  });
+
+  // Validar los select obligatorios
+  function validarFormulario(id) {
+    if (id == 1) {
+      var categoriaSeleccionada = document.forms["formProducto"]["categoria_id"].value;
+      var proveedorSeleccionado = document.forms["formProducto"]["proveedor_id"].value;
+      if (categoriaSeleccionada == "") {
+          Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Por favor, seleccione una categoría.',
+          });
+          return false;
+      }
+      if (proveedorSeleccionado == "") {
+          Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Por favor, seleccione un proveedor.',
+          });
+          return false;
+      }
+    }else if(id == 2){
+      var rolSeleccionado = document.forms["formEmpleado"]["usuario_rol"].value;
+      var cajaSeleccionado = document.forms["formEmpleado"]["usuario_caja"].value;
+
+    if (rolSeleccionado == "") {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Por favor, seleccione un rol para el empleado.',
+        });
+        return false;
+    }
+    if (cajaSeleccionado == "") {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Por favor, seleccione una para el empleado.',
+        });
+        return false;
+    }
+    }
+    return true;
+}
+    // Validar que las claves sean iguales
+    document.addEventListener("DOMContentLoaded", function() {
+      pass1 = document.getElementById("usuario_clave_1");
+      pass2 = document.getElementById("usuario_clave_2");
+      var mensaje = document.getElementById("mensaje");
+
+      // Campos de crear empleados
+        pass2.addEventListener("input", function() {
+          if (pass1.value === pass2.value) {
+            mensaje.textContent = "";
+            document.getElementById("guardar").disabled = false;
+            
+          } else {
+            mensaje.textContent = "Las contraseñas no coinciden.";
+            document.getElementById("guardar").disabled = true;
+          }
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function() {
+        // Campos de editar empleados
+        pass1Edit = document.getElementById("usuario_clave_1E");
+        pass2Edit = document.getElementById("usuario_clave_2E");
+        var mensajeEdit = document.getElementById("mensajeEdit");
+      
+          pass2Edit.addEventListener("input", function() {
+              if (pass1Edit.value === pass2Edit.value) {
+                  mensajeEdit.textContent = "";
+                  document.getElementById("guardarEdit").disabled = false;
+
+              } else {
+                  mensajeEdit.textContent = "Las contraseñas no coinciden.";
+                  document.getElementById("guardarEdit").disabled = true;
+              }
+          });
     });
 </script>
 </body>
