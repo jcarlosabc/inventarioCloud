@@ -26,7 +26,7 @@ if ($_POST) {
 
           // die(print_r($_SESSION));
 
-        header("Location:index.php");
+        header("Location:http://localhost/inventariocloud/secciones/index.php");
     }else {
         $mensaje="Error: el usuario o contraseña son incorrectos";
     }

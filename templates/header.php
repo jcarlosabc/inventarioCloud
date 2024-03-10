@@ -1,58 +1,65 @@
 <?php 
 
+    session_start();
+    include("../db.php");
     $url_base = "http://localhost/inventariocloud/";
     
     $sentencia=$conexion->prepare("SELECT empresa_logo, empresa_nombre FROM empresa LIMIT 1 ");
     $sentencia->execute();
     $lista_empresa=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
 
-
-
-
     $logo_empresa = isset($lista_empresa[0]['empresa_logo'])? $lista_empresa[0]['empresa_logo']:'';
     $nombre_empresa = isset($lista_empresa[0]['empresa_nombre'])? $lista_empresa[0]['empresa_nombre'] : '';
 
-?>
+    if (!isset($_SESSION['usuario_usuario'])) {
+      header("Location:".$url_base."login.php");
+    }
 
+    date_default_timezone_set('America/Bogota'); 
+    $fechaActual = date("d/m/Y");
+    $horaActual = date("h:i a");
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Inventario Cloud</title>
-  <link rel="icon" type="image/x-icon" href="dist/img/logos/logo_nube.png">
+  <link rel="icon" type="image/x-icon" href="../dist/img/logos/logo_nube.png">
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Tempusdominus Bootstrap 4 -->
-  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <link rel="stylesheet" href="../plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
   <!-- iCheck -->
-  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- JQVMap -->
-  <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
+  <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
   <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <link rel="stylesheet" href="../plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
   <!-- Daterange picker -->
-  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
-  <!-- summernote -->
-  <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
-  <!-- <link rel="stylesheet" href="dist/css/estilos_content.css"> -->
+  <link rel="stylesheet" href="../plugins/daterangepicker/daterangepicker.css">
   <!-- ajax -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <!-- Estilos Personalizados -->
+  <link rel="stylesheet" href="../dist/css/custom_content.css">
+  <!-- sweetalert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
-  <!-- Preloader -->
-  <div class="preloader flex-column justify-content-center align-items-center">
-    <img class="animation__shake" src="dist/img/logos/logo_nube.png" alt="AdminLTELogo" height="60" width="80">
-  </div>
-  
   <?php if ($_SESSION['logueado']) { ?>
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -112,7 +119,7 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-            <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+            <img src="../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
             <a href="#" class="d-block h5" ><?php echo $_SESSION['usuario_usuario']?></a>
@@ -138,7 +145,7 @@
                  with font-awesome or any other icon font library -->
             <li class="nav-item menu-open">
               <li class="nav-item">
-                <a href="./index.php" class="nav-link active">
+                <a href="index.php" class="nav-link active">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Panel de control</p>
                 </a>
@@ -156,13 +163,13 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/ventas/crear.php" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/crear_venta.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Nueva venta</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/ventas/" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/index_ventas.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Historial de Ventas</p>
                   </a>
@@ -181,25 +188,25 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/productos/crear_categoria.php" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/crear_categoria.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Crear Categoria</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/productos/lista_categoria.php" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/lista_categoria.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Lista de Categorias</p>
                   </a>
                 </li> 
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/productos/crear.php" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/crear_producto.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Crear Producto</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/productos/" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/index_productos.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Lista de Productos</p>
                   </a>
@@ -218,13 +225,13 @@
               </a>
               <ul class="nav nav-treeview">
               <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/clientes/crear.php" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/crear_cliente.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Crear Cliente</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/clientes/index.php" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/index_clientes.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Lista de Clientes</p>
                   </a>
@@ -243,13 +250,13 @@
             </a>
             <ul class="nav nav-treeview">              
               <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/proveedores/crear.php" class="nav-link">
+                <a href="<?php echo $url_base;?>secciones/crear_proveedor.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Crear Proveedor</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/proveedores/" class="nav-link">
+                <a href="<?php echo $url_base;?>secciones/index_proveedores.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Lista Proveedores</p>
                 </a>
@@ -269,13 +276,13 @@
               </a>
               <ul class="nav nav-treeview">  
               <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/cajas/crear.php" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/crear_caja.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Crear Caja</p>
                   </a>
                 </li>            
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/cajas/" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/index_cajas.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Lista de Cajas</p>
                   </a>
@@ -294,13 +301,13 @@
               </a>
               <ul class="nav nav-treeview">              
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/empleados/crear.php" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/crear_empleado.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Crear Empleado</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/empleados/" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/index_empleados.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Lista de Empleados</p>
                   </a>
@@ -319,7 +326,7 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/pendientes/" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/index_pendientes.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Cuentas Clientes</p>
                   </a>
@@ -328,7 +335,7 @@
               <?php if ($_SESSION['rolEmpleado']) { ?>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/pendientes/" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/index_pendientes.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Cuentas Proveedores</p>
                   </a>
@@ -348,7 +355,7 @@
             </a>
             <ul class="nav nav-treeview">              
               <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/configuracion/crear.php" class="nav-link">
+                <a href="<?php echo $url_base;?>secciones/crear_config.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Configurar Empresa</p>
                 </a>
