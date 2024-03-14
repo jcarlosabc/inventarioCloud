@@ -4,6 +4,8 @@
 include("../../db.php");
 $fechaActual = date("d/m/Y");
 
+
+
 if ($_POST) {
 
     $producto_codigo = isset($_POST['producto_codigo']) ? $_POST['producto_codigo'] : "";
