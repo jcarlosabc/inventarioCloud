@@ -5,7 +5,7 @@
   </div>
  <!-- /.content-wrapper -->
  <footer class="main-footer">
-    <strong>Copyright &copy; <a href="https://adminlte.io">Innova Cloud</a>.</strong>
+    <strong>Copyright &copy; <a href="https://www.instagram.com/innova.cloud1?igsh=M2R2eWcwdjkzYmhn" target="_blank">Innova Cloud</a>.</strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
       <b>Version</b> 1.0.0
@@ -35,8 +35,6 @@
 <script src="../plugins/inputmask/jquery.inputmask.min.js"></script>
 <!-- Tempusdominus Bootstrap 4 -->
 <script src="../plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-<!-- Summernote -->
-<script src="../plugins/summernote/summernote-bs4.min.js"></script>
 <!-- overlayScrollbars -->
 <script src="../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <!-- AdminLTE App -->

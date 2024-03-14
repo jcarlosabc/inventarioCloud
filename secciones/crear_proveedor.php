@@ -26,7 +26,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result)=>{
             if(result.isConfirmed){
-                window.location.href="http://localhost/inventariocloud/secciones/index_proveedores.php"
+                window.location.href="'.$url_base.'secciones/index_proveedores.php"
             }
         })
         </script>';
@@ -55,7 +55,7 @@ if ($_POST) {
         <form action=" " method="post">
             <div class="card-body">
                 <div class="row" style="justify-content:center">
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <div class="form-group">
                             <label for="producto_nombre" class="textLabel">Nit</label> &nbsp;<i class="nav-icon fas fa-edit">  </i>
                             <input type="text" class="form-control camposTabla" name="nit_proveedore" required>

@@ -24,11 +24,11 @@ if (isset($_GET['txtID'])) {
         $usuario_apellido = isset($_POST['usuario_apellido']) ? $_POST['usuario_apellido'] : "";
         $usuario_telefono = isset($_POST['usuario_telefono']) ? $_POST['usuario_telefono'] : "";
         $usuario_email = isset($_POST['usuario_email']) ? $_POST['usuario_email'] : "";
-        $usuario_clave = hash('sha256',isset($_POST['usuario_clave_1']) ? $_POST['usuario_clave_1'] : "");
+        if ($_POST['usuario_clave_1']) {$usuario_clave = hash('sha256', $_POST['usuario_clave_1']);}else{$usuario_clave =  $_POST['usuario_clave_db'];}
         $usuario_rol = isset($_POST["usuario_rol"]) ? $_POST["usuario_rol"] : "";
         $usuario_caja = isset($_POST["usuario_caja"]) ? $_POST["usuario_caja"] : "";
         $username = "u" . $usuario_apellido;
-        $responsable = isset($_SESSION['usuario_id']) ?   $_SESSION['usuario_id']  : 0;
+        $responsable = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
 
         $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
         usuario_nombre=:usuario_nombre, usuario_apellido=:usuario_apellido,usuario_telefono=:usuario_telefono,
@@ -56,7 +56,7 @@ if (isset($_GET['txtID'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result) => {
                 if(result.isConfirmed){
-                    window.location.href = "http://localhost/inventariocloud/secciones/index_empleados.php";
+                    window.location.href = "'.$url_base.'secciones/index_empleados.php";
                 }
             })
         </script>';
@@ -115,13 +115,14 @@ if (isset($_GET['txtID'])) {
                     <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Clave</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
-                            <input type="password" class="form-control camposTabla" name="usuario_clave_1" id="usuario_clave_1E" value="">
+                            <input type="hidden" class="form-control camposTabla" name="usuario_clave_db" value="<?php echo $usuario_clave ?>" >
+                            <input type="password" class="form-control camposTabla" name="usuario_clave_1" id="usuario_clave_1E" >
                         </div>
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Confime la Clave</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
-                            <input type="password" class="form-control camposTabla" name="usuario_clave_2" id="usuario_clave_2E" value="">
+                            <input type="password" class="form-control camposTabla" name="usuario_clave_2" id="usuario_clave_2E" >
                             <div id="mensajeEdit" class="text-danger"></div>
                         </div>
                     </div>

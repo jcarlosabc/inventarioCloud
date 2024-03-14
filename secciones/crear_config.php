@@ -62,7 +62,7 @@ if ($_POST &&  $_POST['txtID'] == "") {
             confirmButtonText: "¡Entendido!"
         }).then((result)=>{
             if(result.isConfirmed){
-                window.location.href="http://localhost/inventariocloud/secciones/crear_config.php"
+                window.location.href="'.$url_base.'secciones/crear_config.php"
             }
         })
         </script>';
@@ -122,7 +122,7 @@ if ($_POST &&  $_POST['txtID'] == "") {
             confirmButtonText: "¡Entendido!"
         }).then((result)=>{
             if(result.isConfirmed){
-                window.location.href=http://localhost/inventariocloud/secciones/crear_config.php"
+                window.location.href="'.$url_base.'secciones/crear_config.php"
             }
         })
         </script>';

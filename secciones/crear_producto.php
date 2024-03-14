@@ -18,27 +18,31 @@ if ($_POST) {
     $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
     $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
 
-    $sentencia = $conexion->prepare("INSERT INTO producto(
-    producto_id, producto_codigo, producto_fecha_creacion, producto_fecha_garantia, 
-    producto_nombre, producto_stock_total, producto_precio_compra,
-    producto_precio_venta, producto_marca, producto_modelo,
-    categoria_id, proveedor_id, responsable) 
-    VALUES (NULL,:producto_codigo,:producto_fecha_creacion,:fechaGarantia, :producto_nombre,:producto_stock_total,:producto_precio_compra,:producto_precio_venta,:producto_marca,:producto_modelo,:categoria_id, :proveedor_id ,:responsable)");
+    date_default_timezone_set('America/Bogota'); 
+    $fechaActual = date("d/m/Y");
    
-    $sentencia->bindParam(":producto_codigo", $producto_codigo);
-    $sentencia->bindParam(":producto_fecha_creacion", $fechaActual);
-    $sentencia->bindParam(":fechaGarantia", $fechaGarantia);
-    $sentencia->bindParam(":producto_nombre", $producto_nombre);
-    $sentencia->bindParam(":producto_stock_total", $producto_stock_total);
-    $sentencia->bindParam(":producto_precio_compra", $producto_precio_compra);
-    $sentencia->bindParam(":producto_precio_venta", $producto_precio_venta);
-    $sentencia->bindParam(":producto_marca", $producto_marca);
-    $sentencia->bindParam(":producto_modelo", $producto_modelo);
-    $sentencia->bindParam(":categoria_id", $categoria_id);
-    $sentencia->bindParam(":proveedor_id", $proveedor_id);
-    $sentencia->bindParam(":responsable", $idResponsable);
-    
-    $resultado = $sentencia->execute();    
+  
+    $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion,
+        producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo,
+    categoria_id,proveedor_id,responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            
+    $sentencia = $conexion->prepare($sql);
+    $params = array(
+        $producto_codigo, 
+        $fechaActual, 
+        $fechaGarantia, 
+        $producto_nombre,
+        $producto_stock_total, 
+        $producto_precio_compra,
+        $producto_precio_venta, 
+        $producto_marca, 
+        $producto_modelo,
+        $categoria_id,
+        $proveedor_id,
+        $responsable 
+    );
+    $resultado = $sentencia->execute($params);
+
     if ($resultado) {
         echo '<script>
         // Código JavaScript para mostrar SweetAlert
@@ -48,7 +52,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "http://localhost/inventariocloud/secciones/index_productos.php";
+                window.location.href = "'.$url_base.'secciones/index_productos.php";
             }
         })
         </script>';
@@ -91,7 +95,7 @@ $lista_proveedores = $sentencia_prove->fetchAll(PDO::FETCH_ASSOC);
                             <div class="form-group">
                                 <label class="textLabel">Código de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-crearProducto"><i class="fas fa-barcode"></i></button>
-                                <input type="text" class="form-control camposTabla" name="producto_codigo">
+                                <input type="text" class="form-control camposTabla" name="producto_codigo" required>
                                 <div class="modal fade" id="modal-crearProducto">
                                     <div class="modal-dialog">
                                         <div class="modal-content bg-default" style="width: 115%;">

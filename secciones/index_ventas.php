@@ -29,7 +29,7 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
           <table id="historialVentas" class="table table-bordered table-striped" style="text-align:center">
             <thead>
             <tr>
-              <th>Codigo</th>
+              <th>Código</th>
               <th>Fecha / Hora </th>
               <th>Total</th>
               <th>Pagado</th>
@@ -46,7 +46,7 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['venta_fecha']; ?> / <?php echo $registro['venta_hora']; ?></td>
                   <td class="tdColor"><?php echo '$' . number_format($registro['venta_total'], 0, '.', ','); ?></td>
                   <td class="tdColor"><?php echo '$' . number_format($registro['venta_pagado'], 0, '.', ','); ?></td> 
-                  <td class="tdColor"><?php echo '$' . number_format($registro['venta_cambio'], 0, '.', ','); ?></td>
+                  <td class="tdColor"><?php echo ($registro['venta_metodo_pago'] == 0 || $registro['venta_metodo_pago'] == 1) ? '$' . number_format($registro['venta_cambio'], 0, '.', ',') : "Credito Saldado"; ?></td>
                   <td><a  <?php if($registro['cliente_id'] != 0 ){ ?> href="../editar_clientes.php?txtID=<?php echo $registro['cliente_id']; ?>" <?php }?>    ><?php echo $registro['cliente_nombre']; ?></a></td>
                   <td><?php echo  $registro['usuario_nombre']; ?></td> 
                   <td>

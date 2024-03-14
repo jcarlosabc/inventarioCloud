@@ -10,6 +10,11 @@ if(isset($_GET['txtID'])){
   $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id=:id");
   $sentencia->bindParam(":id",$txtID);
   $sentencia->execute();
+
+  // Mostrar el carrito
+  $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, marca, modelo FROM carrito WHERE estado=0");
+  $sentencia->execute();
+  $lista_carrito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Mostrar datos de la tabla 
@@ -36,20 +41,22 @@ if(isset($_POST['producto_seleccionado'])) {
     $producto_precio_venta = $producto_seleccionado['producto_precio_venta'];
     $producto_marca = $producto_seleccionado['producto_marca'];
     $producto_modelo = $producto_seleccionado['producto_modelo']; 
-       
-    $sentencia = $conexion->prepare("INSERT INTO carrito(id, producto_codigo,producto_id,producto, precio, marca, modelo ) 
-        VALUES (NULL,:producto_codigo,:producto_id,:producto_nombre,:producto_precio_venta,:producto_marca,:producto_modelo)");
 
-    $sentencia->bindParam(":producto_id", $producto_id);
-    $sentencia->bindParam(":producto_codigo", $producto_codigo);
-    $sentencia->bindParam(":producto_nombre", $producto_nombre);
-    $sentencia->bindParam(":producto_precio_venta", $producto_precio_venta);
-    $sentencia->bindParam(":producto_marca", $producto_marca);
-    $sentencia->bindParam(":producto_modelo", $producto_modelo);
-    $sentencia->execute();
+    $sql = "INSERT INTO carrito (producto_codigo, producto_id, producto, precio, marca, modelo) 
+            VALUES (?, ?, ?, ?, ?, ?)";
+        $sentencia = $conexion->prepare($sql);
+        $params = array(
+        $producto_codigo, 
+        $producto_id, 
+        $producto_nombre, 
+        $producto_precio_venta,
+        $producto_marca, 
+        $producto_modelo
+    );
+    $sentencia->execute($params);
 
     // Mostrar el carrito
-    $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, marca, modelo FROM carrito WHERE estado=0");
+    $sentencia=$conexion->prepare("SELECT * FROM carrito WHERE estado = 0");
     $sentencia->execute();
     $lista_carrito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
@@ -73,42 +80,51 @@ if(isset($_POST['productos_vendidos'])) {
     $cambio_dinero = str_replace(array('$','.', ','), '', $cambio_dinero);
     $cliente_id = isset($_POST['cliente_id']) ? $_POST['cliente_id'] : $_POST['cliente_id'];
     $metodo_pago = isset($_POST['metodo_pago']) ? $_POST['metodo_pago'] : $_POST['metodo_pago'];
+    $estado_ventas = 0;
+    if ($metodo_pago == 0 || $metodo_pago == 1) {
+        $estado_ventas = 1;
+    }
     $partes = isset($_POST['partes']) ? $_POST['partes'] : $_POST['partes'];
    
     $user_id = $_SESSION['usuario_id'];
     $venta_realizada = false;
-    
-    // Guardar la venta
-    $sentencia_venta = $conexion->prepare("INSERT INTO venta(venta_id,venta_codigo, venta_fecha, venta_hora,
-        venta_total, venta_pagado, venta_cambio, venta_metodo_pago, partes, cliente_id, caja_id, responsable ) 
-    VALUES (NULL,:codigo_factura,:fechaActual, :horaActual, :total_dinero, :recibe_dinero, :cambio_dinero, :metodo_pago, :partes , :cliente_id , :caja_id, :user_id)");
 
-    $sentencia_venta->bindParam(":codigo_factura", $codigo_factura);
-    $sentencia_venta->bindParam(":fechaActual", $fechaActual);
-    $sentencia_venta->bindParam(":horaActual", $horaActual);
-    $sentencia_venta->bindParam(":total_dinero", $total_dinero);
-    $sentencia_venta->bindParam(":recibe_dinero", $recibe_dinero);
-    $sentencia_venta->bindParam(":cambio_dinero", $cambio_dinero);
-    $sentencia_venta->bindParam(":metodo_pago", $metodo_pago);
-    $sentencia_venta->bindParam(":partes", $partes);
-    $sentencia_venta->bindParam(":cliente_id", $cliente_id);
-    $sentencia_venta->bindParam(":caja_id", $caja_id);
-    $sentencia_venta->bindParam(":user_id", $user_id);
-    $sentencia_venta->execute();
-
+    $sql = "INSERT INTO venta (venta_codigo, venta_fecha, venta_hora, venta_total, venta_pagado, venta_cambio, 
+                        venta_metodo_pago, partes, cliente_id, caja_id, responsable, estado_venta) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sentencia = $conexion->prepare($sql);
+            $params = array(
+            $codigo_factura, 
+            $fechaActual, 
+            $horaActual, 
+            $total_dinero,
+            $recibe_dinero, 
+            $cambio_dinero, 
+            $metodo_pago,
+            $partes,
+            $cliente_id,
+            $caja_id,
+            $user_id,
+            $estado_ventas
+    );
+    $sentencia->execute($params);   
     // Obtener el ID de la última fila afectada
     $ultimo_id_insertado = $conexion->lastInsertId();
 
     foreach ($cantidades as $id => $cantidad) {
         $total = $totales[$id] ?? 0;
 
-        // Guardando datos / actualizando carrito
-        $sentencia_edit = $conexion->prepare("UPDATE carrito SET cantidad = :cantidad, total = :total, estado = 1, responsable = :user_id  WHERE id = :id");
-        $sentencia_edit->bindParam(":cantidad", $cantidad);
-        $sentencia_edit->bindParam(":total", $total);
-        $sentencia_edit->bindParam(":id", $id);     
-        $sentencia_edit->bindParam(":user_id", $user_id);     
-        $sentencia_edit->execute();
+        // Agregando al carrito los productos
+        $sql = "UPDATE carrito SET cantidad = ?, total = ?, estado = ?, responsable = ? WHERE id = ?";
+                $sentencia = $conexion->prepare($sql);
+                $params = array(
+                    $cantidad, 
+                    $total, 
+                    1,  
+                    $user_id,
+                    $id  
+                );
+               $sentencia->execute($params);
 
         // Obteniendo la cantidad y id producto vendidos
         $sentencia_carrito = $conexion->prepare("SELECT id, cantidad, producto_id, producto FROM carrito WHERE id= $id");
@@ -131,34 +147,55 @@ if(isset($_POST['productos_vendidos'])) {
         $total_stock = $producto_stock_total - $cantidad_vendida;
 
         // Actualizando stock en el inventario 
-        $sentencia_update = $conexion->prepare("UPDATE producto SET producto_stock_total = :cantidad WHERE producto_id = :producto_id");
-        $sentencia_update->bindParam(":cantidad", $total_stock);
-        $sentencia_update->bindParam(":producto_id", $producto_id);     
-        $sentencia_update->execute();
+        $sql = "UPDATE producto SET producto_stock_total = ? WHERE producto_id = ?";
+                $sentencia = $conexion->prepare($sql);
+                $params = array(
+                    $total_stock, 
+                    $producto_id
+                );
+                $sentencia->execute($params);
+              
 
         // Insertando en ventas detalles
-        $sentencia_venta_detalle = $conexion->prepare("INSERT INTO venta_detalle(venta_detalle_id, venta_detalle_cantidad,
-            venta_detalle_precio_compra, venta_detalle_precio_venta, venta_detalle_total, venta_detalle_metodo_pago,
-            venta_detalle_descripcion, venta_codigo, producto_id, responsable ) 
-        VALUES (NULL,:cantidad_vendida, :producto_precio_compra, :producto_precio_venta, :total, :metodo_pago, :producto, :codigo_factura, :producto_id, :user_id)");
-
-        $sentencia_venta_detalle->bindParam(":cantidad_vendida", $cantidad_vendida);
-        $sentencia_venta_detalle->bindParam(":producto_precio_compra", $producto_precio_compra);
-        $sentencia_venta_detalle->bindParam(":producto_precio_venta", $producto_precio_venta);
-        $sentencia_venta_detalle->bindParam(":total", $total);
-        $sentencia_venta_detalle->bindParam(":metodo_pago", $metodo_pago);
-        $sentencia_venta_detalle->bindParam(":producto", $producto);
-        $sentencia_venta_detalle->bindParam(":codigo_factura", $codigo_factura);
-        $sentencia_venta_detalle->bindParam(":producto_id", $producto_id);
-        $sentencia_venta_detalle->bindParam(":user_id", $user_id);    
-        $sentencia_venta_detalle->execute();
+        $sql = "UPDATE producto SET producto_stock_total = ? WHERE producto_id = ?";
+        $sentencia = $conexion->prepare($sql);
+        $params = array(
+            $total_stock, 
+            $producto_id
+        );
+       $sentencia->execute($params);
+       
+    //    Guardando el detalle de la venta
+       $sql = "INSERT INTO venta_detalle (venta_detalle_cantidad,
+                venta_detalle_precio_compra, venta_detalle_precio_venta, venta_detalle_total, venta_detalle_metodo_pago,
+                venta_detalle_descripcion, venta_codigo, producto_id, responsable) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sentencia = $conexion->prepare($sql);
+            $params = array(
+            $cantidad_vendida, 
+            $producto_precio_compra, 
+            $producto_precio_venta, 
+            $total,
+            $metodo_pago, 
+            $producto, 
+            $codigo_factura,
+            $producto_id,
+            $user_id
+            );
+            $sentencia->execute($params);
 
         // Borrar los datos de carrito una ves se haya realizado el proceso anterior
-        $sentencia_delete_carrito=$conexion->prepare("DELETE FROM carrito WHERE estado = 1 AND responsable= :responsable");
-        $sentencia_delete_carrito->bindParam(":responsable", $user_id);
-        $sentencia_delete_carrito->execute();
+            $sql = "DELETE FROM carrito WHERE estado = ? AND responsable= ?";
+            $sentencia = $conexion->prepare($sql);
+            $params = array(
+                1, 
+                $user_id
+            );
+           $sentencia->execute($params);
+
 
     }
+   
     // Validando que todo el proceso fue exitoso
     $venta_realizada = true;
   
@@ -210,6 +247,8 @@ if(isset($_POST['productos_vendidos'])) {
             confirmButtonText: "¡Entendido!"
         });
         </script>';
+    
+  
     }
 }
 

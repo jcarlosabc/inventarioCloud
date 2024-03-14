@@ -2,5 +2,5 @@
 session_start();
 //$_SESSION=[];
 session_destroy();
-header("Location:login.php");
+header("Location: https://sunny-part.000webhostapp.com/login.php");
 ?>

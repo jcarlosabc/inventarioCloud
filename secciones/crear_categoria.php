@@ -2,6 +2,7 @@
 <?php
 
 if ($_POST) {
+    session_start();
     $nombre_categoria = isset($_POST['nueva_categoria']) ? $_POST['nueva_categoria'] : "";
     $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";
 
@@ -20,9 +21,9 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "http://localhost/inventariocloud/secciones/lista_categoria.php";
+                window.location.href = "'.$url_base.'secciones/lista_categoria.php";
             }
-        })
+        });
         </script>';
     }else {
         echo '<script>

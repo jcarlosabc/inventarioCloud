@@ -56,7 +56,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "http://localhost/inventariocloud/secciones/index_clientes.php";
+                window.location.href = "'.$url_base.'secciones/index_clientes.php";
             }
         })
         </script>';

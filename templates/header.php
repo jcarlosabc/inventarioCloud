@@ -2,7 +2,7 @@
 
     session_start();
     include("../db.php");
-    $url_base = "http://localhost/inventariocloud/";
+    $url_base = "https://sunny-part.000webhostapp.com/";
     
     $sentencia=$conexion->prepare("SELECT empresa_logo, empresa_nombre FROM empresa LIMIT 1 ");
     $sentencia->execute();
@@ -119,7 +119,7 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-            <img src="../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+            <img src="../dist/img/avatar5.png" class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
             <a href="#" class="d-block h5" ><?php echo $_SESSION['usuario_usuario']?></a>
@@ -332,16 +332,16 @@
                   </a>
                 </li>
               </ul>
-              <?php if ($_SESSION['rolEmpleado']) { ?>
+              <!-- hp if ($_SESSION['rolEmpleado']) { ?>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/index_pendientes.php" class="nav-link">
+                  <a href="?php echo $url_base;?>secciones/index_pendientes.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Cuentas Proveedores</p>
                   </a>
                 </li>
               </ul>
-              <?php } ?>
+              ?php } ?> -->
             </li>
 
              <!-- CONFIGURACIÓNES -->
@@ -364,42 +364,6 @@
           </li>
           
           <?php } ?>
-            
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-edit"></i>
-                <p>
-                  Forms
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="pages/forms/general.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>General Elements</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="pages/forms/advanced.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Advanced Elements</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="pages/forms/editors.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Editors</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="pages/forms/validation.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Validation</p>
-                  </a>
-                </li>
-              </ul>
-            </li> 
           </ul>
         </nav>
         <!-- /.sidebar-menu -->

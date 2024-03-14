@@ -3,8 +3,9 @@
 if (isset($_GET['txtID'])) {
 
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
+    echo $txtID; 
     // Obtener la categoría actual del producto
-    $datos_proveedores = $conexion->prepare("SELECT * FROM proveedores  WHERE id_proveedores = :id_proveedores");
+    $datos_proveedores = $conexion->prepare("SELECT * FROM proveedores WHERE id_proveedores = :id_proveedores");
 
     $datos_proveedores->bindParam(":id_proveedores", $txtID);
     $datos_proveedores->execute();
@@ -44,7 +45,7 @@ if (isset($_GET['txtID'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result) => {
                 if(result.isConfirmed){
-                    window.location.href = "http://localhost/inventarioCloud/secciones/index_proveedores.php";
+                    window.location.href = "'.$url_base.'secciones/index_proveedores.php";
                 }
             })
         </script>';
@@ -55,8 +56,8 @@ if (isset($_GET['txtID'])) {
                 icon: "error",
                 confirmButtonText: "¡Entendido!"
             });
-        </script>';
-        }
+            </script>';
+            }
     }
 }
 
@@ -106,7 +107,7 @@ if (isset($_GET['txtID'])) {
                     </div>
                 </div>
                 <div class="card-footer" style="text-align:center">
-                    <button type="submit" class="btn btn-primary btn-lg" id="guardar" name="guardar">Guardar</button>
+                    <button type="submit" class="btn btn-primary btn-lg" name="guardar">Guardar</button>
                     <a role="button" href="index_proveedores.php" class="btn btn-danger btn-lg">Cancelar</a>
                 </div>
             </div>

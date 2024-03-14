@@ -14,6 +14,7 @@ if(isset($_GET['txtID'])){
 
   $venta_id=$registro["venta_id"];
   $venta_fecha=$registro["venta_fecha"];
+  $venta_hora=$registro["venta_hora"];  
   $venta_codigo=$registro["venta_codigo"];
   $venta_total=$registro["venta_total"];
   $venta_pagado=$registro["venta_pagado"];  
@@ -43,6 +44,7 @@ if(isset($_GET['txtID'])){
   $empresa_nombre=$registro_empresa["empresa_nombre"];  
   $empresa_telefono=$registro_empresa["empresa_telefono"];  
   $empresa_direccion=$registro_empresa["empresa_direccion"];  
+  $empresa_nit=$registro_empresa["empresa_nit"];  
  
   // Mostrar lista comprados
   $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia
@@ -163,10 +165,12 @@ if(isset($_GET['txtID'])){
               <input type="hidden" name="empresa_nombre" value="<?php echo $empresa_nombre ?>">
               <input type="hidden" name="empresa_telefono" value="<?php echo $empresa_telefono ?>">
               <input type="hidden" name="empresa_direccion" value="<?php echo $empresa_direccion ?>">
+              <input type="hidden" name="empresa_nit" value="<?php echo $empresa_nit ?>">
               <!-- Datos de la venta -->
               <input type="hidden" name="venta_id" value="<?php echo $venta_id ?>">
               <input type="hidden" name="venta_codigo" value="<?php echo $venta_codigo ?>">
-              <input type="hidden" name="fechaActual" value="<?php echo $fechaActual;?>">
+              <input type="hidden" name="venta_fecha" value="<?php echo $venta_fecha;?>">
+              <input type="hidden" name="venta_hora" value="<?php echo $venta_hora;?>">
               <input type="hidden" name="caja_id" value="<?php echo $caja_id ?>">
               <input type="hidden" name="venta_metodo_pago" value="<?php echo $venta_metodo_pago ?>">
               <!-- Datos del empleado  -->

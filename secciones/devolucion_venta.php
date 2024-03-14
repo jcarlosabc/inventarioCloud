@@ -1,7 +1,12 @@
 <?php include("../templates/header.php") ?>
 <?php 
+date_default_timezone_set('America/Bogota');
+$fecha_actual = date("d/m/Y");
+$horaActual = date("h:i a");
+
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
+
     $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
     FROM venta 
     INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
@@ -17,8 +22,10 @@ if(isset($_GET['txtID'])){
     $venta_total=$registro["venta_total"];
     $venta_pagado=$registro["venta_pagado"];  
     $venta_cambio=$registro["venta_cambio"];  
+    
     $caja_id=$registro["caja_id"];  
     $usuario_nombre=$registro["usuario_nombre"];  
+
     $cliente_numero_documento=$registro["cliente_numero_documento"];  
     $cliente_nombre=$registro["cliente_nombre"];  
     $cliente_apellido=$registro["cliente_apellido"];  
@@ -42,65 +49,81 @@ if ($_POST) {
     $productos_a_devolver = isset($_POST['productos_a_devolver']) ? $_POST['productos_a_devolver'] : array();
     $producto_ids = isset($_POST['producto_id']) ? $_POST['producto_id'] : array();
     $venta_codigo = isset($_POST['venta_codigo']) ? $_POST['venta_codigo'] : "";
+    
     $responsable = $_SESSION['usuario_id'];
-
+    
     // Iterar sobre los productos seleccionados
     foreach ($productos_a_devolver as $producto_codigo) {
         // Obtener los datos correspondientes al producto
         $index = array_search($producto_codigo, $_POST['producto_codigo']);
         $devolucion_motivo = $devolucion_motivos[$index];
         $devolucion_serial = $devolucion_seriales[$index];
-        $producto_id = $producto_ids[$index];       
-
-        // Insertar los datos de la devolución en la base de datos para este producto
-        $sentencia_devolucion = $conexion->prepare("INSERT INTO devolucion(
-            id, venta_codigo, producto_id, producto_codigo, devolucion_fecha, 
-            devolucion_motivo, devolucion_serial, devolucion_hora, responsable) 
-            VALUES (NULL,:venta_codigo,:producto_id,:producto_codigo,:devolucion_fecha, :devolucion_motivo,:devolucion_serial,:devolucion_hora,:responsable)");
-
-        $sentencia_devolucion->bindParam(":venta_codigo",$venta_codigo);
-        $sentencia_devolucion->bindParam(":producto_id",$producto_id);
-        $sentencia_devolucion->bindParam(":producto_codigo",$producto_codigo);
-        $sentencia_devolucion->bindParam(":devolucion_fecha",$fecha_actual);
-        $sentencia_devolucion->bindParam(":devolucion_motivo",$devolucion_motivo);
-        $sentencia_devolucion->bindParam(":devolucion_serial",$devolucion_serial);
-        $sentencia_devolucion->bindParam(":devolucion_hora",$horaActual);
-        $sentencia_devolucion->bindParam(":responsable",$responsable);
-        $resultado= $sentencia_devolucion->execute();
-
-        //UPDATE DE ESTADO
-        $estado_devolucion = $conexion->prepare("UPDATE venta_detalle 
-        SET estado_devolucion = '1'
-        WHERE venta_codigo = :venta_codigo AND producto_id = :producto_id");
-
-        $estado_devolucion->bindParam(":venta_codigo", $venta_codigo);    
-        $estado_devolucion->bindParam(":producto_id", $producto_id);
-        $estado_devolucion->execute();
-    }
-    if ($resultado) {
-        echo '<script>
-        // Código JavaScript para mostrar SweetAlert
-        Swal.fire({
-            title: "¡Devolución Exitosa!",
-            icon: "success",
-            confirmButtonText: "¡Entendido!"
-        }).then((result) => {
-            if(result.isConfirmed){
-                window.location.href = "http://localhost/inventariocloud/secciones/index_ventas.php";
+        $producto_id = $producto_ids[$index];
+    
+        if (!$devolucion_motivo || !$devolucion_serial) {
+            echo '<script>
+                Swal.fire({
+                    title: "Opps los campos no se pueden ir vacíos, o has seleccionado la casilla incorrecta ",
+                    icon: "error",
+                    confirmButtonText: "¡Entendido!"
+                });
+            </script>';
+        } else {
+    
+            // Insertar los datos de la devolución en la base de datos para este producto
+            $sql = "INSERT INTO devolucion (venta_codigo, producto_id, producto_codigo, devolucion_fecha, 
+                devolucion_motivo, devolucion_serial, devolucion_hora, responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $sentencia = $conexion->prepare($sql);
+            $params = array(
+                $venta_codigo,
+                $producto_id,
+                $producto_codigo,
+                $fecha_actual,
+                $devolucion_motivo,
+                $devolucion_serial,
+                $horaActual,
+                $responsable
+            );
+            $resultado = $sentencia->execute($params);
+            // UPDATE DE ESTADO
+            $estado_devolucion = $conexion->prepare("UPDATE venta_detalle 
+            SET estado_devolucion = '1'
+            WHERE venta_codigo = :venta_codigo AND producto_id = :producto_id");
+            $estado_devolucion->bindParam(":venta_codigo", $venta_codigo);
+            $estado_devolucion->bindParam(":producto_id", $producto_id);
+            $resultado = $estado_devolucion->execute();
+    
+            if ($resultado) {
+                echo '<script>
+                // Código JavaScript para mostrar SweetAlert
+                Swal.fire({
+                    title: "¡Devolución Exitosa!",
+                    icon: "success",
+                    confirmButtonText: "¡Entendido!"
+                }).then((result) => {
+                    if(result.isConfirmed){
+                        window.location.href = "'.$url_base.'secciones/index_ventas.php";
+                    }
+                })
+                </script>';
+            } else {
+                echo '<script>
+                Swal.fire({
+                    title: "Error al devolver Producto",
+                    icon: "error",
+                    confirmButtonText: "¡Entendido!"
+                });
+                </script>';
             }
-        })
-        </script>';
-    } else {
-        echo '<script>
-        Swal.fire({
-            title: "Error al devolver Producto",
-            icon: "error",
-            confirmButtonText: "¡Entendido!"
-        });
-        </script>';
+        }
     }
-}
+    
+    }
+
+
+
 ?>
+
 <br>
 <!-- Main content -->
 <div class="invoice p-3 mb-3">
@@ -135,6 +158,8 @@ if ($_POST) {
                 </address>
             </div>               
         </div>
+        <!-- /.row -->
+
         <!-- Table row -->
         <div class="row">
             <div class="col-12 table-responsive">
@@ -144,11 +169,11 @@ if ($_POST) {
                           <th>Qty</th>
                           <th>PRODUCTO</th>
                           <th>CANTIDAD</th>
-                          <th>GARANTíA</th>
+                          <th>GARANTIA</th>
+                          <th>ESTADO</th>
+                          <th>SELECCIONAR</th>
                           <th>MOTIVO</th>
                           <th>SERIAL</th>
-                          <th>ESTADO</th>
-                          <th>SElECCIONAR</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -163,27 +188,15 @@ if ($_POST) {
                                 <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
                                 <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
                                 <td><?php echo $registro['producto_fecha_garantia']; ?></td>
-                                <?php if ($registro['estado_devolucion'] == 1) {  ?>   
-                                    <td><?php echo $registro['devolucion_motivo']; ?></td>  
-                                    <td><?php echo $registro['devolucion_serial']; ?></td>
-                                <?php } else  { ?> 
-                                    <?php if ($fecha_actual <= $fecha_garantia) {  ?>  
-                                        <td><textarea name="devolucion_motivo[]" rows="2" ></textarea></td>  
-                                        <td><input type="number" placeholder="" name="devolucion_serial[]"></td>
-                                    <?php } else { 
-                                            echo '<td></td>';                         
-                                            echo '<td></td>';
-                                        } ?>
-                                <?php } ?>       
                                 <td>
                                     <?php
                                         // Comparar las fechas
                                         if ($fecha_actual <= $fecha_garantia) {
                                             if ($registro['estado_devolucion']==0) {
                                                 echo '<span class="badge bg-success">Garantia Activa</span>';                                      
-                                                echo '<td><input type="checkbox" name="productos_a_devolver[]" value="' . $registro['producto_codigo'].'"></td>';
+                                                echo '<td><input type="checkbox" style="height: 22px; width: 100%;" name="productos_a_devolver[]" value="' . $registro['producto_codigo'].'"></td>';
                                             }else {
-                                                echo '<span class="badge bg-info">Garantia Realizada</span>';
+                                                echo '<span class="badge bg-info">Garantia Realizada</span> <br>No llenar los campos de esta fila';
                                                 echo '<td>♻️</td>';
                                             }
                                         } else {
@@ -192,6 +205,8 @@ if ($_POST) {
                                         }
                                     ?>
                                 </td>
+                                <td><textarea name="devolucion_motivo[]" required rows="2" ></textarea></td>  
+                                <td><input type="number" placeholder="" required name="devolucion_serial[]"></td>
                                 <input type="hidden" name="venta_codigo" value="<?php echo $registro['venta_codigo']; ?>"> 
                                 <input type="hidden" name="producto_id[]" value="<?php echo $registro['producto_id']; ?>">  
                                 <input type="hidden" name="producto_codigo[]" value="<?php echo $registro['producto_codigo']; ?>">                                
@@ -228,6 +243,7 @@ if ($_POST) {
         <!-- this row will not appear when printing -->
         <div class="row no-print">
             <div class="col-12">
+                
                 <button type="submit" class="btn btn-primary float-right" style="margin-right: 5px;">
                     <i class="fa fa-retweet"></i> Guardar Devolución
                 </button>
@@ -235,4 +251,13 @@ if ($_POST) {
         </div>
     </form>
 </div>
+<!-- /.invoice -->
+</div><!-- /.col -->
+</div><!-- /.row -->
+</div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+
+
+
 <?php include("../templates/footer.php") ?>
