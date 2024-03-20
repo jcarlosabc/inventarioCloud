@@ -6,6 +6,10 @@ if ($_SESSION['valSudoAdmin']) {
  }else{
     $lista_cliente_link  = "index_clientes.php?link=".$link;
  }
+ 
+ if(isset($_GET['link'])){
+    $link=(isset($_GET['link']))?$_GET['link']:"";
+ }
 
 if ($_POST) {
     
@@ -18,6 +22,8 @@ if ($_POST) {
     $cliente_telefono = isset($_POST['cliente_telefono']) ? $_POST['cliente_telefono'] : "";
     $cliente_email = isset($_POST['cliente_email']) ? $_POST['cliente_email'] : "";
     $responsable = $_SESSION['usuario_id'];
+    $link =  isset($_POST['link']) ? $_POST['link'] : "";
+
     
     $sentencia = $conexion->prepare("INSERT INTO cliente(
         cliente_id,
@@ -28,8 +34,9 @@ if ($_POST) {
         cliente_direccion,
         cliente_telefono,
         cliente_email,
+        link,
         responsable) 
-        VALUES (NULL,:cliente_numero_documento, :cliente_nombre,:cliente_apellido,:cliente_ciudad, :cliente_direccion,:cliente_telefono,:cliente_email,:responsable)");
+        VALUES (NULL,:cliente_numero_documento, :cliente_nombre,:cliente_apellido,:cliente_ciudad, :cliente_direccion,:cliente_telefono,:cliente_email, :link,:responsable)");
     
     $sentencia->bindParam(":cliente_numero_documento", $cliente_numero_documento);
     $sentencia->bindParam(":cliente_nombre", $cliente_nombre);
@@ -38,6 +45,7 @@ if ($_POST) {
     $sentencia->bindParam(":cliente_direccion", $cliente_direccion);
     $sentencia->bindParam(":cliente_telefono", $cliente_telefono);
     $sentencia->bindParam(":cliente_email", $cliente_email);
+    $sentencia->bindParam(":link", $link);
     $sentencia->bindParam(":responsable",$responsable);
         
     $resultado = $sentencia->execute();
@@ -78,6 +86,8 @@ if ($_POST) {
                             <div class="form-group">
                                 <label  for="cliente_numero_documento" class="textLabel">Cédula</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input required type="num" class="form-control camposTabla" name="cliente_numero_documento">
+                                <input type="hidden" name="link" value="<?php echo $link ?>">
+
                             </div>                       
                         </div> 
                         <div class="col-2">
