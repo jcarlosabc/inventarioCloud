@@ -7,15 +7,28 @@ if ($_SESSION['valSudoAdmin']) {
   $crear_cliente_link  = "crear_cliente.php?link=".$link;
 }
 
+if(isset($_GET['link'])){
+  $link=(isset($_GET['link']))?$_GET['link']:"";
+}
+
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
     $sentencia=$conexion->prepare("DELETE FROM cliente WHERE cliente_id=:cliente_id");
     $sentencia->bindParam(":cliente_id",$txtID);
     $sentencia->execute();
   }
-  $sentencia=$conexion->prepare("SELECT * FROM `cliente` WHERE cliente_id > 0");
-  $sentencia->execute();
-  $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+  if($link != ""){
+    $sentencia=$conexion->prepare("SELECT * FROM `cliente` WHERE cliente_id > 0  AND link = :link");
+    $sentencia->bindParam(":link", $link);
+    $sentencia->execute();
+    $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+  }else{
+    $sentencia=$conexion->prepare("SELECT * FROM cliente LEFT JOIN empresa ON cliente.link = empresa.link WHERE cliente.cliente_id > 0");
+    $sentencia->execute();
+    $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+
 ?>
       <br>
       <div class="card card-primary">
@@ -33,6 +46,9 @@ if(isset($_GET['txtID'])){
               <th>Dirección</th>                                    
               <th>Teléfono</th>
               <th>Correo</th>
+              <?php if($_SESSION['rolEmpleado']) { ?>
+              <th>Negocio</th>
+             <?php }?>
               <th>Editar</th>
             </tr>
             </thead>
@@ -47,6 +63,7 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['cliente_direccion']; ?></td>
                   <td><?php echo $registro['cliente_telefono']; ?></td>
                   <td><?php echo $registro['cliente_email']; ?></td>
+                  <td><?php if ($registro['link'] == "sudo_admin" || $registro['link'] == "" ) {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <td>
                     <a class="btn btn-info" href="editar_clientes.php?txtID=<?php echo $registro['cliente_id']; ?>"role="button" title="Editar">
                         <i class="fas fa-edit"></i>Editar
