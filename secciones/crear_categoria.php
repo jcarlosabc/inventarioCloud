@@ -1,11 +1,14 @@
 <?php include("../templates/header.php") ?>
 <?php
-if (isset($_SESSION['valSudoAdmin'])) {
+if ($_SESSION['valSudoAdmin']) {
     $lista_categoria_link  = "lista_categoria.php";
-  
- }else{
+    
+}else{
     $lista_categoria_link  = "lista_categoria.php?link=".$link;
- }
+}
+if(isset($_GET['link'])){
+   $link=(isset($_GET['link']))?$_GET['link']:"";
+}
 if ($_POST) {
     $nombre_categoria = isset($_POST['nueva_categoria']) ? $_POST['nueva_categoria'] : "";
     $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";
@@ -51,6 +54,7 @@ if ($_POST) {
             <h2 class="card-title textTabla">REGISTRE NUEVA CATEGORÍA  &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>">Lista Categorías</a></h2>
         </div>
         <form action="" method="POST" id="formCategoria">
+            <input type="hidden" name="link" value="<?php echo $link ?>">
             <div class="card-body ">
                 <div class="row" style="justify-content:center">
                     <div class="col-sm-3" style="justify-content:center">

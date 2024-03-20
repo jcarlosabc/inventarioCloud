@@ -11,7 +11,7 @@ if(isset($_GET['link'])){
   $sentencia->execute();
   $registro=$sentencia->fetch(PDO::FETCH_LAZY);
   $link = $registro["link"];
-  $valSudoAdmin ;
+  $valSudoAdmin;
 }else {
   $valSudoAdmin = true ;
 }
@@ -23,12 +23,14 @@ if ($_POST) {
     $link = isset($_POST['link']) ? $_POST['link'] : "";
 
     if ($valSudoAdmin) {
+      $linkAdmin = "sudo_admin";
       $sentencia=$conexion ->prepare("SELECT *,count(*) as n_usuario 
       FROM usuario 
-      WHERE usuario_usuario=:usuario_usuario AND usuario_clave=:usuario_clave");
+      WHERE usuario_usuario=:usuario_usuario AND usuario_clave=:usuario_clave AND link =:link");
         
       $sentencia->bindParam("usuario_usuario",$usuario_usuario);
       $sentencia->bindParam("usuario_clave",$usuario_clave);
+      $sentencia->bindParam("link",$linkAdmin);
     } else {
       $sentencia=$conexion ->prepare("SELECT *,count(*) as n_usuario 
       FROM usuario 
