@@ -16,11 +16,15 @@ if ($_POST) {
     $codigo_seguridad = isset($_POST['codigo_seguridad']) ? $_POST['codigo_seguridad'] : " ";
     $empresa_logo = "";
 
-    if(isset($_FILES['logo_empresa'])){
+
+    //valiadaciones para la fotos !! Jmendoza
+    if(isset($_FILES['logo_empresa']) && $_FILES['logo_empresa']['error'] === UPLOAD_ERR_OK && $_FILES['logo_empresa']['size'] > 0){
+
         $tipo = $_FILES['logo_empresa']['type'];
         $tamano = $_FILES['logo_empresa']['size'];
         $imagen_temporal = $_FILES['logo_empresa']['tmp_name'];
         $empresa_logo = base64_encode(file_get_contents($imagen_temporal));
+
     }
 
     //  GUARDANDO LA EMPRSA CREADA
