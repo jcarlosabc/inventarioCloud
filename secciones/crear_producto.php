@@ -118,15 +118,15 @@ if ($user_id == 1) {
         <!-- general form elements -->
         <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero crear <strong>categoría</strong> y registrar <strong>proveedor</strong> del producto a crear. </article>
         <br>
-        <div class="row">
-          <div class="col-1">
-           <a href="crear_categoria.php"> <button type="button" class="btn btn-outline-primary" >Crear Categoría</button></a>
-          </div>
-          <div class="col-2">
-           <a href="crear_proveedor.php"> <button type="button" class="btn btn-outline-info" >Registrar Proveedor</button></a>
-          </div>
+        <div class="row no-gutters">
+            <div class="col-1">
+                <a href="crear_categoria.php"><button type="button" class="btn btn-outline-primary">Crear Categoría</button></a>
+            </div>
+            <div class="col-2">
+                <a href="crear_proveedor.php"><button type="button" class="btn btn-outline-info">Registrar Proveedor</button></a>
+            </div>
         </div>
-        <div class="card card-primary" style="margin-top:7%">
+        <div class="card card-primary" style="margin-top:3%">
             <div class="card-header">
                 <h2 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO &nbsp;<a style="color:black" class="btn btn-warning" href="<?php echo $url_base;?>secciones/<?php echo $lista_producto_link;?>">Lista de Productos</a></h2>
             </div>

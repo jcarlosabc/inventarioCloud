@@ -469,6 +469,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Cerrar session sola 
+  function cerrarSesion() {
+        document.getElementById('cerrarSesion').click();
+    }
 </script>
 </body>
 </html>
