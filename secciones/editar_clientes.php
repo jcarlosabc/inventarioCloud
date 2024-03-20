@@ -1,6 +1,14 @@
 <?php include("../templates/header.php") ?>
 <?php
-include("../../db.php");
+include("../db.php");
+
+if ($_SESSION['valSudoAdmin']) {
+    $lista_cliente_link  = "index_clientes.php";
+  
+ }else{
+    $lista_cliente_link  = "index_clientes.php?link=".$link;
+ }
+
 
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
@@ -27,6 +35,8 @@ if ($_POST) {
     $cliente_direccion= isset($_POST['cliente_direccion']) ? $_POST['cliente_direccion'] : "";
     $cliente_telefono= isset($_POST['cliente_telefono']) ? $_POST['cliente_telefono'] : "";
     $cliente_email= isset($_POST['cliente_email']) ? $_POST['cliente_email'] : "";
+
+    $link =  isset($_POST['link']) ? $_POST['link'] : "";
     
     $sentencia_edit = $conexion->prepare("UPDATE cliente SET 
     cliente_numero_documento=:cliente_numero_documento,
@@ -35,7 +45,8 @@ if ($_POST) {
     cliente_ciudad=:cliente_ciudad,
     cliente_direccion=:cliente_direccion,
     cliente_telefono=:cliente_telefono,
-    cliente_email=:cliente_email         
+    cliente_email=:cliente_email,
+    link=:link         
     WHERE cliente_id =:cliente_id");
     
     $sentencia_edit->bindParam(":cliente_id",$txtID);
@@ -46,6 +57,8 @@ if ($_POST) {
     $sentencia_edit->bindParam(":cliente_direccion",$cliente_direccion);
     $sentencia_edit->bindParam(":cliente_telefono",$cliente_telefono);
     $sentencia_edit->bindParam(":cliente_email",$cliente_email);
+    $sentencia_edit->bindParam(":link",$link);
+
     $resultado_edit = $sentencia_edit->execute();
 
     if ($resultado_edit) {
@@ -56,7 +69,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/index_clientes.php";
+                window.location.href = "'.$url_base.'secciones/'.$lista_cliente_link.'";
             }
         })
         </script>';
@@ -131,8 +144,9 @@ if ($_POST) {
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
+                <input type="hidden" name="link" value="<?php echo $link;?>">
                   <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
-                  <a role="button"  href="index.php" class="btn btn-danger btn-lg">Cancelar</a>
+                  <a role="button"  href="index_clientes.php" class="btn btn-danger btn-lg">Cancelar</a>
                 </div>
             </form>
         </div>
