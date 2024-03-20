@@ -50,7 +50,7 @@
       $index_empleados_link = 'index_empleados.php'; 
     
     } else {
-      $inicio_link = "index.php?link=".$link;
+      $inicio_link = "index_estadisticas.php?link=".$link;
     //SECCIÓN DE VENTAS
       $ventas_link = "crear_venta.php?link=".$link;
       $ventas_link_historia_venta = "index_ventas.php?link=".$link;
@@ -125,7 +125,7 @@
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="index.php" class="nav-link">Inicio</a>
+          <a href="<?php echo $url_base;?>secciones/<?php echo $inicio_link;?>" class="nav-link">Inicio</a>
         </li>
         <li>
           <?php if ($valSudoAdmin) { ?>

@@ -1,5 +1,11 @@
 <?php include("../templates/header.php") ?>
 <?php 
+if ($_SESSION['valSudoAdmin']) {
+  $crear_venta_link  = "crear_venta.php";
+
+}else{
+  $crear_venta_link  = "crear_venta.php?link=".$link;
+}
 //Eliminar Elementos
 if(isset($_GET['txtID'])){
 
@@ -22,11 +28,11 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
       <div class="card card-success">
         <div class="card-header">
-          <h2 class="card-title textTabla">HISTORIAL DE VENTAS &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/crear_venta.php">Crear Venta</a></h2>
+          <h2 class="card-title textTabla">HISTORIAL DE VENTAS &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $crear_venta_link;?>" class="btn btn-warning">Crear Venta</a></h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
-          <table id="historialVentas" class="table table-bordered table-striped" style="text-align:center">
+          <table id="historialVentas" class="table table-bordered table-striped" style="text-align:center"> 
             <thead>
             <tr>
               <th>Código</th>
