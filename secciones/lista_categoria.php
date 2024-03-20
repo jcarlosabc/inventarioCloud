@@ -16,9 +16,21 @@ if(isset($_GET['txtID'])){
   $sentencia->execute();
   
 }
-$sentencia=$conexion->prepare("SELECT * FROM `categoria`");
+// Buscando link de la empresa actual
+$linkeo = 0;
+if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
+
+$responsable = $_SESSION['usuario_id'];
+$link = "sudo_admin";
+if ($responsable == 1) {
+  $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM categoria c LEFT JOIN empresa e ON c.link = e.link");
+}else {
+  $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM categoria c JOIN empresa e ON c.link = e.link WHERE c.link =:link");
+  $sentencia->bindParam(":link",$linkeo);
+}
 $sentencia->execute();
 $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
       <br>
       <div class="card card-primary">
@@ -48,7 +60,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['categoria_id']; ?></td>
                   <td><?php echo $registro['categoria_nombre']; ?></td>                               
                   <td><?php echo $registro['categoria_fecha_creacion']; ?></td>                  
-                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['link']; } ?></td>                  
+                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <?php if ($_SESSION['rolEmpleado']) { ?>
                   <td>
                     <a class="btn btn-danger"href="lista_categoria.php?txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
