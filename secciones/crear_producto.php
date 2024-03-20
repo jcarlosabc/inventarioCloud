@@ -7,7 +7,11 @@ if ($_SESSION['valSudoAdmin']) {
     $lista_producto_link  = "index_productos.php?link=".$link;
  }
 
-if ($_POST) {
+ if(isset($_GET['link'])){
+    $link=(isset($_GET['link']))?$_GET['link']:"";
+ }
+
+if ($_POST) {    
     $producto_codigo = isset($_POST['producto_codigo']) ? $_POST['producto_codigo'] : "";
     $fechaGarantia =  isset($_POST['fechaGarantia']) ? $_POST['fechaGarantia'] : "";
     $producto_nombre = isset($_POST['producto_nombre']) ? $_POST['producto_nombre'] : "";
@@ -17,7 +21,8 @@ if ($_POST) {
     $producto_marca = isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
     $producto_modelo = isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
     $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";  
-    $proveedor_id = isset($_POST['proveedor_id']) ? $_POST['proveedor_id'] : "";  
+    $proveedor_id = isset($_POST['proveedor_id']) ? $_POST['proveedor_id'] : "";
+    $link =  isset($_POST['link']) ? $_POST['link'] : "";  
     $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";  
 
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
@@ -31,7 +36,7 @@ if ($_POST) {
         $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion,
         producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo,
     categoria_id,proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            
+    
     $sentencia = $conexion->prepare($sql);
     $params = array(
         $producto_codigo, 
@@ -51,7 +56,7 @@ if ($_POST) {
 
         $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion,
             producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo,
-        categoria_id,proveedor_id,responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        categoria_id,proveedor_id,link,responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 
         $sentencia = $conexion->prepare($sql);
         $params = array(
@@ -66,6 +71,7 @@ if ($_POST) {
             $producto_modelo,
             $categoria_id,
             $proveedor_id,
+            $link,
             $idResponsable 
         );
         $resultado = $sentencia->execute($params);
@@ -103,8 +109,10 @@ if ($user_id == 1) {
     $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores WHERE link = :link");
     $sentencia_prove->bindParam(":link", $sudo_admin);
 } else {
-    $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria");
-    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores");
+    $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria WHERE link = :link");
+    $sentencia_categoria->bindParam(":link", $link);
+    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores WHERE link = :link");
+    $sentencia_prove->bindParam(":link", $link);
 }
     $sentencia_categoria->execute();
     $lista_categoria = $sentencia_categoria->fetchAll(PDO::FETCH_ASSOC);
@@ -134,6 +142,7 @@ if ($user_id == 1) {
               <!-- form start --> 
             <form action="" method="post" id="formProducto" onsubmit="return validarFormulario(1)">
                 <input type="hidden" value="<?php echo $_SESSION['usuario_id'] ?>" name="idResponsable">
+                <input type="hidden" name="link" value="<?php echo $link ?>">
                 <div class="card-body ">
                     <div class="row" style="justify-content:center">                        
                         <div class="col-2">
