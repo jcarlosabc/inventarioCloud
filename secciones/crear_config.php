@@ -159,7 +159,7 @@ if ($_POST &&  $_POST['txtID'] == "") {
                     <div class="col-sm-3">
                         <div class="form-group">
                             <input type="hidden" class="form-control camposTabla" name="txtID" id="nombre_confi" required value="<?=$txtID?>">
-                            <input type="hidden" class="form-control camposTabla" name="txtResponsable_empresa" id="nombre_confi" required value="<?=$txtResposable_empresa?>">
+                            <input type="hidden" class="form-control camposTabla" name="txtResponsable_empresa" id="nombre_confi" value="<?=$txtResposable_empresa?>">
                             <label for="producto_nombre" class="textLabel">Nombre</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="text" class="form-control camposTabla" name="nombre_confi"  value="<?=$txtNombre_empresa?>">
                         </div>

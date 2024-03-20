@@ -1,5 +1,12 @@
 <?php include("../templates/header.php") ?>
 <?php
+if ($_SESSION['valSudoAdmin']) {
+  $crear_cliente_link  = "crear_cliente.php";
+
+}else{
+  $crear_cliente_link  = "crear_cliente.php?link=".$link;
+}
+
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
     $sentencia=$conexion->prepare("DELETE FROM cliente WHERE cliente_id=:cliente_id");
@@ -13,7 +20,7 @@ if(isset($_GET['txtID'])){
       <br>
       <div class="card card-primary">
         <div class="card-header">
-          <h2 class="card-title textTabla">LISTA DE CLIENTES &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="crear_cliente.php" role="button">Crear Cliente</a></h2>
+          <h2 class="card-title textTabla">LISTA DE CLIENTES &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $crear_cliente_link;?>" role="button">Crear Cliente</a></h2>
         </div>
         <div class="card-body">
           <table id="listaClientes" class="table table-bordered table-striped" style="text-align:center">

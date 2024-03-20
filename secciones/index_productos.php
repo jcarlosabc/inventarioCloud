@@ -1,5 +1,12 @@
 <?php include("../templates/header.php") ?>
 <?php 
+if ($_SESSION['valSudoAdmin']) {
+  $crear_productos_link  = "crear_producto.php";
+
+}else{
+  $crear_productos_link  = "crear_producto.php?link=".$link;
+}
+
 //Eliminar Elementos
 if(isset($_GET['txtID'])){
 
@@ -20,7 +27,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
       <br>
       <div class="card card-primary">
         <div class="card-header">
-          <h2 class="card-title textTabla">LISTA DE PRODUCTOS &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/crear_producto.php">Crear Producto</a></h2>
+          <h2 class="card-title textTabla">LISTA DE PRODUCTOS &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $crear_productos_link;?>">Crear Producto</a></h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">

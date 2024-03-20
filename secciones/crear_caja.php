@@ -1,5 +1,14 @@
 <?php include("../templates/header.php") ?>
 <?php 
+
+if ($_SESSION['valSudoAdmin']) {
+    $crear_caja_link  = "index_cajas.php";
+  
+ }else{
+    $crear_caja_link  = "index_cajas.php?link=".$link;
+ }
+
+ 
 if ($_POST) {
     $caja_numero = isset($_POST['caja_numero']) ? $_POST['caja_numero'] : "";
     $caja_nombre = isset($_POST['caja_nombre']) ? $_POST['caja_nombre'] : "";
@@ -27,7 +36,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/index_cajas.php";
+                window.location.href = "'.$url_base.'secciones/'.$crear_caja_link.'";
             }
         })
         </script>';
@@ -75,7 +84,7 @@ if ($_POST) {
             <!-- /.card-body -->
             <div class="card-footer" style="text-align:center">
                 <button type="submit"  class="btn btn-primary btn-lg">Guardar</button>
-                <a role="button" href="index.php" class="btn btn-danger btn-lg">Cancelar</a>
+                <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $crear_caja_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
             </div>
         </form>
     </div>

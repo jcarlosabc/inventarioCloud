@@ -1,5 +1,12 @@
 <?php include("../templates/header.php") ?>
 <?php 
+ if ($_SESSION['valSudoAdmin']) {
+    $crea_abono_link  = "index_pendientes.php";
+  
+ }else{
+    $crea_abono_link  = "index_pendientes.php?link=".$link;
+ }
+
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
     $sentencia=$conexion->prepare("SELECT venta.*, cliente.*
@@ -92,7 +99,7 @@ if ($_POST) {
                   confirmButtonText: "¡Entendido!"
               }).then((result) => {
                   if(result.isConfirmed){
-                      window.location.href = "'.$url_base.'secciones/index_pendientes.php";
+                      window.location.href = "'.$url_base;' secciones/ '.$crear_abono_link;'";
                   }
               })
               </script>';
@@ -144,7 +151,7 @@ if ($_POST) {
                     confirmButtonText: "¡Entendido!"
                 }).then((result) => {
                     if(result.isConfirmed){
-                        window.location.href = "'.$url_base.'secciones/index_pendientes.php";
+                        window.location.href = "'.$url_base.'secciones/'.$crear_abono_link.'";
                     }
                 })
                 </script>';
@@ -214,7 +221,7 @@ if ($_POST) {
           <!-- /.card-body -->
           <div class="card-footer" style="text-align:center">
               <button type="submit"  class="btn btn-primary btn-lg">Guardar</button>
-              <a role="button" href="<?php echo $url_base ?>secciones/index_pendientes.php" class="btn btn-danger btn-lg">Cancelar</a>
+              <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $crear_abono_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
           </div>
           <input type="hidden" name="cliente_id" value="<?php echo $cliente_id?>">
           <input type="hidden" name="venta_id" value="<?php echo $venta_id?>">

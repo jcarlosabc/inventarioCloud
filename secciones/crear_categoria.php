@@ -1,14 +1,23 @@
 <?php include("../templates/header.php") ?>
 <?php
-
+if (isset($_SESSION['valSudoAdmin'])) {
+    $lista_categoria_link  = "lista_categoria.php";
+  
+ }else{
+    $lista_categoria_link  = "lista_categoria.php?link=".$link;
+ }
 if ($_POST) {
-    session_start();
     $nombre_categoria = isset($_POST['nueva_categoria']) ? $_POST['nueva_categoria'] : "";
     $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";
+    $link =  isset($_POST['link']) ? $_POST['link'] : "";
+    if ($idResponsable == 1) {
+      $link = "sudo_admin";
+    }
 
-    $sentencia = $conexion->prepare("INSERT INTO categoria(categoria_id, categoria_nombre,categoria_fecha_creacion, responsable) VALUES (null, :nueva_categoria,:categoria_fecha_creacion,:responsable)");
+    $sentencia = $conexion->prepare("INSERT INTO categoria(categoria_id, categoria_nombre,categoria_fecha_creacion, link, responsable) VALUES (null, :nueva_categoria,:categoria_fecha_creacion, :link, :responsable)");
     $sentencia->bindParam(":nueva_categoria", $nombre_categoria);
     $sentencia->bindParam(":categoria_fecha_creacion", $fechaActual);
+    $sentencia->bindParam(":link", $link);
     $sentencia->bindParam(":responsable", $idResponsable);
     $resultado = $sentencia->execute();
 
@@ -21,7 +30,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/lista_categoria.php";
+                window.location.href = "'.$url_base.'secciones/'.$lista_categoria_link.'";
             }
         });
         </script>';
@@ -39,7 +48,7 @@ if ($_POST) {
     <br>
     <div class="card card-primary" style="margin-top:7%">
         <div class="card-header">
-            <h2 class="card-title textTabla">REGISTRE NUEVA CATEGORÍA  &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/lista_categoria.php">Lista Categorías</a></h2>
+            <h2 class="card-title textTabla">REGISTRE NUEVA CATEGORÍA  &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>">Lista Categorías</a></h2>
         </div>
         <form action="" method="POST" id="formCategoria">
             <div class="card-body ">
@@ -55,7 +64,7 @@ if ($_POST) {
             <!-- /.card-body -->
             <div class="card-footer" style="text-align:center">
                 <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
-                <a role="button"  href="lista_categoria.php" class="btn btn-danger btn-lg">Cancelar</a>
+                <a role="button"  href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
             </div>
         </form>
     </div>

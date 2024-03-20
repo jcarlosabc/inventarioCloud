@@ -1,17 +1,43 @@
 <?php 
 session_start();
+include("db.php");
+
+$valSudoAdmin = false;
+if(isset($_GET['link'])){
+  $link=(isset($_GET['link']))?$_GET['link']:"";
+
+  $sentencia=$conexion->prepare("SELECT * FROM usuario WHERE link=:link");
+  $sentencia->bindParam(":link",$link);
+  $sentencia->execute();
+  $registro=$sentencia->fetch(PDO::FETCH_LAZY);
+  $link = $registro["link"];
+  $valSudoAdmin ;
+}else {
+  $valSudoAdmin = true ;
+}
+
 if ($_POST) {
-    include("db.php");
 
     $usuario_usuario = isset($_POST['usuario_usuario']) ? $_POST['usuario_usuario'] : "";
     $usuario_clave = hash('sha256',(isset($_POST['usuario_clave']) ? $_POST['usuario_clave'] : ""));
+    $link = isset($_POST['link']) ? $_POST['link'] : "";
 
-    $sentencia=$conexion ->prepare("SELECT *,count(*) as n_usuario 
-    FROM usuario 
-    WHERE usuario_usuario=:usuario_usuario AND usuario_clave=:usuario_clave");
-      
-    $sentencia->bindParam("usuario_usuario",$usuario_usuario);
-    $sentencia->bindParam("usuario_clave",$usuario_clave);
+    if ($valSudoAdmin) {
+      $sentencia=$conexion ->prepare("SELECT *,count(*) as n_usuario 
+      FROM usuario 
+      WHERE usuario_usuario=:usuario_usuario AND usuario_clave=:usuario_clave");
+        
+      $sentencia->bindParam("usuario_usuario",$usuario_usuario);
+      $sentencia->bindParam("usuario_clave",$usuario_clave);
+    } else {
+      $sentencia=$conexion ->prepare("SELECT *,count(*) as n_usuario 
+      FROM usuario 
+      WHERE usuario_usuario=:usuario_usuario AND usuario_clave=:usuario_clave AND link =:link");
+        
+      $sentencia->bindParam("usuario_usuario",$usuario_usuario);
+      $sentencia->bindParam("usuario_clave",$usuario_clave);
+      $sentencia->bindParam("link",$link);
+    }
 
     $sentencia->execute();
     $lista_usuario = $sentencia->fetch(PDO::FETCH_ASSOC);
@@ -24,13 +50,18 @@ if ($_POST) {
         $_SESSION['caja_id']=$lista_usuario["caja_id"];
         $_SESSION['logueado']=true;
 
-          // die(print_r($_SESSION));
-
-        header("Location:".$url_base."secciones/index.php");
-    }else {
-        $mensaje="Error: el usuario o contraseña son incorrectos";
+        if ($valSudoAdmin) {
+          $_SESSION['valSudoAdmin']= true;
+        } else { 
+          $_SESSION['valSudoAdmin']= false;
+          $_SESSION['link'] = $link;
+        }
+        $valSudoAdmin ? header("Location:".$url_base."secciones/index.php")  : header("Location:".$url_base."secciones/index_estadisticas.php?link=".$link);
+      }else {
+        $mensaje="Error: el usuario o contraseña son incorrectos";  
+      }
     }
-}
+
 ?>
 
 <!DOCTYPE html>
@@ -66,6 +97,7 @@ if ($_POST) {
         <p class="login-box-msg">Inicia sesión</p> 
         <form action="" method="post">
           <div class="input-group mb-3">
+          <input type="hidden" class="form-control" name="link" value="<?php echo $link ?>" >
             <input type="text" class="form-control" name="usuario_usuario" id="usuario_usuario" aria-describedby="helpId" placeholder="Escriba su usuario"/>
             <div class="input-group-append">
               <div class="input-group-text">

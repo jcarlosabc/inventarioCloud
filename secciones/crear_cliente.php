@@ -1,5 +1,12 @@
 <?php include("../templates/header.php") ?>
 <?php
+if ($_SESSION['valSudoAdmin']) {
+    $lista_cliente_link  = "index_clientes.php";
+  
+ }else{
+    $lista_cliente_link  = "index_clientes.php?link=".$link;
+ }
+
 if ($_POST) {
     
     $cliente_id = isset($_POST['cliente_id']) ? $_POST['cliente_id'] : "";
@@ -42,7 +49,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result)=>{
             if(result.isConfirmed){
-                window.location.href="'.$url_base.'secciones/index_clientes.php"
+                window.location.href= "'.$url_base.'secciones/'.$lista_cliente_link.'"
             }
         })
         </script>';
@@ -60,7 +67,7 @@ if ($_POST) {
         <br>
         <div class="card card-primary" style="margin-top:7%">
             <div class="card-header">
-                <h3 class="card-title textTabla" >REGISTRE NUEVO CLIENTE &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="index_clientes.php" role="button">Lista de Clientes</a></h3>
+                <h3 class="card-title textTabla" >REGISTRE NUEVO CLIENTE &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>" role="button">Lista de Clientes</a></h3>
             </div>
               <!-- form start --> 
             <form action="" method="post" enctype="multipart/form-data">
@@ -119,7 +126,7 @@ if ($_POST) {
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
                   <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
-                  <a role="button"  href="index.php" class="btn btn-danger btn-lg">Cancelar</a>
+                  <a role="button"  href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
                 </div>
             </form>
         </div>

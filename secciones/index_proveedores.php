@@ -1,5 +1,11 @@
 <?php include("../templates/header.php") ?>
 <?php 
+if ($_SESSION['valSudoAdmin']) {
+  $crear_proveedor_link  = "crear_proveedor.php";
+
+}else{
+  $crear_proveedor_link  = "crear_proveedor.php?link=".$link;
+}
 //Eliminar Elementos
 if(isset($_GET['txtID'])){
 
@@ -18,7 +24,7 @@ if(isset($_GET['txtID'])){
       <br>
       <div class="card card-primary ">
         <div class="card-header text-center ">
-          <h2 class="card-title textTabla">LISTA DE PROVEEDORES  &nbsp; <a href="<?=$url_base?>secciones/crear_proveedor.php" class="btn btn-warning" style="color:black"> Registrar Proveedor </a> </h2>
+        <h2 class="card-title textTabla">LISTA DE PROVEEDORES  &nbsp; <a href="<?php echo $url_base;?>secciones/<?php echo $crear_proveedor_link;?>" class="btn btn-warning" style="color:black"> Registrar Proveedor </a> </h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -31,6 +37,7 @@ if(isset($_GET['txtID'])){
               <th>Teléfono</th>
               <th>Correo</th>
               <th>Dirección </th>
+              <th>Negocio </th>
               <th>Opciones</th>
             </tr>
             </thead>
@@ -43,6 +50,7 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['telefono_proveedores']; ?></td>
                   <td><?php echo $registro['email_proveedores']; ?></td>                
                   <td><?php echo $registro['direccion_proveedores']; ?></td> 
+                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['link']; } ?></td>                  
                   <td>
                     <a class="btn btn-info btn-sm" href="editar_proveedores.php?txtID=<?php echo $registro['id_proveedores']; ?>"role="button" title="Editar">
                       <i class="fas fa-edit"></i>Editar

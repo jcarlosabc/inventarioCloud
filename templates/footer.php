@@ -143,6 +143,19 @@
 }
   $("#generador_codigo_factura").val(generarRandom(14))  
     
+  // link unico de empresa
+  function linkunico(num) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const charactersLength = characters.length;
+    let result = "";
+      for (let i = 0; i < num; i++) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+
+  return result;
+}
+  $("#linkEmpresa").val("negocio_" + generarRandom(6))  
+    
     $(document).ready(function () {
         // Función para calcular el total
         function actualizarTotal(fila) {

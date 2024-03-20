@@ -1,7 +1,13 @@
 <?php include("../templates/header.php") ?>
 <?php
-if ($_POST) {
+if ($_SESSION['valSudoAdmin']) {
+    $lista_producto_link  = "index_productos.php";
+  
+ }else{
+    $lista_producto_link  = "index_productos.php?link=".$link;
+ }
 
+if ($_POST) {
     $producto_codigo = isset($_POST['producto_codigo']) ? $_POST['producto_codigo'] : "";
     $fechaGarantia =  isset($_POST['fechaGarantia']) ? $_POST['fechaGarantia'] : "";
     $producto_nombre = isset($_POST['producto_nombre']) ? $_POST['producto_nombre'] : "";
@@ -12,19 +18,19 @@ if ($_POST) {
     $producto_modelo = isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
     $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";  
     $proveedor_id = isset($_POST['proveedor_id']) ? $_POST['proveedor_id'] : "";  
-
     $idResponsable = isset($_POST['idResponsable']) ? $_POST['idResponsable'] : "";  
+
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
     $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
     $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
 
     date_default_timezone_set('America/Bogota'); 
     $fechaActual = date("d/m/Y");
-   
-  
-    $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion,
+
+    if ($idResponsable == 1) {
+        $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion,
         producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo,
-    categoria_id,proveedor_id,responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    categoria_id,proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
     $sentencia = $conexion->prepare($sql);
     $params = array(
@@ -38,11 +44,32 @@ if ($_POST) {
         $producto_marca, 
         $producto_modelo,
         $categoria_id,
-        $proveedor_id,
-        $responsable 
+        $proveedor_id
     );
     $resultado = $sentencia->execute($params);
+    } else { 
 
+        $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion,
+            producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo,
+        categoria_id,proveedor_id,responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                
+        $sentencia = $conexion->prepare($sql);
+        $params = array(
+            $producto_codigo, 
+            $fechaActual, 
+            $fechaGarantia, 
+            $producto_nombre,
+            $producto_stock_total, 
+            $producto_precio_compra,
+            $producto_precio_venta, 
+            $producto_marca, 
+            $producto_modelo,
+            $categoria_id,
+            $proveedor_id,
+            $idResponsable 
+        );
+        $resultado = $sentencia->execute($params);
+    }
     if ($resultado) {
         echo '<script>
         // Código JavaScript para mostrar SweetAlert
@@ -52,7 +79,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/index_productos.php";
+                window.location.href = "'.$url_base.'secciones/'.$lista_producto_link.'";
             }
         })
         </script>';
@@ -67,28 +94,46 @@ if ($_POST) {
     }
 }
 
-$sentencia=$conexion->prepare("SELECT * FROM `categoria`");
-$sentencia->execute();
-$lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+$user_id = $_SESSION['usuario_id'];
+$sudo_admin = "sudo_admin";
+if ($user_id == 1) {
+    $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria WHERE link = :link");
+    $sentencia_categoria->bindParam(":link", $sudo_admin);
 
-$sentencia_prove = $conexion->prepare("SELECT * FROM proveedores");
-$sentencia_prove->execute();
-$lista_proveedores = $sentencia_prove->fetchAll(PDO::FETCH_ASSOC);
+    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores WHERE link = :link");
+    $sentencia_prove->bindParam(":link", $sudo_admin);
+} else {
+    $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria");
+    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores");
+}
+    $sentencia_categoria->execute();
+    $lista_categoria = $sentencia_categoria->fetchAll(PDO::FETCH_ASSOC);
 
-
+    $sentencia_prove->execute();
+    $lista_proveedores = $sentencia_prove->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <script>
 </script>
         <br>
         <!-- general form elements -->
+        <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero crear <strong>categoría</strong> y registrar <strong>proveedor</strong> del producto a crear. </article>
+        <br>
+        <div class="row">
+          <div class="col-1">
+           <a href="crear_categoria.php"> <button type="button" class="btn btn-outline-primary" >Crear Categoría</button></a>
+          </div>
+          <div class="col-2">
+           <a href="crear_proveedor.php"> <button type="button" class="btn btn-outline-info" >Registrar Proveedor</button></a>
+          </div>
+        </div>
         <div class="card card-primary" style="margin-top:7%">
             <div class="card-header">
-                <h2 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO &nbsp;<a style="color:black" class="btn btn-warning" href="<?php echo $url_base;?>secciones/index_productos.php">Lista de Productos</a></h2>
+                <h2 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO &nbsp;<a style="color:black" class="btn btn-warning" href="<?php echo $url_base;?>secciones/<?php echo $lista_producto_link;?>">Lista de Productos</a></h2>
             </div>
             <br>
               <!-- form start --> 
             <form action="" method="post" id="formProducto" onsubmit="return validarFormulario(1)">
-                <input type="hidden" value="<?php $_SESSION['usuario_id'] ?>" name="idResponsable">
+                <input type="hidden" value="<?php echo $_SESSION['usuario_id'] ?>" name="idResponsable">
                 <div class="card-body ">
                     <div class="row" style="justify-content:center">                        
                         <div class="col-2">
@@ -206,7 +251,7 @@ $lista_proveedores = $sentencia_prove->fetchAll(PDO::FETCH_ASSOC);
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
                   <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
-                  <a class="btn btn-danger btn-lg" href="index_productos.php" role="button">Cancelar</a>
+                      <a class="btn btn-danger btn-lg" href="<?php echo $url_base;?>secciones/<?php echo $lista_producto_link;?>" role="button">Cancelar</a>
                 </div>
             </form>
         </div>
