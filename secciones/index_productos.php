@@ -7,6 +7,10 @@ if ($_SESSION['valSudoAdmin']) {
   $crear_productos_link  = "crear_producto.php?link=".$link;
 }
 
+if(isset($_GET['link'])){
+  $link=(isset($_GET['link']))?$_GET['link']:"";
+}
+
 //Eliminar Elementos
 if(isset($_GET['txtID'])){
 
@@ -17,9 +21,20 @@ if(isset($_GET['txtID'])){
   $sentencia->execute();
   
 }
-$sentencia=$conexion->prepare("SELECT producto.*, categoria.*
+$responsable = $_SESSION['usuario_id'];
+$link = "sudo_admin";
+if ($responsable == 1) {
+  $sentencia = $conexion->prepare("SELECT producto.*, categoria.*, e.empresa_nombre
+  FROM producto
+  INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id
+  LEFT JOIN ( SELECT p.*, e.empresa_nombre FROM producto p 
+      LEFT JOIN empresa e ON p.link = e.link) AS e ON producto.link = e.link");
+
+}else { $sentencia=$conexion->prepare("SELECT producto.*, categoria.*
 FROM producto
-INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id");
+INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id WHERE producto.link = :link");
+$sentencia->bindParam(":link",$link);
+}
 
 $sentencia->execute();
 $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -44,6 +59,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Categoría</th>
               <th>Cantidad en Stock</th>
               <th>Garantía</th>
+              <th>Empresa</th>
               <th>Editar</th>
             </tr>
             </thead>
@@ -63,11 +79,13 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['categoria_nombre']; ?></td>
                   <td><?php echo $registro['producto_stock_total']; ?></td>
                   <td><?php echo $registro['producto_fecha_garantia']; ?></td>
+                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td> 
+
                   <td>
-                    <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Añadir Stock">
+                    <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Añadir Stock">
                       <i class="fa fa-plus-circle"></i> Añadir Stock
                     </a>
-                    <a class="btn btn-info" href="editar_productos.php?txtID=<?php echo $registro['producto_id']; ?>"role="button" title="Editar">
+                    <a class="btn btn-info" href="editar_productos.php?txtID=<?php echo $registro['producto_id']; ?><?php echo $link ?>"role="button" title="Editar">
                         <i class="fas fa-edit"></i>Editar
                     </a>
                     <?php if ($_SESSION['rolEmpleado']) { ?>

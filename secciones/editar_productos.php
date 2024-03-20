@@ -1,5 +1,12 @@
 <?php include("../templates/header.php") ?>
 <?php 
+if ($_SESSION['valSudoAdmin']) {
+    $lista_productos_link  = "index_productos.php";
+    
+}else{
+    $lista_productos_link  = "index_productos.php?link=".$link;
+}
+
 if(isset($_GET['txtID'])){
 
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
@@ -102,7 +109,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/index_productos.php";
+                window.location.href = "'.$url_base.'secciones/'.$lista_productos_link.'";
             }
         })
         </script>';
@@ -232,7 +239,7 @@ if ($_POST) {
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
                     <button type="submit" class="btn btn-success btn-lg"> Actualizar </button>
-                    <a class="btn btn-danger btn-lg" href="index_productos.php" role="button">Cancelar</a>
+                    <a class="btn btn-danger btn-lg" href="<?php echo $url_base;?>secciones/<?php echo $lista_productos_link;?>" role="button">Cancelar</a>
                 </div>
             </form>
             </div>
