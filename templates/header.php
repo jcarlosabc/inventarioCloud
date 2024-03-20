@@ -129,7 +129,7 @@
         </li>
         <li>
           <?php if ($valSudoAdmin) { ?>
-            <a href=" <?php  echo $url_base;?>cerrar.php" class="nav-link" style="background: #17A2B8; border-radius: 17px;font-size: 15px;
+            <a href="<?php echo $url_base;?>cerrar.php" class="nav-link" style="background: #17A2B8; border-radius: 17px;font-size: 15px;
               color: white;">Cerrar Sesion</a>
           <?php } else { ?>
             <a href=" <?php echo $url_base;?>cerrar.php?link=<?php echo $link; ?>" class="nav-link" style="background: #17A2B8; border-radius: 17px;font-size: 15px;
