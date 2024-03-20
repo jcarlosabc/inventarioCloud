@@ -16,7 +16,21 @@ if(isset($_GET['txtID'])){
   $sentencia->execute();
   
 }
-    $sentencia=$conexion->prepare("SELECT * FROM proveedores ");
+$linkeo = 0;
+if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
+
+  $responsable = $_SESSION['usuario_id'];
+  $link = "sudo_admin";
+  if ($responsable == 1) {
+    $sentencia=$conexion->prepare("SELECT p.*, e.empresa_nombre FROM proveedores p 
+    LEFT JOIN empresa e ON p.link = e.link");
+
+  }else {
+    $sentencia=$conexion->prepare("SELECT p.*, e.empresa_nombre FROM proveedores p JOIN empresa e ON p.link = e.link WHERE p.link =:link");
+  $sentencia->bindParam(":link",$linkeo);
+
+    
+  }
     $sentencia->execute();
     $lista_proveedores=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
 
@@ -50,7 +64,7 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['telefono_proveedores']; ?></td>
                   <td><?php echo $registro['email_proveedores']; ?></td>                
                   <td><?php echo $registro['direccion_proveedores']; ?></td> 
-                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['link']; } ?></td>                  
+                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <td>
                     <a class="btn btn-info btn-sm" href="editar_proveedores.php?txtID=<?php echo $registro['id_proveedores']; ?>"role="button" title="Editar">
                       <i class="fas fa-edit"></i>Editar

@@ -1,5 +1,6 @@
 <?php include("../templates/header.php") ?>
 <?php
+
 if ($_SESSION['valSudoAdmin']) {
     $lista_proveedor_link  = "index_proveedores.php";
 
@@ -13,11 +14,11 @@ if ($_POST) {
     $telefono_proveedores =  isset($_POST['telefono_proveedores']) ? $_POST['telefono_proveedores'] : " ";
     $direccion_proveedores = isset($_POST['direccion_proveedore']) ? $_POST['direccion_proveedore'] : " ";
     $responsable = $_SESSION['usuario_id'];
+
     $link =  isset($_POST['link']) ? $_POST['link'] : "";
     if ($responsable == 1) {
         $link =  "sudo_admin";
     }
-
     $sentencia = $conexion->prepare("INSERT INTO proveedores (id_proveedores ,
         nit_proveedores, nombre_proveedores, email_proveedores, telefono_proveedores, direccion_proveedores, link) 
         VALUES (NULL, :nit_proveedores , :nombre_proveedores, :email_proveedores , :telefono_proveedores, :direccion_proveedores, :link)");
@@ -101,7 +102,7 @@ if ($_POST) {
                         </div>
                     </div>
                 </div>
-
+                <input type="hidden" name="link" value="<?php echo $link ?>">
                 <div class="card-footer" style="text-align:center">
                     <button type="submit" class="btn btn-primary btn-lg" name="guardar">Guardar</button>
                     <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $lista_proveedor_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
