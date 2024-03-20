@@ -1,6 +1,6 @@
 <?php include("../templates/header.php") ?>
 <?php
-if (isset($_SESSION['valSudoAdmin'])) {
+if (($_SESSION['valSudoAdmin'])) {
     $lista_categoria_link  = "lista_categoria.php";
   
  }else{
