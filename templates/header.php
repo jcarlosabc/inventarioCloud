@@ -41,7 +41,7 @@
       $lista_cliente_link = 'index_clientes.php';
     //SECCIÓN DE PROVEEDORES
       $crear_proveedore_link = 'crear_proveedor.php';
-      $lista_proveedores_link = 'index_proveedores.php';
+      $lista_proveedore_link = 'index_proveedores.php';
     //SECCIÓN DE CAJAS
       $crear_caja_link = 'crear_caja.php';
       $index_cajas_link = 'index_cajas.php';
