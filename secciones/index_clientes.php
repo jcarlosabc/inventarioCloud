@@ -10,24 +10,21 @@ if ($_SESSION['valSudoAdmin']) {
 if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
 }
-
+$responsable = $_SESSION['usuario_id'];
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
     $sentencia=$conexion->prepare("DELETE FROM cliente WHERE cliente_id=:cliente_id");
     $sentencia->bindParam(":cliente_id",$txtID);
     $sentencia->execute();
   }
-  if($link != ""){
-    $sentencia=$conexion->prepare("SELECT * FROM `cliente` WHERE cliente_id > 0  AND link = :link");
-    $sentencia->bindParam(":link", $link);
-    $sentencia->execute();
-    $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+  if($responsable == 1){
+    $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM cliente c LEFT JOIN empresa e ON c.link = e.link WHERE c.cliente_id > 0");
   }else{
-    $sentencia=$conexion->prepare("SELECT * FROM cliente LEFT JOIN empresa ON cliente.link = empresa.link WHERE cliente.cliente_id > 0");
-    $sentencia->execute();
-    $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+    $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM cliente c JOIN empresa e ON c.link = e.link WHERE c.cliente_id > 0 AND c.link = :link");
+    $sentencia->bindParam(":link", $link);
   }
-
+  $sentencia->execute();
+  $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
       <br>
@@ -46,10 +43,8 @@ if(isset($_GET['txtID'])){
               <th>Dirección</th>                                    
               <th>Teléfono</th>
               <th>Correo</th>
-              <?php if($_SESSION['rolEmpleado']) { ?>
               <th>Negocio</th>
-             <?php }?>
-              <th>Editar</th>
+              <th>Opciones</th>
             </tr>
             </thead>
             <tbody>
@@ -63,7 +58,7 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['cliente_direccion']; ?></td>
                   <td><?php echo $registro['cliente_telefono']; ?></td>
                   <td><?php echo $registro['cliente_email']; ?></td>
-                  <td><?php if ($registro['link'] == "sudo_admin" || $registro['link'] == "" ) {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
+                  <td><?php if ($registro['link'] == "sudo_admin" ) {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <td>
                     <a class="btn btn-info" href="editar_clientes.php?txtID=<?php echo $registro['cliente_id']; ?>"role="button" title="Editar">
                         <i class="fas fa-edit"></i>Editar

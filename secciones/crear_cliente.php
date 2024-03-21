@@ -23,6 +23,9 @@ if ($_POST) {
     $cliente_email = isset($_POST['cliente_email']) ? $_POST['cliente_email'] : "";
     $responsable = $_SESSION['usuario_id'];
     $link =  isset($_POST['link']) ? $_POST['link'] : "";
+    if ($responsable == 1) {
+        $link = "sudo_admin";
+    }
 
     
     $sentencia = $conexion->prepare("INSERT INTO cliente(

@@ -24,6 +24,7 @@ if(isset($_GET['txtID'])){
     $cliente_direccion=$registro["cliente_direccion"];
     $cliente_telefono=$registro["cliente_telefono"];
     $cliente_email=$registro["cliente_email"];
+    $cliente_link=$registro["link"];
 }
 
 if ($_POST) {
@@ -35,8 +36,9 @@ if ($_POST) {
     $cliente_direccion= isset($_POST['cliente_direccion']) ? $_POST['cliente_direccion'] : "";
     $cliente_telefono= isset($_POST['cliente_telefono']) ? $_POST['cliente_telefono'] : "";
     $cliente_email= isset($_POST['cliente_email']) ? $_POST['cliente_email'] : "";
+    $cliente_email= isset($_POST['cliente_email']) ? $_POST['cliente_email'] : "";
 
-    $link =  isset($_POST['link']) ? $_POST['link'] : "";
+    $link =  isset($_POST['cliente_link']) ? $_POST['cliente_link'] : "";
     
     $sentencia_edit = $conexion->prepare("UPDATE cliente SET 
     cliente_numero_documento=:cliente_numero_documento,
@@ -96,7 +98,8 @@ if ($_POST) {
                     <div class="row" style="justify-content:center">
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <input type="hidden" class="textLabel" name="txtID" id="txtID" value="<?php echo $cliente_id;?>" >
+                                <input type="hidden" name="txtID"  value="<?php echo $cliente_id;?>" >
+                                <input type="hidden" name="cliente_link" value="<?php echo $cliente_link;?>" >
                                 <label  for="cliente_numero_documento" class="textLabel">Cédula</label>
                                 <input required type="num" class="form-control camposTabla" name="cliente_numero_documento" value="<?php echo $cliente_numero_documento;?>">
                             </div>                       
@@ -144,7 +147,6 @@ if ($_POST) {
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
-                <input type="hidden" name="link" value="<?php echo $link;?>">
                   <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
                   <a role="button"  href="index_clientes.php" class="btn btn-danger btn-lg">Cancelar</a>
                 </div>

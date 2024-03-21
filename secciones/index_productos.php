@@ -2,9 +2,11 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
   $crear_productos_link  = "crear_producto.php";
+  $editar_producto_link = 'editar_productos.php';
 
 }else{
   $crear_productos_link  = "crear_producto.php?link=".$link;
+  $editar_producto_link ='editar_productos.php?link='.$link;
 }
 
 if(isset($_GET['link'])){
@@ -22,18 +24,15 @@ if(isset($_GET['txtID'])){
   
 }
 $responsable = $_SESSION['usuario_id'];
-$link = "sudo_admin";
 if ($responsable == 1) {
-  $sentencia = $conexion->prepare("SELECT producto.*, categoria.*, e.empresa_nombre
-  FROM producto
-  INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id
-  LEFT JOIN ( SELECT p.*, e.empresa_nombre FROM producto p 
+  $sentencia = $conexion->prepare("SELECT producto.*, categoria.*, e.empresa_nombre FROM producto
+      INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id LEFT JOIN ( SELECT p.*, e.empresa_nombre FROM producto p 
       LEFT JOIN empresa e ON p.link = e.link) AS e ON producto.link = e.link");
 
-}else { $sentencia=$conexion->prepare("SELECT producto.*, categoria.*
-FROM producto
-INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id WHERE producto.link = :link");
-$sentencia->bindParam(":link",$link);
+}else { 
+  $sentencia=$conexion->prepare("SELECT p.*, c.*, e.empresa_nombre
+  FROM producto p INNER JOIN categoria c ON p.categoria_id = c.categoria_id LEFT JOIN empresa e ON p.link = e.link WHERE p.link = :link");
+  $sentencia->bindParam(":link",$link);
 }
 
 $sentencia->execute();
@@ -85,11 +84,11 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Añadir Stock">
                       <i class="fa fa-plus-circle"></i> Añadir Stock
                     </a>
-                    <a class="btn btn-info" href="editar_productos.php?txtID=<?php echo $registro['producto_id']; ?><?php echo $link ?>"role="button" title="Editar">
+                    <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_producto_link;?>" role="button" title="Editar">
                         <i class="fas fa-edit"></i>Editar
                     </a>
                     <?php if ($_SESSION['rolEmpleado']) { ?>
-                    <a class="btn btn-danger"href="index_productos.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar">
+                    <a class="btn btn-danger" href="index_productos.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar">
                       <i class="far fa-trash-alt"></i>Eliminar 
                     </a>
                     <?php } ?>
