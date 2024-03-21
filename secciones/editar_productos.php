@@ -6,13 +6,17 @@ if ($_SESSION['valSudoAdmin']) {
 }else{
     $lista_productos_link  = "index_productos.php?link=".$link;
 }
+$responsable = $_SESSION['usuario_id'];
+if(isset($_GET['link']) || $responsable == 1){
+    if ($responsable == 1) {
+       $txtID = "sudo_admin";
+       $sentencia=$conexion->prepare("SELECT * FROM producto");
+    }else {
+        $txtID=(isset($_GET['link']))?$_GET['link']:"";
+        $sentencia=$conexion->prepare("SELECT * FROM producto WHERE link=:link");
+        $sentencia->bindParam(":link",$txtID);
 
-if(isset($_GET['txtID'])){
-
-    $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-
-    $sentencia=$conexion->prepare("SELECT * FROM producto WHERE producto_id=:producto_id");
-    $sentencia->bindParam(":producto_id",$txtID);
+    }
     $sentencia->execute();
     $registro=$sentencia->fetch(PDO::FETCH_LAZY);
     $producto_id=$registro["producto_id"];
@@ -25,6 +29,7 @@ if(isset($_GET['txtID'])){
     $producto_modelo=$registro["producto_modelo"];  
     $categoria_id=$registro["categoria_id"];  
     $producto_fecha_garantia=$registro["producto_fecha_garantia"];  
+    $link=$registro["link"];  
 }
 
     // Obtener la categoría actual del producto
@@ -36,10 +41,12 @@ if(isset($_GET['txtID'])){
     $categoria_actual = $sentencia_categoria->fetch(PDO::FETCH_ASSOC);
 
     // Obtener todas las categorías disponibles
-    $sentencia_todas = $conexion->prepare("SELECT categoria_id, categoria_nombre FROM categoria");
+    if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
+    $sentencia_todas = $conexion->prepare("SELECT categoria_id, categoria_nombre FROM categoria WHERE link=:linkeo");
+    $sentencia_todas->bindParam(":linkeo", $linkeo);
     $sentencia_todas->execute();
     $categorias_disponibles = $sentencia_todas->fetchAll(PDO::FETCH_ASSOC);
-
+    
    // Consulta para obtener el proveedor actual del producto
     $sentencia_proveedor = $conexion->prepare("SELECT p.proveedor_id, pro.nombre_proveedores
     FROM producto p
@@ -50,7 +57,8 @@ if(isset($_GET['txtID'])){
     $proveedor_actual = $sentencia_proveedor->fetch(PDO::FETCH_ASSOC);
 
     // Consulta para obtener todos los proveedores disponibles
-    $sentencia_todas = $conexion->prepare("SELECT id_proveedores, nombre_proveedores FROM proveedores");
+    $sentencia_todas = $conexion->prepare("SELECT id_proveedores, nombre_proveedores FROM proveedores WHERE link=:linkeo");
+    $sentencia_todas->bindParam(":linkeo", $linkeo);
     $sentencia_todas->execute();
     $proveedores_disponibles = $sentencia_todas->fetchAll(PDO::FETCH_ASSOC);
 

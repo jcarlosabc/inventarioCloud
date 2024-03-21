@@ -1,5 +1,11 @@
 <?php include("../templates/header.php") ?>
 <?php
+if ($_SESSION['valSudoAdmin']) {
+    $lista_proveedor_link  = "index_proveedores.php";
+
+ }else{
+    $lista_proveedor_link  = "index_proveedores.php?link=".$link;
+ }
 if (isset($_GET['txtID'])) {
 
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
@@ -16,6 +22,7 @@ if (isset($_GET['txtID'])) {
     $email_proveedores = $registro['email_proveedores'];
     $telefono_proveedores = $registro['telefono_proveedores'];
     $direccion_proveedores = $registro['direccion_proveedores'];
+    $link_proveedores = $registro['link'];
 
     if ($_POST) {
         $txtID = (isset($_POST['txtID'])) ? $_POST['txtID'] : "";
@@ -24,10 +31,11 @@ if (isset($_GET['txtID'])) {
         $email_proveedores = isset($_POST['email_proveedores']) ? $_POST['email_proveedores'] : " ";
         $telefono_proveedores = isset($_POST['telefono_proveedores']) ? $_POST['telefono_proveedores'] : " ";
         $direccion_proveedores = isset($_POST['direccion_proveedores']) ? $_POST['direccion_proveedores'] : " ";
+        $link = isset($_POST['link']) ? $_POST['link'] : " ";
 
         $sentencia_edit = $conexion->prepare("UPDATE proveedores SET 
         nit_proveedores=:nit_proveedores, nombre_proveedores=:nombre_proveedores, email_proveedores=:email_proveedores,
-        telefono_proveedores=:telefono_proveedores, direccion_proveedores=:direccion_proveedores WHERE id_proveedores=:id_proveedores");
+        telefono_proveedores=:telefono_proveedores, direccion_proveedores=:direccion_proveedores, link=:link WHERE id_proveedores=:id_proveedores");
 
         $sentencia_edit->bindParam(":id_proveedores", $txtID);
         $sentencia_edit->bindParam(":nit_proveedores", $nit_proveedore);
@@ -35,6 +43,7 @@ if (isset($_GET['txtID'])) {
         $sentencia_edit->bindParam(":email_proveedores", $email_proveedores);
         $sentencia_edit->bindParam(":telefono_proveedores", $telefono_proveedores);
         $sentencia_edit->bindParam(":direccion_proveedores", $direccion_proveedores);
+        $sentencia_edit->bindParam(":link", $link);
         $resultado_edit = $sentencia_edit->execute();
 
         if ($resultado_edit) {
@@ -45,7 +54,7 @@ if (isset($_GET['txtID'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result) => {
                 if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/index_proveedores.php";
+                    window.location.href = "'.$url_base.'secciones/'.$lista_proveedor_link.'";
                 }
             })
         </script>';
@@ -74,6 +83,7 @@ if (isset($_GET['txtID'])) {
                     <div class="col-sm-2">
                         <div class="form-group">
                         <input type="hidden" name="txtID" value="<?= $txtID ?>">
+                        <input type="hidden" name="link" value="<?= $link_proveedores ?>">
                             <label for="producto_nombre" class="textLabel">Nit</label>
                             <input type="text" class="form-control camposTabla" name="nit_proveedores" value="<?=$nit_proveedores?>">
                         </div>

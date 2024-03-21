@@ -20,10 +20,8 @@ $linkeo = 0;
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
 
   $responsable = $_SESSION['usuario_id'];
-  $link = "sudo_admin";
   if ($responsable == 1) {
-    $sentencia=$conexion->prepare("SELECT p.*, e.empresa_nombre FROM proveedores p 
-    LEFT JOIN empresa e ON p.link = e.link");
+    $sentencia=$conexion->prepare("SELECT p.*, e.empresa_nombre FROM proveedores p LEFT JOIN empresa e ON p.link = e.link");
 
   }else {
     $sentencia=$conexion->prepare("SELECT p.*, e.empresa_nombre FROM proveedores p JOIN empresa e ON p.link = e.link WHERE p.link =:link");

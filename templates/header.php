@@ -36,6 +36,7 @@
       $lista_categoria_link = 'lista_categoria.php';
       $crear_producto_link = 'crear_producto.php';
       $lista_producto_link = 'index_productos.php';
+      $editar_producto_link = 'editar_productos.php';
     //SECCIÓN DE CLIENTES
       $crear_cliente_link = 'crear_cliente.php';
       $lista_cliente_link = 'index_clientes.php';
@@ -59,6 +60,7 @@
       $lista_categoria_link = 'lista_categoria.php?link='.$link;
       $crear_producto_link = 'crear_producto.php?link='.$link;
       $lista_producto_link ='index_productos.php?link='.$link;
+      $editar_producto_link ='editar_productos.php?link='.$link;
     //SECCIÓN DE CLIENTES
       $crear_cliente_link = 'crear_cliente.php?link='.$link;
       $lista_cliente_link = 'index_clientes.php?link='.$link;
@@ -129,10 +131,10 @@
         </li>
         <li>
           <?php if ($valSudoAdmin) { ?>
-            <a href="<?php echo $url_base;?>cerrar.php" class="nav-link" style="background: #17A2B8; border-radius: 17px;font-size: 15px;
+            <a id="cerrarSesion" href="<?php echo $url_base;?>cerrar.php" class="nav-link" style="background: #17A2B8; border-radius: 17px;font-size: 15px;
               color: white;">Cerrar Sesion</a>
           <?php } else { ?>
-            <a href=" <?php echo $url_base;?>cerrar.php?link=<?php echo $link; ?>" class="nav-link" style="background: #17A2B8; border-radius: 17px;font-size: 15px;
+            <a id="cerrarSesion" href="<?php echo $url_base;?>cerrar.php?link=<?php echo $link; ?>" class="nav-link" style="background: #17A2B8; border-radius: 17px;font-size: 15px;
               color: white;">Cerrar Sesion</a>
           <?php } ?>
 

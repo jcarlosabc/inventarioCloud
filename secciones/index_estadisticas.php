@@ -1,7 +1,20 @@
 <?php include("../templates/header.php") ?>
 <?php 
+if ($_SESSION['valSudoAdmin']) {
+  $lista_cliente_link  = "index_clientes.php";
 
-$sentencia=$conexion->prepare("SELECT COUNT(*) as total_clientes FROM cliente WHERE cliente_id > 0");
+}else{
+  $lista_cliente_link  = "index_clientes.php?link=".$link;
+}
+
+$usuario_sesion = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
+if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
+if ($usuario_sesion == 1) {
+  $sentencia=$conexion->prepare("SELECT COUNT(*) as total_clientes FROM cliente WHERE cliente_id > 0");
+}else {
+  $sentencia=$conexion->prepare("SELECT COUNT(*) as total_clientes FROM cliente WHERE cliente_id > 0 AND link=:link");
+  $sentencia->bindParam(":link", $linkeo);
+}
 $sentencia->execute();
 $contardor_usuario=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
@@ -16,7 +29,6 @@ $contardor_ventas =$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 // consulta para el dinero de la caja que inicio session 
 //$_SESSION['usuario_id']
-$usuario_sesion = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
 
 $sentencia=$conexion->prepare("SELECT * FROM usuario
 INNER JOIN caja ON usuario.caja_id = caja.caja_id 
@@ -91,7 +103,7 @@ if ($_POST) {
               <div class="icon">
                 <i class="ion ion-person-add"></i>
               </div>
-              <a style="color: white !important" href="<?php echo $url_base ?>secciones/index_clientes.php" class="small-box-footer">Ver Clientes <i class="fas fa-arrow-circle-right"></i></a>
+              <a style="color: white !important" href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>" class="small-box-footer">Ver Clientes <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- Ventas del dia -->
