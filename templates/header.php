@@ -50,6 +50,8 @@
     //SECCIÓN DE USUARIO
       $crear_empleado_link = 'crear_empleado.php'; 
       $index_empleados_link = 'index_empleados.php'; 
+
+      $lista_gasto_link = 'crear_gastos.php';
     
     } else {
       $inicio_link = "index_estadisticas.php?link=".$link;
@@ -75,7 +77,9 @@
     //SECCIÓN DE USUARIO
       $crear_empleado_link = 'crear_empleado.php?link='.$link; 
       $index_empleados_link = 'index_empleados.php?link='.$link;
-        
+      
+      $lista_gasto_link = 'crear_gastos.php?link='.$link;
+
   
   }
 ?>
@@ -465,6 +469,15 @@
             </ul>
           </li>
           <?php } ?>
+
+          <li class="nav-item menu-open">
+              <li class="nav-item">
+                <a href="<?php echo $url_base;?>secciones/<?php echo $lista_gasto_link;?>" class="nav-link">
+                  <i class="fa fa-archive nav-icon"></i>
+                  <p>Gastos</p>
+                </a>
+              </li>
+            </li>
           </ul>
         </nav>
         <!-- /.sidebar-menu -->
