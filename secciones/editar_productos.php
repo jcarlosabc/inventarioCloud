@@ -6,13 +6,21 @@ if ($_SESSION['valSudoAdmin']) {
 }else{
     $lista_productos_link  = "index_productos.php?link=".$link;
 }
+$responsable = $_SESSION['usuario_id'];
 
-if(isset($_GET['txtID'])){
+if(isset($_GET['link']) || $responsable == 1){
+    if ($responsable == 1) {
+       $txtID_productos=(isset($_GET['txtID']))?$_GET['txtID']:"";
+       $sentencia=$conexion->prepare("SELECT * FROM producto WHERE producto_id=:producto_id");
+       $sentencia->bindParam(":producto_id",$txtID_productos);
+    }else {
+        $link=(isset($_GET['link']))?$_GET['link']:"";
+        $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
+        $sentencia=$conexion->prepare("SELECT * FROM producto WHERE link=:link AND producto_id = :txtID");
+        $sentencia->bindParam(":txtID",$txtID);
+        $sentencia->bindParam(":link",$link);
 
-    $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-
-    $sentencia=$conexion->prepare("SELECT * FROM producto WHERE producto_id=:producto_id");
-    $sentencia->bindParam(":producto_id",$txtID);
+    }
     $sentencia->execute();
     $registro=$sentencia->fetch(PDO::FETCH_LAZY);
     $producto_id=$registro["producto_id"];
@@ -26,20 +34,32 @@ if(isset($_GET['txtID'])){
     $categoria_id=$registro["categoria_id"];  
     $producto_fecha_garantia=$registro["producto_fecha_garantia"];  
 }
+        // Obtener la categoría actual del producto
+        $sentencia_categoria = $conexion->prepare("SELECT p.categoria_id, c.categoria_nombre FROM producto p
+            JOIN categoria c ON p.categoria_id = c.categoria_id
+            WHERE p.producto_id=:producto_id");
+        $sentencia_categoria->bindParam(":producto_id", $producto_id);
+        
+        $sentencia_categoria->execute();
+        $categoria_actual = $sentencia_categoria->fetch(PDO::FETCH_ASSOC);
 
-    // Obtener la categoría actual del producto
-    $sentencia_categoria = $conexion->prepare("SELECT p.categoria_id, c.categoria_nombre FROM producto p
-        JOIN categoria c ON p.categoria_id = c.categoria_id
-        WHERE p.producto_id=:producto_id");
-    $sentencia_categoria->bindParam(":producto_id", $producto_id);
-    $sentencia_categoria->execute();
-    $categoria_actual = $sentencia_categoria->fetch(PDO::FETCH_ASSOC);
 
-    // Obtener todas las categorías disponibles
-    $sentencia_todas = $conexion->prepare("SELECT categoria_id, categoria_nombre FROM categoria");
+if(isset($_GET['link']) || $responsable == 1){
+    if ($responsable == 1) {
+
+        // Obtener todas las categorías disponibles
+        if(isset($_GET['data-value'])){ $linkeo=(isset($_GET['data-value']))?$_GET['data-value']:"";}
+        $sentencia_todas = $conexion->prepare("SELECT categoria_id, categoria_nombre FROM categoria WHERE link=:linkeo");
+        $sentencia_todas->bindParam(":linkeo", $linkeo);
+    }else {
+        // Obtener todas las categorías disponibles
+        if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
+        $sentencia_todas = $conexion->prepare("SELECT categoria_id, categoria_nombre FROM categoria WHERE link=:linkeo");
+        $sentencia_todas->bindParam(":linkeo", $linkeo);
+    }
     $sentencia_todas->execute();
     $categorias_disponibles = $sentencia_todas->fetchAll(PDO::FETCH_ASSOC);
-
+    
    // Consulta para obtener el proveedor actual del producto
     $sentencia_proveedor = $conexion->prepare("SELECT p.proveedor_id, pro.nombre_proveedores
     FROM producto p
