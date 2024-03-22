@@ -1,38 +1,52 @@
 <?php include("../templates/header.php") ?>
 <?php 
+if ($_SESSION['valSudoAdmin']) {
+    $ventas_link = "crear_venta.php";
+  
+ }else{
+    $ventas_link = "crear_venta.php?link=".$link;
+ }
 error_reporting(E_ERROR | E_PARSE);$caja_id = $_SESSION['caja_id'];
 // die(print_r($caja_id));
-include("../../db.php");
+if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
+
 //Eliminar Elementos
-if(isset($_GET['txtID'])){
+if(isset($_GET['link'])){
+  $link=(isset($_GET['link']))?$_GET['link']:"";
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
 
-  $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id=:id");
+  $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id = :id AND link = :link");
   $sentencia->bindParam(":id",$txtID);
+  $sentencia->bindParam(":link",$link);
   $sentencia->execute();
 
   // Mostrar el carrito
-  $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, marca, modelo FROM carrito WHERE estado=0");
+  $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, marca, modelo FROM carrito WHERE estado = 0 AND link = :link");
+  $sentencia->bindParam(":link",$link);
   $sentencia->execute();
   $lista_carrito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Mostrar datos de la tabla 
-$sentencia=$conexion->prepare("SELECT * FROM `producto`");
-$sentencia->execute();
-$lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+    $sentencia=$conexion->prepare("SELECT * FROM `producto` WHERE link = :link");
+    $sentencia->bindParam(":link", $linkeo);
+    $sentencia->execute();
+    $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+    
+    $sentencia=$conexion->prepare("SELECT * FROM `categoria`WHERE link = :link");
+    $sentencia->bindParam(":link", $linkeo);;
+    $sentencia->execute();
+    $lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+    
+    $sentencia=$conexion->prepare("SELECT * FROM `cliente` WHERE cliente_id > 0 AND link = :link");
+    $sentencia->bindParam(":link", $linkeo);
+    $sentencia->execute();
+    $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
-$sentencia=$conexion->prepare("SELECT * FROM `categoria`");
-$sentencia->execute();
-$lista_categoria=$sentencia->fetchAll(PDO::FETCH_ASSOC);
-
-$sentencia=$conexion->prepare("SELECT * FROM `cliente` WHERE cliente_id > 0");
-$sentencia->execute();
-$lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 // ===========================================================
 
 // Guardar productos escogidos al carrito
 if(isset($_POST['producto_seleccionado'])) {
+    $linkeo = isset($_POST['link']) ? $_POST['link'] : $_POST['link'];
     $producto_seleccionado_encoded = $_POST['producto_seleccionado'];
     $producto_seleccionado = unserialize(base64_decode($producto_seleccionado_encoded));
     $producto_id = $producto_seleccionado['producto_id'];
@@ -40,10 +54,11 @@ if(isset($_POST['producto_seleccionado'])) {
     $producto_nombre = $producto_seleccionado['producto_nombre'];
     $producto_precio_venta = $producto_seleccionado['producto_precio_venta'];
     $producto_marca = $producto_seleccionado['producto_marca'];
-    $producto_modelo = $producto_seleccionado['producto_modelo']; 
+    $producto_modelo = $producto_seleccionado['producto_modelo'];
+    
 
-    $sql = "INSERT INTO carrito (producto_codigo, producto_id, producto, precio, marca, modelo) 
-            VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO carrito (producto_codigo, producto_id, producto, precio, marca, modelo, link) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
         $sentencia = $conexion->prepare($sql);
         $params = array(
         $producto_codigo, 
@@ -51,12 +66,14 @@ if(isset($_POST['producto_seleccionado'])) {
         $producto_nombre, 
         $producto_precio_venta,
         $producto_marca, 
-        $producto_modelo
+        $producto_modelo,
+        $linkeo
     );
     $sentencia->execute($params);
 
     // Mostrar el carrito
-    $sentencia=$conexion->prepare("SELECT * FROM carrito WHERE estado = 0");
+    $sentencia=$conexion->prepare("SELECT * FROM carrito WHERE estado = 0 AND link = :link");
+    $sentencia->bindParam(":link", $linkeo);
     $sentencia->execute();
     $lista_carrito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
@@ -65,8 +82,19 @@ if(isset($_POST['producto_seleccionado'])) {
         $precio = $item['precio'];
         $total += $precio;
     }
+    
+    $sentencia=$conexion->prepare("SELECT * FROM `producto` WHERE link = :link");
+    $sentencia->bindParam(":link", $linkeo);
+    $sentencia->execute();
+    $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+    
+    if ($lista_producto) {
+        header("Location:".$url_base.'secciones/'. $ventas_link);
+    }
 }
 
+
+// Realizando venta - revisar la parte de ventas en cada local
 if(isset($_POST['productos_vendidos'])) {
     $cantidades = isset($_POST['cantidad']) ? $_POST['cantidad'] : array();
     $totales = isset($_POST['total']) ? $_POST['total'] : array();
@@ -292,6 +320,7 @@ if(isset($_POST['productos_vendidos'])) {
                                     <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td>
                                         <form action="crear_venta.php" method="POST">
+                                            <input type="text" name="link" value="<?php echo $linkeo; ?>">
                                             <input type="hidden" name="producto_id" value="<?php echo $registro['producto_id']; ?>">
                                             <input type="hidden" name="producto_codigo" value="<?php echo $registro['producto_codigo']; ?>">
                                             <?php if($registro['producto_stock_total'] == 0) { ?>
@@ -347,8 +376,8 @@ if(isset($_POST['productos_vendidos'])) {
                                                 <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
                                                 <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
                                                     <div class="btn-group">
-                                                        <a class="btn btn-danger btn-sm" href="crear_venta.php?txtID=<?php echo $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
-                                                    </div>
+                                                        <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link . '&txtID=' . $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
+                                                    </div>  
                                                 </td>
                                             </tr>  
                                         <?php } ?>
