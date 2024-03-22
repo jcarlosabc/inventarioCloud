@@ -2,9 +2,13 @@
 <?php
 if ($_SESSION['valSudoAdmin']) {
     $lista_producto_link  = "index_productos.php";
+    $crear_categoria_link  = "crear_categoria.php";
+    $crear_proveedor_link  = "crear_proveedor.php";
   
  }else{
     $lista_producto_link  = "index_productos.php?link=".$link;
+    $crear_categoria_link  = "crear_categoria.php?link=".$link;
+    $crear_proveedor_link  = "crear_proveedor.php?link=".$link;
  }
 
  if(isset($_GET['link'])){
@@ -128,10 +132,12 @@ if ($user_id == 1) {
         <br>
         <div class="row no-gutters">
             <div class="col-1">
-                <a href="crear_categoria.php"><button type="button" class="btn btn-outline-primary">Crear Categoría</button></a>
+                <a href="<?php echo $url_base;?>secciones/<?php echo $crear_categoria_link;?>"><button type="button" class="btn btn-outline-primary">Crear Categoría</button></a>
+                
             </div>
             <div class="col-2">
-                <a href="crear_proveedor.php"><button type="button" class="btn btn-outline-info">Registrar Proveedor</button></a>
+                <a href="<?php echo $url_base;?>secciones/<?php echo $crear_proveedor_link;?>"><button type="button" class="btn btn-outline-info">Registrar Proveedor</button></a>
+                
             </div>
         </div>
         <div class="card card-primary" style="margin-top:3%">

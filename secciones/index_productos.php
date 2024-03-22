@@ -27,7 +27,7 @@ $responsable = $_SESSION['usuario_id'];
 if ($responsable == 1) {
   $sentencia = $conexion->prepare("SELECT producto.*, categoria.*, e.empresa_nombre FROM producto
       INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id LEFT JOIN ( SELECT p.*, e.empresa_nombre FROM producto p 
-      LEFT JOIN empresa e ON p.link = e.link) AS e ON producto.link = e.link");
+      LEFT JOIN empresa e ON p.link = e.link) AS e ON producto.link = e.link GROUP BY producto_id");
 
 }else { 
   $sentencia=$conexion->prepare("SELECT p.*, c.*, e.empresa_nombre
@@ -84,9 +84,14 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Añadir Stock">
                       <i class="fa fa-plus-circle"></i> Añadir Stock
                     </a>
-                    <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_producto_link;?>" role="button" title="Editar">
-                        <i class="fas fa-edit"></i>Editar
-                    </a>
+                    <?php if ($_SESSION['rolEmpleado']) { ?>
+                      <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_producto_link . '?' . http_build_query(['data-value' => $registro['link']]); ?><?php echo '&txtID=' . $registro['producto_id']; ?>" role="button" title="Editar">
+                      <i class="fas fa-edit"></i>Editar
+                    <?php } else { ?>
+                      <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_producto_link . '&txtID=' . $registro['producto_id']; ?>" role="button" title="Editar"> 
+                       <i class="fas fa-edit"></i>Editar
+                   </a>
+                   <?php } ?>
                     <?php if ($_SESSION['rolEmpleado']) { ?>
                     <a class="btn btn-danger" href="index_productos.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar">
                       <i class="far fa-trash-alt"></i>Eliminar 
