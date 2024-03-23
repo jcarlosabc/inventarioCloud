@@ -1,14 +1,26 @@
 <?php include("../templates/header.php") ?>
 <?php 
+
 if(isset($_GET['txtID'])){
-
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-  $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
-  FROM venta 
-  INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
-  INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id; ");
+  $link=(isset($_GET['link']))?$_GET['link']:"";
+  
+  if($_SESSION['rolEmpleado']){
+    $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
+    FROM venta 
+    INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
+    INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id");
+    $sentencia->bindParam(":venta_id",$txtID);
 
-  $sentencia->bindParam(":venta_id",$txtID);
+  }else{
+    $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
+    FROM venta 
+    INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
+    INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id AND venta.link = :link");
+    $sentencia->bindParam(":venta_id",$txtID);
+    $sentencia->bindParam(":link",$link);
+  }
+
   $sentencia->execute();
   $registro=$sentencia->fetch(PDO::FETCH_LAZY);
 
@@ -47,16 +59,29 @@ if(isset($_GET['txtID'])){
   $empresa_nit=$registro_empresa["empresa_nit"];  
  
   // Mostrar lista comprados
-  $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia
-  FROM venta
-  INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
-  INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
-  WHERE venta_detalle.venta_codigo = :venta_codigo");
+  if($_SESSION['rolEmpleado']){
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia
+    FROM venta
+    INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
+    INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
+    WHERE venta_detalle.venta_codigo = :venta_codigo");
+    $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
 
-  $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
+  }else{
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia
+    FROM venta
+    INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
+    INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
+    WHERE venta_detalle.venta_codigo = :venta_codigo AND venta_detalle.link = :link");
+    $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
+    $sentencia_venta->bindParam(":link", $link);
+
+  }
   $sentencia_venta->execute();
   $detalle_venta = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
 
+}else {
+  echo " no existe nada";
 }
 
 ?>
