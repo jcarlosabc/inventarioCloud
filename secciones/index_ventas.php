@@ -2,9 +2,11 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
   $crear_venta_link  = "crear_venta.php";
+  $devolucion_venta_link  = "devolucion_venta.php";
 
 }else{
   $crear_venta_link  = "crear_venta.php?link=".$link;
+  $devolucion_venta_link  = "devolucion_venta.php?link=".$link;
 }
 //Eliminar Elementos
 if(isset($_GET['txtID'])){
@@ -16,11 +18,22 @@ if(isset($_GET['txtID'])){
   $sentencia->execute();
   
 }
-
-$sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
+if($_SESSION['rolEmpleado']){
+$sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*, empresa.empresa_nombre
 FROM venta 
 INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
-INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id; ");
+INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
+INNER JOIN empresa ON venta.link = empresa.link;");
+
+}else{
+$link=(isset($_GET['link']))?$_GET['link']:"";
+$sentencia=$conexion->prepare("SELECT * FROM venta 
+INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
+INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
+WHERE venta.link = :link");
+$sentencia->bindParam(":link",$link);
+echo 'soy una empresa';
+}
 
 $sentencia->execute();
 $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -41,7 +54,10 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Pagado</th>
               <th>Cambio</th>
               <th>Cliente</th>
-              <th>responsable</th>              
+              <th>responsable</th>
+              <?php if ($_SESSION['rolEmpleado']) { ?>
+              <th>Negocio</th>
+              <?php } ?>            
               <th>Opciones</th>
             </tr>
             </thead>
@@ -54,14 +70,32 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td class="tdColor"><?php echo '$' . number_format($registro['venta_pagado'], 0, '.', ','); ?></td> 
                   <td class="tdColor"><?php echo ($registro['venta_metodo_pago'] == 0 || $registro['venta_metodo_pago'] == 1) ? '$' . number_format($registro['venta_cambio'], 0, '.', ',') : "Credito Saldado"; ?></td>
                   <td><a  <?php if($registro['cliente_id'] != 0 ){ ?> href="../editar_clientes.php?txtID=<?php echo $registro['cliente_id']; ?>" <?php }?>    ><?php echo $registro['cliente_nombre']; ?></a></td>
-                  <td><?php echo  $registro['usuario_nombre']; ?></td> 
+                  <td><?php echo  $registro['usuario_nombre']; ?></td>
+                  <?php if ($_SESSION['rolEmpleado']) { ?>
+                    <td><?php echo  $registro['empresa_nombre']; ?></td>
+                  <?php } ?>  
                   <td>
-                    <a class="btn btn-primary btn-sm" href="<?php $url_base ?>detalles.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Detalles">
+
+                  <?php if ($_SESSION['rolEmpleado']) { ?>
+                    <a class="btn btn-primary btn-sm" href="detalles.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Detalles">
                       <i class="fas fa-eye"></i> Ver
                     </a>
+                    <?php } else { ?>
+                      <a class="btn btn-primary btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_detalles_link . '&txtID=' . $registro['venta_id']; ?>" role="button" title="Detalles">
+                      <i class="fas fa-eye"></i> Ver
+                    </a>
+                   <?php } ?>
+
+                   <?php if ($_SESSION['rolEmpleado']) { ?>
                     <a class="btn btn-warning btn-sm" href="devolucion_venta.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Devolucion">
                       <i class="fas fa-retweet"></i> Devolución
                     </a>
+                    <?php } else { ?>
+                    <a class="btn btn-warning btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $devolucion_venta_link . '&txtID=' . $registro['venta_id']; ?>" role="button" title="Devolucion">
+                      <i class="fas fa-retweet"></i> Devolución
+                    </a>
+                   <?php } ?>
+
                     <?php if ($_SESSION['rolEmpleado']) { ?>
                       <a class="btn btn-danger btn-sm" href="index_ventas.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Eliminar">
                         <i class="fas fa-trash-alt"></i> Eliminar 

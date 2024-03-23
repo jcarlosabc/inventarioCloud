@@ -30,6 +30,7 @@
       $inicio_link = "index.php";
     //SECCIÓN DE VENTAS
       $ventas_link = "crear_venta.php";
+      $ventas_detalles_link = "detalles.php";
       $ventas_link_historia_venta = "index_ventas.php";
     //SECCIÓN DE PRODUCTOS
       $crear_categoria_link = 'crear_categoria.php';
@@ -54,6 +55,7 @@
       $inicio_link = "index_estadisticas.php?link=".$link;
     //SECCIÓN DE VENTAS
       $ventas_link = "crear_venta.php?link=".$link;
+      $ventas_detalles_link = "detalles.php?link=".$link;
       $ventas_link_historia_venta = "index_ventas.php?link=".$link;
     //SECCIÓN DE PRODUCTOS
       $crear_categoria_link = 'crear_categoria.php?link='.$link;
