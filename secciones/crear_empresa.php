@@ -52,7 +52,7 @@ if ($_POST) {
     VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     $sentencia_usuario = $conexion->prepare($sql);
     $params = array(
-        "N/A",
+        "Admin_".$nombre_empresa,
         "N/A",
         "N/A",
         "N/A",

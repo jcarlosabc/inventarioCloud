@@ -2,12 +2,12 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
     $ventas_link = "crear_venta.php";
-  
+    $ventas_detalles_link = "detalles.php";
  }else{
     $ventas_link = "crear_venta.php?link=".$link;
+    $ventas_detalles_link = "detalles.php?link=".$link;
  }
 error_reporting(E_ERROR | E_PARSE);$caja_id = $_SESSION['caja_id'];
-// die(print_r($caja_id));
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
 
 //Eliminar Elementos
@@ -108,6 +108,8 @@ if(isset($_POST['productos_vendidos'])) {
     $cambio_dinero = str_replace(array('$','.', ','), '', $cambio_dinero);
     $cliente_id = isset($_POST['cliente_id']) ? $_POST['cliente_id'] : $_POST['cliente_id'];
     $metodo_pago = isset($_POST['metodo_pago']) ? $_POST['metodo_pago'] : $_POST['metodo_pago'];
+    $linkeo_venta = isset($_POST['link_venta']) ? $_POST['link_venta'] : $_POST['link_venta'];
+    
     $estado_ventas = 0;
     if ($metodo_pago == 0 || $metodo_pago == 1) {
         $estado_ventas = 1;
@@ -118,8 +120,8 @@ if(isset($_POST['productos_vendidos'])) {
     $venta_realizada = false;
 
     $sql = "INSERT INTO venta (venta_codigo, venta_fecha, venta_hora, venta_total, venta_pagado, venta_cambio, 
-                        venta_metodo_pago, partes, cliente_id, caja_id, responsable, estado_venta) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        venta_metodo_pago, partes, cliente_id, caja_id, link, responsable, estado_venta) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $sentencia = $conexion->prepare($sql);
             $params = array(
             $codigo_factura, 
@@ -132,12 +134,15 @@ if(isset($_POST['productos_vendidos'])) {
             $partes,
             $cliente_id,
             $caja_id,
+            $linkeo_venta,
             $user_id,
             $estado_ventas
     );
-    $sentencia->execute($params);   
+    $sentencia->execute($params);  
+
     // Obtener el ID de la última fila afectada
-    $ultimo_id_insertado = $conexion->lastInsertId();
+   $ultimo_id_insertado = $conexion->lastInsertId();
+   print_r("ultimo id =>>>> ".$ultimo_id_insertado);
 
     foreach ($cantidades as $id => $cantidad) {
         $total = $totales[$id] ?? 0;
@@ -196,8 +201,8 @@ if(isset($_POST['productos_vendidos'])) {
     //    Guardando el detalle de la venta
        $sql = "INSERT INTO venta_detalle (venta_detalle_cantidad,
                 venta_detalle_precio_compra, venta_detalle_precio_venta, venta_detalle_total, venta_detalle_metodo_pago,
-                venta_detalle_descripcion, venta_codigo, producto_id, responsable) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                venta_detalle_descripcion, venta_codigo, producto_id, link, responsable) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $sentencia = $conexion->prepare($sql);
             $params = array(
             $cantidad_vendida, 
@@ -208,6 +213,7 @@ if(isset($_POST['productos_vendidos'])) {
             $producto, 
             $codigo_factura,
             $producto_id,
+            $linkeo_venta,
             $user_id
             );
             $sentencia->execute($params);
@@ -238,7 +244,8 @@ if(isset($_POST['productos_vendidos'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result)=>{
                 if(result.isConfirmed){
-                    window.location.href="'.$url_base.'secciones/detalles.php?txtID='.$ultimo_id_insertado.'";
+                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$ultimo_id_insertado.'";
+
                 }
             })
             </script>';
@@ -250,7 +257,7 @@ if(isset($_POST['productos_vendidos'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result)=>{
                 if(result.isConfirmed){
-                    window.location.href="'.$url_base.'secciones/detalles.php?txtID='.$ultimo_id_insertado.'";
+                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$ultimo_id_insertado.'";
                 }
             })
             </script>'; 
@@ -262,7 +269,7 @@ if(isset($_POST['productos_vendidos'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result)=>{
                 if(result.isConfirmed){
-                    window.location.href="'.$url_base.'secciones/detalles.php?txtID='.$ultimo_id_insertado.'";
+                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$ultimo_id_insertado.'";
                 }
             })
             </script>'; 
@@ -320,7 +327,7 @@ if(isset($_POST['productos_vendidos'])) {
                                     <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td>
                                         <form action="crear_venta.php" method="POST">
-                                            <input type="text" name="link" value="<?php echo $linkeo; ?>">
+                                            <input type="hidden" name="link" value="<?php echo $linkeo; ?>">
                                             <input type="hidden" name="producto_id" value="<?php echo $registro['producto_id']; ?>">
                                             <input type="hidden" name="producto_codigo" value="<?php echo $registro['producto_codigo']; ?>">
                                             <?php if($registro['producto_stock_total'] == 0) { ?>
@@ -449,6 +456,7 @@ if(isset($_POST['productos_vendidos'])) {
                                         <label class="textLabel">Se devuelve</label>
                                         <input type="text" class="form-control camposTabla_dinero se_devuelve" name="cambio_dinero" readonly>
                                     </div>
+                                    <input type="hidden" name="link_venta" value="<?php echo $linkeo; ?>">
                                     <input type="hidden" id="generador_codigo_factura" name="codigo_factura">
                                 </div>
                                 <br>

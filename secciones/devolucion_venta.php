@@ -102,7 +102,7 @@ if ($_POST) {
                     confirmButtonText: "¡Entendido!"
                 }).then((result) => {
                     if(result.isConfirmed){
-                        window.location.href = "'.$url_base.'secciones/index_ventas.php";
+                        window.location.href = "'.$url_base.'secciones/'.$ventas_link_historia_venta.'";
                     }
                 })
                 </script>';
@@ -196,17 +196,26 @@ if ($_POST) {
                                                 echo '<span class="badge bg-success">Garantia Activa</span>';                                      
                                                 echo '<td><input type="checkbox" style="height: 22px; width: 100%;" name="productos_a_devolver[]" value="' . $registro['producto_codigo'].'"></td>';
                                             }else {
-                                                echo '<span class="badge bg-info">Garantia Realizada</span> <br>No llenar los campos de esta fila';
+                                                echo '<span class="badge bg-info">Garantia Realizada</span>';
                                                 echo '<td>♻️</td>';
                                             }
                                         } else {
                                             echo '<span class="badge bg-danger">Garantía expirada</span>';                                     
-                                            echo '<td></td>';
+                                            echo '<td>🚫</td>';
                                         }
                                     ?>
                                 </td>
-                                <td><textarea name="devolucion_motivo[]" required rows="2" ></textarea></td>  
-                                <td><input type="number" placeholder="" required name="devolucion_serial[]"></td>
+                                <?php
+                                    if ($fecha_actual <= $fecha_garantia) {
+                                        if ($registro['estado_devolucion']==0) {
+                                            echo '<td><textarea name="devolucion_motivo[]"  rows="2" ></textarea></td>';
+                                            echo '<td><input type="number" placeholder=""  name="devolucion_serial[]"></td>';
+                                        }else{
+                                             echo ' <td>'. $registro['devolucion_motivo']. '</td>';;
+                                             echo ' <td>'. $registro['devolucion_serial']. '</td>';
+                                         }
+                                    }
+                                ?>
                                 <input type="hidden" name="venta_codigo" value="<?php echo $registro['venta_codigo']; ?>"> 
                                 <input type="hidden" name="producto_id[]" value="<?php echo $registro['producto_id']; ?>">  
                                 <input type="hidden" name="producto_codigo[]" value="<?php echo $registro['producto_codigo']; ?>">                                
