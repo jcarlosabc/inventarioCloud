@@ -1,5 +1,9 @@
 <?php include("../templates/header.php") ?>
 <?php 
+
+if(isset($_GET['link'])){
+  $link=(isset($_GET['link']))?$_GET['link']:"";
+}
 //Eliminar Elementos
 if(isset($_GET['txtID'])){
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
@@ -8,7 +12,14 @@ if(isset($_GET['txtID'])){
   $sentencia->bindParam(":usuario_id",$txtID);
   $sentencia->execute();
 }
-  $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre FROM usuario u JOIN caja c ON u.caja_id = c.caja_id WHERE u.usuario_id > 1 ");
+  $responsable = $_SESSION['usuario_id'];
+  if ($responsable == 1) {
+    $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre 
+    FROM usuario u INNER JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 ");
+  }else{
+    $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre FROM usuario u JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 AND u.link=:link ");
+    $sentencia->bindParam(":link",$link);
+   }
   $sentencia->execute();
   $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
 
@@ -16,7 +27,7 @@ if(isset($_GET['txtID'])){
       <br>
       <div class="card card-primary ">
         <div class="card-header text-center ">
-          <h2 class="card-title textTabla">LISTA DE EMPLEADOS  &nbsp; <a href="<?=$url_base?>secciones/crear_empleado.php" class="btn btn-warning" style="color:black"> Nuevo Empleado </a>
+          <h2 class="card-title textTabla">LISTA DE EMPLEADOS  &nbsp; <a href="<?php echo $url_base;?>secciones/<?php echo $crear_empleado_link;?>" class="btn btn-warning" style="color:black"> Nuevo Empleado </a>
           </h2>
         </div>
         <!-- /.card-header -->
@@ -30,6 +41,7 @@ if(isset($_GET['txtID'])){
               <th>Correo</th>
               <th>Usuario</th>
               <th>Caja de usuario</th>
+              <th>Negocio</th>
               <th>Opciones</th>
             </tr>
             </thead>
@@ -43,6 +55,7 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['usuario_email']; ?></td>                
                   <td><?php echo $registro['usuario_usuario']; ?></td>
                   <td><?php echo $registro['caja_nombre']; ?></td>
+                  <td><?php echo $registro['empresa_nombre']; ?></td>
                   <td>
                     <a class="btn btn-info" href="editar_empleados.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button" title="Editar">
                         <i class="fas fa-edit"></i>Editar

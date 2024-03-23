@@ -179,10 +179,10 @@
       <!-- Main Sidebar Container -->
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
-      <a href="#" class="brand-link">
+      <!-- <a href="#" class="brand-link">
         <img src="<?php echo "data:image/png;base64,".$logo_empresa;?>" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light"><?php echo $nombre_empresa;?></span>
-      </a>
+      </a> -->
     
       <!-- Sidebar -->
       <div class="sidebar">
@@ -344,7 +344,7 @@
             </ul>
           </li>
 
-          <?php if ($_SESSION['rolEmpleado'] && $valSudoAdmin) { ?>
+          <?php if ($_SESSION['rolEmpleado'] || $_SESSION['roladminlocal']) { ?>
           <!-- SECCIÓN DE CAJAS -->
             <li class="nav-item">
               <a href="#" class="nav-link">
@@ -442,7 +442,10 @@
               </li>
             </ul>
           </li> -->
-          <li class="nav-item menu-open">
+          <?php } ?>
+          <?php if ($_SESSION['rolEmpleado'] && !$_SESSION['roladminlocal']){ ?>
+          <!-- BODEGA -->
+            <li class="nav-item menu-open">
               <li class="nav-item">
                 <a href="bodega.php" class="nav-link ">
                   <i class="fa fa-archive nav-icon"></i>
@@ -450,9 +453,8 @@
                 </a>
               </li>
             </li>
-
-           <!-- CONFIGURACIÓNES -->
-           <li class="nav-item">
+          <!-- CONFIGURACIÓNES -->
+          <li class="nav-item">
             <a href="#" class="nav-link">
             <i class="nav-icon fas  fa-cog fa-lg mr-2"></i>
               <p>
@@ -485,8 +487,6 @@
       <!-- /.sidebar -->
     </aside>
     <?php } ?>
-    
-
     <div class="content-wrapper" >
       <!-- Main content -->
       <section class="content">

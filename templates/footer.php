@@ -385,14 +385,14 @@
           return false;
       }
     }else if(id == 2){
-      var rolSeleccionado = document.forms["formEmpleado"]["usuario_rol"].value;
+      var rolSeleccionado = document.forms["formEmpleado"]["usuario_empresa"].value;
       var cajaSeleccionado = document.forms["formEmpleado"]["usuario_caja"].value;
 
     if (rolSeleccionado == "") {
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Por favor, seleccione un rol para el empleado.',
+            text: 'Por favor, seleccione un negocio donde va a laboral el empleado.',
         });
         return false;
     }
@@ -400,7 +400,7 @@
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Por favor, seleccione una para el empleado.',
+            text: 'Por favor, seleccione una Caja para el empleado.',
         });
         return false;
     }

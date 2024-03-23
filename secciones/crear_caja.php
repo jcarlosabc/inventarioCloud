@@ -2,28 +2,34 @@
 <?php 
 
 if ($_SESSION['valSudoAdmin']) {
-    $crear_caja_link  = "index_cajas.php";
+    $index_cajas_link  = "index_cajas.php";
   
  }else{
-    $crear_caja_link  = "index_cajas.php?link=".$link;
+    $index_cajas_link  = "index_cajas.php?link=".$link;
  }
 
- 
+ if(isset($_GET['link'])){
+    $link=(isset($_GET['link']))?$_GET['link']:"";
+ }
 if ($_POST) {
     $caja_numero = isset($_POST['caja_numero']) ? $_POST['caja_numero'] : "";
     $caja_nombre = isset($_POST['caja_nombre']) ? $_POST['caja_nombre'] : "";
     $caja_efectivo = isset($_POST['caja_efectivo']) ? $_POST['caja_efectivo'] : "";  
     $responsable = $_SESSION['usuario_id'];
-    
+    $link =  isset($_POST['link']) ? $_POST['link'] : "";
+    if ($responsable == 1) {
+        $link = "sudo_admin";
+    }
     // Eliminar el signo "$" y el separador de miles "." del valor del campo de entrada
     $caja_efectivo = str_replace(array('$','.',','), '', $caja_efectivo); 
     
-    $sentencia = $conexion->prepare("INSERT INTO caja(caja_numero, caja_nombre, caja_efectivo, responsable) 
-        VALUES (:caja_numero, :caja_nombre,:caja_efectivo,:responsable)");
+    $sentencia = $conexion->prepare("INSERT INTO caja(caja_numero, caja_nombre, caja_efectivo, link, responsable) 
+        VALUES (:caja_numero, :caja_nombre,:caja_efectivo, :link, :responsable)");
     
     $sentencia->bindParam(":caja_numero", $caja_numero);
     $sentencia->bindParam(":caja_nombre", $caja_nombre);
     $sentencia->bindParam(":caja_efectivo", $caja_efectivo);
+    $sentencia->bindParam(":link", $link);
     $sentencia->bindParam(":responsable",$responsable);
     $resultado = $sentencia->execute();
     
@@ -36,7 +42,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/'.$crear_caja_link.'";
+                window.location.href = "'.$url_base.'secciones/'.$index_cajas_link.'";
             }
         })
         </script>';
@@ -54,11 +60,12 @@ if ($_POST) {
     <br>
     <div class="card card-primary" style="margin-top:7%">
         <div class="card-header">
-            <h3 class="card-title textTabla">REGISTRE UNA NUEVA CAJA &nbsp;&nbsp;<a class="btn btn-warning"  style="color:black" href="index_cajas.php" role="button">Lista de Caja</a></h3>
+            <h3 class="card-title textTabla">REGISTRE UNA NUEVA CAJA &nbsp;&nbsp;<a class="btn btn-warning"  style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>" role="button">Lista de Caja</a></h3>
         </div>
         <!-- /.card-header -->
         <!-- form start --> 
         <form action="" method="POST">
+            <input type="hidden" name="link" value="<?php echo $link ?>">
             <div class="card-body">
                 <div class="row" style="justify-content:center">
                     <div class="col-sm-2">

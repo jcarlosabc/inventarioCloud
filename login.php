@@ -10,10 +10,19 @@ if(isset($_GET['link'])){
   $sentencia->bindParam(":link",$link);
   $sentencia->execute();
   $registro=$sentencia->fetch(PDO::FETCH_LAZY);
+  
+  
+  $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link=:link");
+  $sentencia_empresa->bindParam(":link",$link);
+  $sentencia_empresa->execute();
+  $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+  $empresa_login = $registro_empresa['empresa_nombre'];
+
   $link = $registro["link"];
   $valSudoAdmin;
 }else {
   $valSudoAdmin = true ;
+  $empresa_login = "ADMIN";
 }
 
 if ($_POST) {
@@ -48,7 +57,22 @@ if ($_POST) {
         $_SESSION['usuario_usuario']=$lista_usuario["usuario_usuario"];
         $_SESSION['usuario_id']=$lista_usuario["usuario_id"];
         $_SESSION['rol']=$lista_usuario["rol"];
-        $_SESSION['rol'] == 0 ? $_SESSION['rolEmpleado']=true : $_SESSION['rolEmpleado']=false ;
+
+      if ($_SESSION['rol'] == 0) {
+
+        $_SESSION['rolEmpleado']=true;
+        $_SESSION['roladminlocal']= false;
+
+      }else if($_SESSION['rol'] == 1) {
+        $_SESSION['rolEmpleado']=false;
+        $_SESSION['roladminlocal']= true;
+
+      }else {
+
+        $_SESSION['rolEmpleado']=false;
+        $_SESSION['roladminlocal']= false;
+
+      }
         $_SESSION['caja_id']=$lista_usuario["caja_id"];
         $_SESSION['logueado']=true;
 
@@ -81,14 +105,14 @@ if ($_POST) {
   <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="dist/css/estilos.css">
+  <link rel="stylesheet" href="dist/css/login_estilo.css">
   <link rel="icon" type="image/x-icon" href="dist/img/logos/logo_nube.png">
 </head>
 <body class="hold-transition login-page fondoLogin">
   <div class="login-box">
     <div class="card card-outline card-primary">
       <div class="card-header text-center">
-        <a href="#" class="h2"><b>Inventario </b>Cloud</a>
+        <a href="#" class="h2"><b>Sistema </b><?php echo $empresa_login; ?></a>
       </div>
       <div class="card-body">
         <?php if (isset($mensaje)) { ?>
