@@ -25,15 +25,15 @@ if (isset($_GET['txtID'])) {
         $usuario_telefono = isset($_POST['usuario_telefono']) ? $_POST['usuario_telefono'] : "";
         $usuario_email = isset($_POST['usuario_email']) ? $_POST['usuario_email'] : "";
         if ($_POST['usuario_clave_1']) {$usuario_clave = hash('sha256', $_POST['usuario_clave_1']);}else{$usuario_clave =  $_POST['usuario_clave_db'];}
-        $usuario_rol = isset($_POST["usuario_rol"]) ? $_POST["usuario_rol"] : "";
-        $usuario_caja = isset($_POST["usuario_caja"]) ? $_POST["usuario_caja"] : "";
+        // $usuario_rol = isset($_POST["usuario_rol"]) ? $_POST["usuario_rol"] : "";
+        // $usuario_caja = isset($_POST["usuario_caja"]) ? $_POST["usuario_caja"] : "";
         $username = "u" . $usuario_apellido;
         $responsable = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
 
         $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
         usuario_nombre=:usuario_nombre, usuario_apellido=:usuario_apellido,usuario_telefono=:usuario_telefono,
         usuario_email=:usuario_email, usuario_usuario =:usuario_usuario,
-        usuario_clave=:usuario_clave, rol=:rol, caja_id = :caja_id, responsable = :responsable
+        usuario_clave=:usuario_clave, responsable = :responsable
         WHERE usuario_id =:usuario_id");
 
         $sentencia_edit->bindParam(":usuario_id", $txtID);
@@ -43,8 +43,8 @@ if (isset($_GET['txtID'])) {
         $sentencia_edit->bindParam(":usuario_email", $usuario_email);
         $sentencia_edit->bindParam(":usuario_usuario", $username);
         $sentencia_edit->bindParam(":usuario_clave", $usuario_clave);
-        $sentencia_edit->bindParam(":rol", $usuario_rol);
-        $sentencia_edit->bindParam(":caja_id", $usuario_caja);
+        // $sentencia_edit->bindParam(":rol", $usuario_rol);
+        // $sentencia_edit->bindParam(":caja_id", $usuario_caja);
         $sentencia_edit->bindParam(":responsable", $responsable);
         $resultado_edit = $sentencia_edit->execute();
 
@@ -126,27 +126,12 @@ if (isset($_GET['txtID'])) {
                             <div id="mensajeEdit" class="text-danger"></div>
                         </div>
                     </div>
-                    <div class="col-sm-2">
-                        <div class="form-group">
-                            <label class="textLabel">Rol de usuario</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
-                            <div class="form-group">
-                                <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_rol">
-                                    <option value="<?= $usuario_tipo ?>" selected><?= ($usuario_tipo == 1) ? 'Administrador' : 'Empleado' ?></option>
-                                    <?php if($usuario_tipo == 1){ ?>
-                                        <option value="1">Empleado</option>
-                                  <?php  } else { ?>
-                                        <option value="0">Administrador</option>
-                                 <?php } ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
+                    <!-- <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <div class="form-group">
                                 <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja">
-                                    <?php
+                                    <php
                                     if (!empty($lista_cajas)) {
                                         foreach ($lista_cajas as $caja) {
                                             // Comprobar si la caja actual es la caja del usuario
@@ -160,7 +145,7 @@ if (isset($_GET['txtID'])) {
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">

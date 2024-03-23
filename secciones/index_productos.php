@@ -1,11 +1,5 @@
 <?php include("../templates/header.php") ?>
 <?php 
-if ($_SESSION['valSudoAdmin']) {
-  $crear_productos_link  = "crear_producto.php";
-
-}else{
-  $crear_productos_link  = "crear_producto.php?link=".$link;
-}
 
 if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
