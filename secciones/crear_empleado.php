@@ -1,68 +1,117 @@
 <?php include("../templates/header.php") ?>
 <?php
+ 
+ if(isset($_GET['link'])){
+    $link=(isset($_GET['link']))?$_GET['link']:"";
+ }
+ $responsable = $_SESSION['usuario_id'] ;
+
 if ($_POST) {
     $usuario_nombre = isset($_POST['usuario_nombre']) ? $_POST['usuario_nombre'] : "";
     $usuario_apellido = isset($_POST['usuario_apellido']) ? $_POST['usuario_apellido'] : "";
     $usuario_telefono = isset($_POST['usuario_telefono']) ? $_POST['usuario_telefono'] : "";
     $usuario_email = isset($_POST['usuario_email']) ? $_POST['usuario_email'] : "";
     $usuario_clave =  hash('sha256', (isset($_POST['usuario_clave_1']) ? $_POST['usuario_clave_1'] : ""));
-    $usuario_rol = isset($_POST['usuario_rol']) ? $_POST['usuario_rol'] : "";
+
+    $usuario_rol = 2;
+    $usuario_empresa = isset($_POST['usuario_empresa']) ? $_POST['usuario_empresa'] : "";
+    if (!$usuario_empresa) {
+        $usuario_empresa = $link;
+    }
     $usuario_caja = isset($_POST['usuario_caja']) ? $_POST['usuario_caja'] : 0;
+
     $username = "u" . $usuario_apellido;
-    $responsable = isset($_SESSION['usuario_id']) ?   $_SESSION['usuario_id']  : 0;
+    $responsable = isset($_POST['responsable']) ? $_POST['responsable']  : $responsable ;
+    $link =  isset($_POST['link']) ? $_POST['link'] : "";
+    $create_user =  isset($_POST['create_user']) ? $_POST['create_user'] : "";
 
-    $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
-            usuario_nombre, usuario_apellido, usuario_telefono, usuario_email, usuario_usuario,
-            usuario_clave, rol, caja_id, responsable) 
-        VALUES (NULL, :usuario_nombre , :usuario_apellido, :usuario_telefono,:usuario_email , :usuario_usuario, :usuario_clave, :rol, :caja_id, :responsable)");
+     if ($responsable == 1) {
+         $link = $usuario_empresa;
+     }
 
-    $sentencia->bindParam(":usuario_nombre", $usuario_nombre);
-    $sentencia->bindParam(":usuario_apellido", $usuario_apellido);
-    $sentencia->bindParam(":usuario_telefono", $usuario_telefono);
-    $sentencia->bindParam(":usuario_email", $usuario_email);
-    $sentencia->bindParam(":usuario_usuario", $username);
-    $sentencia->bindParam(":usuario_clave", $usuario_clave);
-    $sentencia->bindParam(":rol", $usuario_rol);
-    $sentencia->bindParam(":caja_id", $usuario_caja);
-    $sentencia->bindParam(":responsable", $responsable);
-    $resultado = $sentencia->execute();
+     echo " usuario_empresa" . $usuario_empresa;
+     echo "  -- usuario_caja" . $usuario_caja;
 
-    if ($resultado) {
+    $sentencia_caja = $conexion->prepare("SELECT * FROM caja WHERE link=:link AND caja_id =:caja_id");
+    $sentencia_caja->bindParam(":link", $usuario_empresa);
+    $sentencia_caja->bindParam(":caja_id", $usuario_caja);
+    $sentencia_caja->execute();
+    $listas_cajas = $sentencia_caja->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($listas_cajas)) {
         echo '<script>
         Swal.fire({
-            title: "¡Usuario Creado Exitosamente!",
-            icon: "success",
+            title: "Esta Caja no Pertenece a la empresa seleccionada",
+            icon: "info",
             confirmButtonText: "¡Entendido!"
-        }).then((result)=>{
-            if(result.isConfirmed){
-                window.location.href="'.$url_base.'secciones/index_empleados.php"
-            }
         })
         </script>';
     } else {
-        echo '<script>
-        Swal.fire({
-            title: "Error al Crear Usuario",
-            icon: "error",
-            confirmButtonText: "¡Entendido!"
-        });
-        </script>';
+        $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
+                usuario_nombre, usuario_apellido, usuario_telefono, usuario_email, usuario_usuario,
+                usuario_clave, rol, caja_id, link, responsable) 
+            VALUES (NULL, :usuario_nombre , :usuario_apellido, :usuario_telefono,:usuario_email , :usuario_usuario, :usuario_clave, :rol, :caja_id, :link, :responsable)");
+
+        $sentencia->bindParam(":usuario_nombre", $usuario_nombre);
+        $sentencia->bindParam(":usuario_apellido", $usuario_apellido);
+        $sentencia->bindParam(":usuario_telefono", $usuario_telefono);
+        $sentencia->bindParam(":usuario_email", $usuario_email);
+        $sentencia->bindParam(":usuario_usuario", $username);
+        $sentencia->bindParam(":usuario_clave", $usuario_clave);
+        $sentencia->bindParam(":rol", $usuario_rol);
+        $sentencia->bindParam(":caja_id", $usuario_caja);
+        $sentencia->bindParam(":link", $link);
+        $sentencia->bindParam(":responsable", $responsable);
+        $resultado = $sentencia->execute();
+        if ($resultado) {
+            echo '<script>
+            Swal.fire({
+                title: "Empleado Creado Exitosamente!",
+                icon: "success",
+                confirmButtonText: "¡Entendido!"
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    window.location.href= "'.$url_base.'secciones/'.$index_empleados_link.'"
+                }
+            })
+            </script>';
+        } else {
+            echo '<script>
+            Swal.fire({
+                title: "Error al Crear Empleado",
+                icon: "error",
+                confirmButtonText: "¡Entendido!"
+            });
+            </script>';
+        }
     }
 }
 
-$sentencia = $conexion->prepare("SELECT * FROM `caja` ");
+$responsable = $_SESSION['usuario_id'];
+if ($responsable == 1) {
+    $sentencia = $conexion->prepare("SELECT c.*, e.empresa_nombre FROM caja c JOIN empresa e ON c.link = e.link");
+}else{
+    $sentencia = $conexion->prepare("SELECT c.*, e.empresa_nombre FROM caja c JOIN empresa e ON c.link = e.link WHERE c.link =:link");
+  $sentencia->bindParam(":link",$link);
+ }
 $sentencia->execute();
 $lista_cajas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+$sentencia = $conexion->prepare("SELECT * FROM empresa ");
+$sentencia->execute();
+$lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
 <br>
     <div class="card card-primary" style="margin-top:7%">
         <div class="card-header" >
-            <h2 class="card-title textTabla">REGISTRE NUEVO EMPLEADO &nbsp; <a href="<?=$url_base?>secciones/index_empleados.php" class="btn btn-warning" style="color:black"> Lista de Empleados </a>
+            <h2 class="card-title textTabla">REGISTRE NUEVO EMPLEADO &nbsp; <a href="<?php echo $url_base;?>secciones/<?php echo $index_empleados_link;?>" class="btn btn-warning" style="color:black"> Lista de Empleados </a>
             </h2>
         </div>
         <form action=" " method="post" id="formEmpleado" onsubmit="return validarFormulario(2)">
+            <input type="hidden" name="link" value="<?php echo $link ?>">
+            <input type="hidden" name="responsable" value="<?php echo $responsable?>">
             <div class="card-body">
                 <div class="row" style="justify-content:center">
                     <div class="col-sm-3">
@@ -99,32 +148,37 @@ $lista_cajas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group">
-                            <label class="textLabel">Confime la Clave</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                            <label class="textLabel">Confirme la Clave</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="password" class="form-control camposTabla" name="usuario_clave_2" id="usuario_clave_2" required>
                             <div id="mensaje" class="text-danger"></div>
                         </div>
                     </div>
-                    <div class="col-sm-2">
-                        <div class="form-group">
-                            <label class="textLabel">Rol de usuario</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                    <?php if ($responsable == 1) { ?>
+                        <input type="hidden" name="create_user" value="1">
+                        <div class="col-sm-2">
                             <div class="form-group">
-                                <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_rol">
-                                    <option value="">Escoger Rol</option>
-                                    <option value="1">Empleado</option>
-                                    <option value="0">Administrador</option>
-                                </select>
+                                <label class="textLabel">Negocio</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                                <div class="form-group">
+                                    <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_empresa">
+                                        <option value="">Escoger Negocio</option>
+                                        <?php foreach ($lista_empresas as $registro) { ?>
+                                            <option value="<?php echo $registro['link']; ?>"><?php echo $registro['empresa_nombre']; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-2">
+                       
+                        <?php } ?>
+                    <div class="col-sm-3">
                         <div class="form-group">
                             <label class="textLabel">Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <div class="form-group">
                                 <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja"
                                     <?php echo empty($lista_cajas) ? 'disabled' : ''; ?>>
-                                    <option value="">Ecoger Caja</option>
+                                    <option value="">Escoger Caja</option>
                                     <?php foreach ($lista_cajas as $registro) { ?>
-                                        <option value="<?php echo $registro['caja_id']; ?>"><?php echo $registro['caja_nombre']; ?></option>
+                                        <option value="<?php echo $registro['caja_id']; ?>"><?php echo $registro['caja_nombre']; ?> - <?php echo $registro['empresa_nombre']; ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
@@ -133,7 +187,7 @@ $lista_cajas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <div class="card-footer" style="text-align:center">
                     <button type="submit" class="btn btn-primary btn-lg" name="guardar">Guardar</button>
-                    <a role="button" href="index.php" class="btn btn-danger btn-lg">Cancelar</a>
+                    <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $index_empleados_link; ?>" class="btn btn-danger btn-lg">Cancelar</a>
                 </div>
             </div>
         </form>
