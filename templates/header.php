@@ -50,8 +50,9 @@
     //SECCIÓN DE USUARIO
       $crear_empleado_link = 'crear_empleado.php'; 
       $index_empleados_link = 'index_empleados.php'; 
-
-      $lista_gasto_link = 'crear_gastos.php';
+    //GASTOS 
+      $crear_gasto_link = 'crear_gastos.php';
+      $index_gastos_link = 'index_gastos.php';
     
     } else {
       $inicio_link = "index_estadisticas.php?link=".$link;
@@ -77,10 +78,9 @@
     //SECCIÓN DE USUARIO
       $crear_empleado_link = 'crear_empleado.php?link='.$link; 
       $index_empleados_link = 'index_empleados.php?link='.$link;
-      
-      $lista_gasto_link = 'crear_gastos.php?link='.$link;
-
-  
+    //GASTOS 
+      $crear_gasto_link = 'crear_gastos.php?link='.$link;
+      $index_gastos_link = 'index_gastos.php?link='.$link;
   }
 ?>
 <!DOCTYPE html>
@@ -423,6 +423,7 @@
               </ul>
               ?php } ?> -->
             </li>
+            
 
              <!-- CONFIGURACIÓNES -->
             <!-- <li class="nav-item">
@@ -472,13 +473,29 @@
           </li>
           <?php } ?>
 
-          <li class="nav-item menu-open">
+          <!-- GASTOS -->
+          <li class="nav-item">
+              <a href="#" class="nav-link">
+              <i class="nav-icon fa fa-puzzle-piece fa-lg mr-2"></i>
+                <p>
+                  GASTOS
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">  
               <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/<?php echo $lista_gasto_link;?>" class="nav-link">
-                  <i class="fa fa-archive nav-icon"></i>
-                  <p>Gastos</p>
-                </a>
-              </li>
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $crear_gasto_link;?>" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Registrar Gasto</p>
+                  </a>
+                </li>            
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $index_gastos_link;?>" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Gastos</p>
+                  </a>
+                </li>              
+              </ul>
             </li>
           </ul>
         </nav>
