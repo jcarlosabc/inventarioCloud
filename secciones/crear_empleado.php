@@ -23,14 +23,9 @@ if ($_POST) {
     $username = "u" . $usuario_apellido;
     $responsable = isset($_POST['responsable']) ? $_POST['responsable']  : $responsable ;
     $link =  isset($_POST['link']) ? $_POST['link'] : "";
-    $create_user =  isset($_POST['create_user']) ? $_POST['create_user'] : "";
-
      if ($responsable == 1) {
          $link = $usuario_empresa;
      }
-
-     echo " usuario_empresa" . $usuario_empresa;
-     echo "  -- usuario_caja" . $usuario_caja;
 
     $sentencia_caja = $conexion->prepare("SELECT * FROM caja WHERE link=:link AND caja_id =:caja_id");
     $sentencia_caja->bindParam(":link", $usuario_empresa);
@@ -154,7 +149,6 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                     <?php if ($responsable == 1) { ?>
-                        <input type="hidden" name="create_user" value="1">
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Negocio</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
@@ -168,7 +162,6 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                             </div>
                         </div>
-                       
                         <?php } ?>
                     <div class="col-sm-3">
                         <div class="form-group">

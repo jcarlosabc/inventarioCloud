@@ -1,7 +1,7 @@
 <?php include("../templates/header.php") ?>
 <?php 
     $sentencia=$conexion->prepare("SELECT usuario_usuario, usuario_clave, empresa.* FROM usuario 
-    INNER JOIN empresa ON empresa.link = usuario.link");
+    JOIN empresa ON empresa.link = usuario.link GROUP BY empresa_id");
     $sentencia->execute();
     $empresa_creadas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
     

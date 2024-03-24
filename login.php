@@ -141,7 +141,7 @@ if ($_POST) {
           </div>
           <div class="row text-center ">
             <div class="col-12"class="" >
-              <button type="submit" class="btn btn-primary btn-block" >Entrar</button>
+              <button type="submit" class="btn btn-primary btn-block">Entrar  <i class="fa fa-paper-plane" aria-hidden="true"></i></button> 
             </div>
           </div>
         </form>  
