@@ -454,6 +454,14 @@
                 </a>
               </li>
             </li>
+            <li class="nav-item menu-open">
+              <li class="nav-item">
+                <a href="nomina.php" class="nav-link ">
+                  <i class="fa fa-list-alt nav-icon"></i>
+                  <p>NÓMINA</p>
+                </a>
+              </li>
+            </li>
           <!-- CONFIGURACIÓNES -->
           <li class="nav-item">
             <a href="#" class="nav-link">

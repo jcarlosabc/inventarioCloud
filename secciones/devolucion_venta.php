@@ -193,14 +193,14 @@ if ($_POST) {
                                         // Comparar las fechas
                                         if ($fecha_actual <= $fecha_garantia) {
                                             if ($registro['estado_devolucion']==0) {
-                                                echo '<span class="badge bg-success">Garantia Activa</span>';                                      
+                                                echo '<span class="badge bg-success style="font-size: 1.2em;">Garantia Activa</span>';                                      
                                                 echo '<td><input type="checkbox" style="height: 22px; width: 100%;" name="productos_a_devolver[]" value="' . $registro['producto_codigo'].'"></td>';
                                             }else {
-                                                echo '<span class="badge bg-info">Garantia Realizada</span>';
+                                                echo '<span class="badge bg-info style="font-size: 1.2em;">Garantia Realizada</span>';
                                                 echo '<td>♻️</td>';
                                             }
                                         } else {
-                                            echo '<span class="badge bg-danger">Garantía expirada</span>';                                     
+                                            echo '<span class="badge bg-danger style="font-size: 1.2em;">Garantía expirada</span>';                                     
                                             echo '<td>🚫</td>';
                                         }
                                     ?>
