@@ -38,6 +38,7 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
             <thead>
             <tr>
               <th>#</th>
+              <th>Fecha</th>
               <th>Producto Adquirido</th>
               <th>Motivo de la Compra</th>
               <th>Precio</th>
@@ -52,6 +53,7 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               foreach ($lista_gastos as $registro) {?>
                 <tr class="">
                   <td scope="row"><?php $count++; echo $count; ?></td>
+                  <td><?php echo $registro['gasto_fecha']; ?> // <?php echo $registro['gasto_hora']; ?></td>
                   <td><?php echo $registro['gasto_producto']; ?></td>
                   <td><?php echo $registro['gasto_motivo']; ?></td>
                   <td class="tdColor"> <?php echo '$' . number_format($registro['gasto_precio'], 0, '.', ','); ?></td>

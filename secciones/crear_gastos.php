@@ -10,6 +10,9 @@ $sentencia->execute();
 $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_POST) {
+    date_default_timezone_set('America/Bogota'); 
+    $fechaActual = date("d/m/Y");
+    $hora_actual = date("h:i:s A");
 
     $gasto_producto = isset($_POST['gasto_producto']) ? $_POST['gasto_producto'] : "";
     $gasto_motivo = isset($_POST['gasto_motivo']) ? $_POST['gasto_motivo'] : "";
@@ -24,12 +27,14 @@ if ($_POST) {
      if ($responsable == 1) {
          $link = $usuario_empresa_gastos;
      }
-    $sql = "INSERT INTO gastos (gasto_producto, gasto_motivo, gasto_precio, link, responsable) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO gastos (gasto_producto, gasto_motivo, gasto_precio, gasto_fecha, gasto_hora, link, responsable) VALUES (?, ?, ?, ?, ?, ?, ?)";
             $sentencia = $conexion->prepare($sql);
             $params = array(
             $gasto_producto, 
             $gasto_motivo, 
             $gasto_precio,
+            $fechaActual,
+            $hora_actual,
             $link,
             $responsable 
             );
