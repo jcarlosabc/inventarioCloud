@@ -470,6 +470,22 @@
                 </li>
               </li>
         
+            <li class="nav-item menu-open">
+              <li class="nav-item">
+                <a href="bodega.php" class="nav-link ">
+                  <i class="fa fa-archive nav-icon"></i>
+                  <p>BODEGA</p>
+                </a>
+              </li>
+            </li>
+            <li class="nav-item menu-open">
+              <li class="nav-item">
+                <a href="nomina.php" class="nav-link ">
+                  <i class="fa fa-list-alt nav-icon"></i>
+                  <p>NÓMINA</p>
+                </a>
+              </li>
+            </li>
           <!-- CONFIGURACIÓNES -->
           <!-- Permisos => sudo admin | -->
             <li class="nav-item">
