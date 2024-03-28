@@ -36,13 +36,21 @@ if(isset($_GET['txtID'])){
     JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo
     JOIN producto ON venta_detalle.producto_id = producto.producto_id
     WHERE venta_detalle.venta_codigo = :venta_codigo");
+    // PRINCIPAL PARA EL SELECT 
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto.*, producto.producto_codigo
+    FROM venta 
+    JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo
+    JOIN producto ON venta_detalle.producto_id = producto.producto_id
+    WHERE venta_detalle.venta_codigo = :venta_codigo");
 
     $sentencia_venta->bindParam(":venta_codigo",$venta_codigo);
     $sentencia_venta->execute();
     $sentencia_venta = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
+    $sentencia_venta = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
     $detalle_venta = $sentencia_venta;
 
 }
+
 
 if ($_POST) {
     if(isset($_GET['link'])){
@@ -126,6 +134,7 @@ if ($_POST) {
                 });
                 </script>';
             }
+    }
     }
 ?>
 
