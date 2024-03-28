@@ -352,8 +352,8 @@ if(isset($_POST['productos_vendidos'])) {
                             <div class="card-header">
                                 <h3 class="card-title textTabla">PRODUCTOS A COMPRAR</h3>
                             </div>
-                            <div class="card-body">
-                                <table class="table table-bordered table-striped" style="text-align:center">
+                            <div class="card-body" style="overflow-x: auto;">
+                                <table class="table table-bordered table-striped" style="text-align:center; max-width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Código</th>
@@ -407,9 +407,10 @@ if(isset($_POST['productos_vendidos'])) {
                                             <label class="textLabel">Métodos de Pago</label> 
                                             <div class="form-group">
                                                 <select class="form-control camposTabla" id="metodoPago" name="metodo_pago" onchange="mostrarOcultarPartes()">                                    
-                                                    <option value="0" style="color:green">Efectivo</option> 
-                                                    <option value="1" style="color:blue">Transferencia</option> 
-                                                    <option value="2" style="color:#fb7e35">A Crédito</option> 
+                                                    <option value="0" style="color:#22c600">Efectivo</option> 
+                                                    <option value="1" style="color:#009fc1">Transferencia</option> 
+                                                    <option value="2" style="color:#f4a700">A Crédito</option>
+                                                    <option value="3" style="color:#d50000">Por Datafono</option>  
                                                 </select>
                                             </div>
                                         </div>
