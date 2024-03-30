@@ -5,7 +5,7 @@ if(isset($_GET['txtID'])){
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
   $link=(isset($_GET['link']))?$_GET['link']:"";
   
-  if($_SESSION['rolEmpleado']){
+  if($_SESSION['rolSudoAdmin']){
     $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
     FROM venta 
     INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
@@ -37,8 +37,10 @@ if(isset($_GET['txtID'])){
     $venta_metodo_pago = "Efectivo";
   }else if($venta_metodo_pago == 1){
     $venta_metodo_pago = "Transferencia";
-  }else{
+  }else if(2){
     $venta_metodo_pago = "Credito";
+  }else {
+    $venta_metodo_pago = "Datafono";
   }
 
   $caja_id=$registro["caja_id"];  
@@ -59,7 +61,7 @@ if(isset($_GET['txtID'])){
   $empresa_nit=$registro_empresa["empresa_nit"];  
  
   // Mostrar lista comprados
-  if($_SESSION['rolEmpleado']){
+  if($_SESSION['rolSudoAdmin']){
     $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 

@@ -43,7 +43,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>#</th>
               <th>Código</th>
               <th>Nombre</th>
-              <?php if ($_SESSION['rolEmpleado']) { ?> <th>Precio de compra</th> <?php } ?>
+              <?php if ($_SESSION['rolSudoAdmin']) { ?> <th>Precio de compra</th> <?php } ?>
               <th>Precio de Venta</th>
               <th>Marca</th>
               <th>Modelo</th>                                    
@@ -61,7 +61,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td scope="row"><?php $count++; echo $count; ?></td>
                   <td><?php echo $registro['producto_codigo']; ?></td>
                   <td><?php echo $registro['producto_nombre']; ?></td>
-                  <?php if ($_SESSION['rolEmpleado']) { ?>
+                  <?php if ($_SESSION['rolSudoAdmin']) { ?>
                     <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
                   <?php } ?>
                   <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>                
@@ -76,7 +76,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Añadir Stock">
                       <i class="fa fa-plus-circle"></i> Añadir Stock
                     </a>
-                    <?php if ($_SESSION['rolEmpleado']) { ?>
+                    <?php if ($_SESSION['rolSudoAdmin']) { ?>
                       <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_producto_link . '?' . http_build_query(['data-value' => $registro['link']]); ?><?php echo '&txtID=' . $registro['producto_id']; ?>" role="button" title="Editar">
                       <i class="fas fa-edit"></i>Editar
                     <?php } else { ?>
@@ -84,7 +84,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                        <i class="fas fa-edit"></i>Editar
                    </a>
                    <?php } ?>
-                    <?php if ($_SESSION['rolEmpleado']) { ?>
+                    <?php if ($_SESSION['rolSudoAdmin']) { ?>
                     <a class="btn btn-danger" href="index_productos.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar">
                       <i class="far fa-trash-alt"></i>Eliminar 
                     </a>

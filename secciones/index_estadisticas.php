@@ -18,7 +18,7 @@ if ($_SESSION['valSudoAdmin']) {
   $index_pendientes_link = "index_pendientes.php?link=".$link;
 }
 
-$usuario_sesion = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
+$usuario_sesion = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;  
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
 
 //Total de Clientes Registrados
@@ -52,16 +52,32 @@ $sentencia_ventas->bindParam(":fechaActual", $fechaActual);
 $sentencia_ventas->execute();
 $contardor_ventas =$sentencia_ventas->fetchAll(PDO::FETCH_ASSOC); 
 
-
 // consulta para el dinero de la caja que inicio session 
 if ($usuario_sesion == 1) {
-  $sentencia_dinero=$conexion->prepare("SELECT * FROM usuario INNER JOIN caja ON usuario.caja_id = caja.caja_id 
-  WHERE usuario.usuario_id = :usuario_id;");
-  $sentencia_dinero->bindParam(":usuario_id", $usuario_sesion);
-}else {
+
+  $sentencia_dinero=$conexion->prepare("SELECT * FROM caja;");
+
+} else if($_SESSION['roladminlocal']) {
+
   $sentencia_dinero=$conexion->prepare("SELECT * FROM caja WHERE link = :link;");
   $sentencia_dinero->bindParam(":link", $linkeo);
+  $sentencia_dinero->execute();
+  $total_dinero_caja =$sentencia_dinero->fetchAll(PDO::FETCH_ASSOC);
+  $dinero_efectivo = 0;
+  if ($total_dinero_caja) {
+    foreach ($total_dinero_caja as $item) {
+      $dinero_efectivo += $item['caja_efectivo'];
+    }
+  }
+
+} else if($_SESSION['rolUserEmpleado']) {
+
+  $sentencia_dinero=$conexion->prepare("SELECT c.* FROM caja c JOIN usuario u ON c.caja_id = u.caja_id WHERE c.link = :link AND u.usuario_id =:id;");
+  $sentencia_dinero->bindParam(":link", $linkeo);
+  $sentencia_dinero->bindParam(":id", $usuario_sesion);
+
 }
+ 
 $sentencia_dinero->execute();
 $total_dinero_caja =$sentencia_dinero->fetchAll(PDO::FETCH_ASSOC);
 
@@ -132,23 +148,25 @@ if ($_POST) {
         <br>
         <div class="row">
           <!-- Cantidad de productos -->
-          <div class="col-lg-3 col-6">
-            <div class="small-box bg-info">
-              <div class="inner">
-                <h3><?php echo (isset( $contardor_producto[0]['total_stock']))?$contardor_producto[0]['total_stock']: 0;?></h3>
-                <p>Productos</p>
+          <?php if (!$_SESSION['rolUserEmpleado']) { ?>
+            <div class="col-lg-3 col-6">
+              <div class="small-box bg-info">
+                <div class="inner">
+                  <h3><?php echo (isset( $contardor_producto[0]['total_stock']))?$contardor_producto[0]['total_stock']: 0;?></h3>
+                  <p>Productos</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-bag"></i>
+                </div>
+                <a href="<?php echo $url_base;?>secciones/<?php echo $lista_productos_link;?>" class="small-box-footer">Ver Productos<i class="fas fa-arrow-circle-right"></i></a>
               </div>
-              <div class="icon">
-                <i class="ion ion-bag"></i>
-              </div>
-              <a href="<?php echo $url_base;?>secciones/<?php echo $lista_productos_link;?>" class="small-box-footer">Ver Productos<i class="fas fa-arrow-circle-right"></i></a>
             </div>
-          </div>
+          <?php } ?>
           <!-- Clientes registrados -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
               <div class="inner" style="color: white !important">
-                <h3 ><?php echo  (isset($contardor_usuario[0]['total_clientes']))?$contardor_usuario[0]['total_clientes']: 0 ;?></h3>
+                <h3 ><?php echo (isset($contardor_usuario[0]['total_clientes']))?$contardor_usuario[0]['total_clientes']: 0 ;?></h3>
                 <p>Clientes Registrados</p>
               </div>
               <div class="icon">
@@ -189,8 +207,10 @@ if ($_POST) {
           <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
               <div class="inner">
-              <h3><?php echo  (isset($total_dinero_caja[0]['caja_efectivo']))?'$' . number_format($total_dinero_caja[0]['caja_efectivo'], 0, '.', ','): "Nah" ;?></h3>
-                <p>Dinero en caja</p>
+              <h3>
+                <?php if($_SESSION['roladminlocal']) { echo '$' . number_format($dinero_efectivo, 0, '.', ','); } else { echo '$' . number_format($total_dinero_caja[0]['caja_efectivo'], 0, '.', ',') ;}?>
+              </h3>
+              <?php if($_SESSION['rolUserEmpleado']) { ?> <p>Efectivo en la caja</p> <?php } else { echo "Total Efectivo en las cajas"; } ?>
               </div>
               <div class="icon">
                 <i class="ion ion-stats-bars"></i>

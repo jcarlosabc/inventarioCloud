@@ -59,19 +59,17 @@ if ($_POST) {
         $_SESSION['rol']=$lista_usuario["rol"];
 
       if ($_SESSION['rol'] == 0) {
-
-        $_SESSION['rolEmpleado']=true;
+        $_SESSION['rolSudoAdmin']=true;
         $_SESSION['roladminlocal']= false;
-
+        $_SESSION['rolUserEmpleado']= false;
       }else if($_SESSION['rol'] == 1) {
-        $_SESSION['rolEmpleado']=false;
+        $_SESSION['rolSudoAdmin']=false;
         $_SESSION['roladminlocal']= true;
-
+        $_SESSION['rolUserEmpleado']= false;
       }else {
-
-        $_SESSION['rolEmpleado']=false;
+        $_SESSION['rolSudoAdmin']=false;
         $_SESSION['roladminlocal']= false;
-
+        $_SESSION['rolUserEmpleado']= true;
       }
         $_SESSION['caja_id']=$lista_usuario["caja_id"];
         $_SESSION['logueado']=true;

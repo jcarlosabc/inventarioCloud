@@ -344,13 +344,13 @@
 
     // Función formato dinero 
     // campos agregados: cajas, caja_edit, producto_precio_compra, producto_precio_venta, producto_precio_compra_edit,
-    // gasto_precio
+    // gasto_precio, montoDevolucion
   $(document).ready(function() {
       function formatDineroSinDecimales(valor) {
           return "$" + parseFloat(valor).toFixed(0).replace(/\d(?=(\d{3})+$)/g, "$&,");
       }
       $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta, " + 
-        "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio").on("input", function() {
+        "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion").on("input", function() {
           var valor = $(this).val().replace(/[^0-9]/g, '');
           $(this).val(formatDineroSinDecimales(valor));
       });
@@ -358,7 +358,7 @@
       // Evento al enviar el formulario
       $("form").submit(function() {
           var valor = $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta," +
-          "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio").val().replace(/[^0-9]/g, ''); 
+          "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion").val().replace(/[^0-9]/g, ''); 
           $("#cajaEfectivo").val(valor);
       });
   });
@@ -483,6 +483,25 @@ document.addEventListener('DOMContentLoaded', function() {
   function cerrarSesion() {
         document.getElementById('cerrarSesion').click();
     }
+
+  // Alternar entre los metodos de devolucion 
+  document.addEventListener("DOMContentLoaded", function() {
+      var cambiarMetodoBtn = document.getElementById('cambiar_metodo_btn');
+      var camposAOcultar = document.querySelector('.campos_a_ocultar');
+      var camposAdicionales = document.querySelector('.campos_adicionales');
+
+      cambiarMetodoBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (camposAOcultar.style.display === 'none') {
+              camposAOcultar.style.display = 'block';
+              camposAdicionales.style.display = 'none';
+          } else {
+              camposAOcultar.style.display = 'none';
+              camposAdicionales.style.display = 'block';
+          }
+      });
+  });
+
 </script>
 </body>
 </html>

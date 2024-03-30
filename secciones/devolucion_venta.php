@@ -30,49 +30,65 @@ if(isset($_GET['txtID'])){
     $cliente_nombre=$registro["cliente_nombre"];  
     $cliente_apellido=$registro["cliente_apellido"];  
 
-    // PRINCIPAL
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto.*, producto.producto_codigo, devolucion.devolucion_serial, devolucion.devolucion_motivo
-    FROM venta
-    INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo
-    INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
-    LEFT JOIN devolucion ON devolucion.venta_codigo = venta_detalle.venta_codigo AND devolucion.producto_id = producto.producto_id
-    WHERE venta_detalle.venta_codigo = :venta_codigo 
-    GROUP BY producto.producto_id;");
+    // PRINCIPAL PARA EL SELECT 
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto.*, producto.producto_codigo
+    FROM venta 
+    JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo
+    JOIN producto ON venta_detalle.producto_id = producto.producto_id
+    WHERE venta_detalle.venta_codigo = :venta_codigo");
 
     $sentencia_venta->bindParam(":venta_codigo",$venta_codigo);
     $sentencia_venta->execute();
+    $sentencia_venta = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
     $detalle_venta = $sentencia_venta;
+
 }
+
 if ($_POST) {
-    $devolucion_motivos = isset($_POST['devolucion_motivo']) ? $_POST['devolucion_motivo'] : array();
-    $devolucion_seriales = isset($_POST['devolucion_serial']) ? $_POST['devolucion_serial'] : array();
-    $productos_a_devolver = isset($_POST['productos_a_devolver']) ? $_POST['productos_a_devolver'] : array();
-    $producto_ids = isset($_POST['producto_id']) ? $_POST['producto_id'] : array();
+    if(isset($_GET['link'])){
+        $link=(isset($_GET['link']))?$_GET['link']:"";
+     }
     $venta_codigo = isset($_POST['venta_codigo']) ? $_POST['venta_codigo'] : "";
-    
+    $valor_seleccionado = $_POST['producto_id'];
+    // Separar los dos valores
+    $partes = explode('-', $valor_seleccionado);
+    $producto_id = $partes[0];
+    error_reporting(E_ERROR | E_PARSE) ;$producto_codigo = $partes[1];
+
+    $devolucion_motivo = isset($_POST['devolucion_motivo']) ? $_POST['devolucion_motivo'] : "";
+    $devolucion_serial = isset($_POST['devolucion_serial']) ? $_POST['devolucion_serial'] : "";
     $responsable = $_SESSION['usuario_id'];
     
-    // Iterar sobre los productos seleccionados
-    foreach ($productos_a_devolver as $producto_codigo) {
-        // Obtener los datos correspondientes al producto
-        $index = array_search($producto_codigo, $_POST['producto_codigo']);
-        $devolucion_motivo = $devolucion_motivos[$index];
-        $devolucion_serial = $devolucion_seriales[$index];
-        $producto_id = $producto_ids[$index];
-    
-        if (!$devolucion_motivo || !$devolucion_serial) {
-            echo '<script>
-                Swal.fire({
-                    title: "Opps los campos no se pueden ir vacíos, o has seleccionado la casilla incorrecta ",
-                    icon: "error",
-                    confirmButtonText: "¡Entendido!"
-                });
-            </script>';
-        } else {
+    $monto_devolucion = isset($_POST['monto_devolucion']) ? $_POST['monto_devolucion'] : "";
+    $monto_devolucion = str_replace(array('$','.',','), '', $monto_devolucion); 
+    if ($monto_devolucion) {
+        $devolucion_motivo = isset($_POST['devolucion_observaciones']) ? $_POST['devolucion_observaciones'] : "";
+        $valor_seleccionado = $_POST['producto_id_dinero'];
+        // Separar los dos valores
+        $partes = explode('-', $valor_seleccionado);
+        $producto_id = $partes[0];
+        $producto_codigo = $partes[1];
+
+        $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link ORDER BY id DESC");
+        $sentencia->bindParam(":link", $link);
+        $sentencia->execute();
+        $lista_ultimo_update=$sentencia->fetch(PDO::FETCH_LAZY);
+        $id_dinero = $lista_ultimo_update['id'];
+        $dinero = $lista_ultimo_update['dinero'];
+        $dinero = $dinero - $monto_devolucion;
+
+        $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id = ?";
+        $sentencia = $conexion->prepare($sql);
+        $params = array(
+            $dinero,
+            $id_dinero
+        );
+        $sentencia->execute($params);
+    }
     
             // Insertar los datos de la devolución en la base de datos para este producto
             $sql = "INSERT INTO devolucion (venta_codigo, producto_id, producto_codigo, devolucion_fecha, 
-                devolucion_motivo, devolucion_serial, devolucion_hora, responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                devolucion_motivo, devolucion_serial, devolucion_hora, monto_devolucion, link, responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $sentencia = $conexion->prepare($sql);
             $params = array(
                 $venta_codigo,
@@ -82,16 +98,11 @@ if ($_POST) {
                 $devolucion_motivo,
                 $devolucion_serial,
                 $horaActual,
+                $monto_devolucion,
+                $link,
                 $responsable
             );
             $resultado = $sentencia->execute($params);
-            // UPDATE DE ESTADO
-            $estado_devolucion = $conexion->prepare("UPDATE venta_detalle 
-            SET estado_devolucion = '1'
-            WHERE venta_codigo = :venta_codigo AND producto_id = :producto_id");
-            $estado_devolucion->bindParam(":venta_codigo", $venta_codigo);
-            $estado_devolucion->bindParam(":producto_id", $producto_id);
-            $resultado = $estado_devolucion->execute();
     
             if ($resultado) {
                 echo '<script>
@@ -102,7 +113,7 @@ if ($_POST) {
                     confirmButtonText: "¡Entendido!"
                 }).then((result) => {
                     if(result.isConfirmed){
-                        window.location.href = "'.$url_base.'secciones/'.$ventas_link_historia_venta.'";
+                        window.location.href = "'.$url_base.'secciones/'.$index_devoluciones_link.'";
                     }
                 })
                 </script>';
@@ -115,31 +126,30 @@ if ($_POST) {
                 });
                 </script>';
             }
-        }
     }
-    
-    }
-
-
-
 ?>
 
 <br>
-<!-- Main content -->
-<div class="invoice p-3 mb-3">
-    <!-- title row -->
-    <form method="post" enctype="multipart/form-data">
+<div class="invoice p-4 mb-3">
+    <form method="post">
+        <input type="hidden" name="venta_codigo" value="<?php echo $venta_codigo ?>">
         <div class="row">
             <div class="col-12">
                 <h4>
-                    <i class="fa fa-shopping-basket"></i> Detalles de la Venta
+                    <i class="fas fa-retweet"></i> DEVOLUCIONES
                     <small class="float-right"><?php echo $venta_fecha;?></small>
                 </h4>
             </div>
-            <!-- /.col -->
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h4 class="text-info">
+                <a href="#" id="cambiar_metodo_btn"><small class="float-right btn btn badge bg-info">CAMBIAR MÉTODO</small></a>
+                </h4>
+            </div>
         </div>
         <!-- info row -->
-        <div class="row invoice-info">
+        <div class="row invoice-info" style="font-size: 18px;margin-top: -32px;">
             <div class="col-sm-4 invoice-col">
                 <br>                
                 <address>
@@ -158,115 +168,90 @@ if ($_POST) {
                 </address>
             </div>               
         </div>
-        <!-- /.row -->
-
-        <!-- Table row -->
+        <br>
+        <br>
+        <br>
+        <div class="campos_a_ocultar">
+        <span class="badge bg-info" style="font-size: 16px;">Devolución de Articulo</span>
+        <br><br>
         <div class="row">
-            <div class="col-12 table-responsive">
-                <table class="table table-striped" style="text-align: center;">
-                    <thead>
-                        <tr>
-                          <th>Qty</th>
-                          <th>PRODUCTO</th>
-                          <th>CANTIDAD</th>
-                          <th>GARANTIA</th>
-                          <th>ESTADO</th>
-                          <th>SELECCIONAR</th>
-                          <th>MOTIVO</th>
-                          <th>SERIAL</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($detalle_venta as $registro) { 
-                            $fecha_actual_str = date('d/m/Y');
-                            $fecha_actual = DateTime::createFromFormat('d/m/Y', $fecha_actual_str);
-                            $fecha_garantia_str = $registro['producto_fecha_garantia'];
-                            $fecha_garantia = DateTime::createFromFormat('d/m/Y', $fecha_garantia_str);
-                            ?>
-                            <tr>
-                                <td scope="row"><?php echo $registro['venta_id']; ?></td>
-                                <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
-                                <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
-                                <td><?php echo $registro['producto_fecha_garantia']; ?></td>
-                                <td>
-                                    <?php
-                                        // Comparar las fechas
-                                        if ($fecha_actual <= $fecha_garantia) {
-                                            if ($registro['estado_devolucion']==0) {
-                                                echo '<span class="badge bg-success">Garantia Activa</span>';                                      
-                                                echo '<td><input type="checkbox" style="height: 22px; width: 100%;" name="productos_a_devolver[]" value="' . $registro['producto_codigo'].'"></td>';
-                                            }else {
-                                                echo '<span class="badge bg-info">Garantia Realizada</span>';
-                                                echo '<td>♻️</td>';
-                                            }
-                                        } else {
-                                            echo '<span class="badge bg-danger">Garantía expirada</span>';                                     
-                                            echo '<td>🚫</td>';
-                                        }
-                                    ?>
-                                </td>
-                                <?php
-                                    if ($fecha_actual <= $fecha_garantia) {
-                                        if ($registro['estado_devolucion']==0) {
-                                            echo '<td><textarea name="devolucion_motivo[]"  rows="2" ></textarea></td>';
-                                            echo '<td><input type="number" placeholder=""  name="devolucion_serial[]"></td>';
-                                        }else{
-                                             echo ' <td>'. $registro['devolucion_motivo']. '</td>';;
-                                             echo ' <td>'. $registro['devolucion_serial']. '</td>';
-                                         }
-                                    }
-                                ?>
-                                <input type="hidden" name="venta_codigo" value="<?php echo $registro['venta_codigo']; ?>"> 
-                                <input type="hidden" name="producto_id[]" value="<?php echo $registro['producto_id']; ?>">  
-                                <input type="hidden" name="producto_codigo[]" value="<?php echo $registro['producto_codigo']; ?>">                                
-                            </tr>  
+            <div class="col-4">
+                <div class="form-group">
+                    <label class="textLabel">Escoger Producto a Devolver</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                    <div class="form-group camposTabla">
+                    <select class="form-control select2 camposTabla" style="width: 100%;" name="producto_id">                                    
+                        <option value="">Escoger Producto</option> 
+                        <?php foreach ($detalle_venta as $registro) { ?>
+                            <option value="<?php echo $registro['producto_id'] . '-' . $registro['producto_codigo']?>"><?php echo "Prod: (" . $registro['venta_detalle_descripcion'] . ") Cant: (" . $registro['venta_detalle_cantidad'] . ") Precio x Unid: (" . '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',') . ")" ?></option> 
                         <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.col -->
-        </div>
-        <div class="row">
-            <div class="col-6">
-                <p class="lead">Amount Due 2/22/2014</p>
-                <div class="table-responsive">
-                    <table class="table">
-                        <tr>
-                            <th style="width:50%">Total:</th>
-                            <td></strong><?php echo '$' . number_format($venta_total, 0, '.', ','); ?></td>
-                        </tr>
-                        <tr>
-                            <th>Pagado:</th>
-                            <td></strong><?php echo '$' . number_format($venta_pagado, 0, '.', ','); ?></td>
-                        </tr>                      
-                        <tr>
-                            <th>Devuelto:</th>
-                            <td></strong><?php echo '$' . number_format($venta_cambio, 0, '.', ','); ?></td>
-                        </tr>
-                    </table>
+                    </select>
+                    </div>
                 </div>
             </div>
-            <!-- /.col --> 
         </div>
-        <!-- /.row -->
-        <!-- this row will not appear when printing -->
+       <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label class="textLabel">Motivo</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                    <textarea class="form-control camposTabla" required name="devolucion_motivo" style="height: 48px;" cols="15" rows="2">n/a</textarea>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label class="textLabel">Serial/Referencia</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                    <div class="form-group camposTabla">
+                        <input type="text" class="form-control camposTabla" value="n/a" style="width: 83%;" required name="devolucion_serial">
+                    </div>
+                </div>
+            </div>
+       </div>
+        </div> 
+
+        <!-- Contenedor para los nuevos campos que aparecerán -->
+         <div class="campos_adicionales" style="display: none;">
+        <span class="badge bg-success" style="font-size: 16px">Devolución de Dinero</span>
+        <br><br>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label class="textLabel">Escoger Producto a Devolver</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                        <div class="form-group camposTabla">
+                        <select class="form-control select2 camposTabla" style="width: 100%;" name="producto_id_dinero">                                    
+                            <option value="">Escoger Producto</option> 
+                            <?php foreach ($detalle_venta as $registro) { ?>
+                                <option value="<?php echo $registro['producto_id'] . '-' . $registro['producto_codigo']?>"><?php echo "Prod: (" . $registro['venta_detalle_descripcion'] . ") Cant: (" . $registro['venta_detalle_cantidad'] . ") Precio x Unid: (" . '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',') . ")" ?></option> 
+                            <?php } ?>
+                        </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label class="textLabel">Monto</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                        <input type="text" class="form-control camposTabla_dinero" value="0" required name="monto_devolucion" id="montoDevolucion">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-7">
+                    <div class="form-group">
+                        <label class="textLabel">Observaciones</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                        <textarea class="form-control" required name="devolucion_observaciones" rows="2">n/a</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row no-print">
             <div class="col-12">
-                
                 <button type="submit" class="btn btn-primary float-right" style="margin-right: 5px;">
                     <i class="fa fa-retweet"></i> Guardar Devolución
                 </button>
             </div>
-        </div>
+        </div> 
     </form>
-</div>
-<!-- /.invoice -->
-</div><!-- /.col -->
-</div><!-- /.row -->
-</div><!-- /.container-fluid -->
-</section>
-<!-- /.content -->
-
-
-
+<style>
+    span.select2-selection.select2-selection--single{
+        height: 38px;
+    }
+</style>
 <?php include("../templates/footer.php") ?>

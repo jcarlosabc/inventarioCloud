@@ -42,7 +42,7 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Motivo de la Compra</th>
               <th>Precio</th>
               <th>Negocio</th>
-              <?php if ($_SESSION['rolEmpleado']) { ?>
+              <?php if ($_SESSION['rolSudoAdmin']) { ?>
               <th>Opciones</th>
               <?php } ?>
             </tr>
@@ -56,7 +56,7 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['gasto_motivo']; ?></td>
                   <td class="tdColor"> <?php echo '$' . number_format($registro['gasto_precio'], 0, '.', ','); ?></td>
                   <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td> 
-                  <?php if ($_SESSION['rolEmpleado']) { ?>
+                  <?php if ($_SESSION['rolSudoAdmin']) { ?>
                   <td>
                     <a class="btn btn-danger"href="index_gastos.php?txtID=<?php echo $registro['gasto_id']; ?>" role="button" title="Eliminar">
                         <i class="fas fa-trash-alt"></i> Eliminar

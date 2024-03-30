@@ -138,12 +138,136 @@ if(isset($_POST['productos_vendidos'])) {
             $user_id,
             $estado_ventas
     );
-    $sentencia->execute($params);  
-
+    $sentencia->execute($params);
     // Obtener el ID de la última fila afectada
    $ultimo_id_insertado = $conexion->lastInsertId();
-   print_r("ultimo id =>>>> ".$ultimo_id_insertado);
 
+    //  GUARDAR SUMA DE DINERO PARA NÓMINA
+    date_default_timezone_set('America/Bogota'); 
+    $fechaDia = date("d");
+    $fechaMes = date("m");
+    $fechaYear = date("Y");
+    // $fechaDia = 13;
+    // $fechaMes = 04;
+    // $fechaYear = date("Y");
+
+    $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link");
+    $sentencia->bindParam(":link", $linkeo_venta);
+    $sentencia->execute();
+    $lista_dinero=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+    $valNuevoMes = false ;
+    if ($lista_dinero) {
+        foreach ($lista_dinero as $fila) {
+            if ($fechaDia <= 15 && $fila['mes'] == $fechaMes) {
+                if ($fila['dia'] <= 15 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear) {
+                    // echo "=============";                    
+                    // echo "<br>";                    
+                    // echo "...Haciendo Update de la primera quincena...";
+                    // echo "<br>";                    
+                    // echo "=============";                    
+
+                    $sql = "UPDATE dinero_por_quincena SET dinero = ?, dia = ?, mes = ?, anio = ? WHERE id = ?";
+                    $sentencia = $conexion->prepare($sql);
+                    $params = array(
+                        $fila['dinero'] += $total_dinero,
+                        $fechaDia,
+                        $fechaMes,
+                        $fechaYear,
+                        $fila['id']
+                    );
+                    $sentencia->execute($params);
+                }
+            }else {
+                $valNuevoMes =true;
+            }
+        }
+        if ($valNuevoMes == true) {
+            if($fechaDia <= 15 && $fila['mes'] != $fechaMes) {
+                // echo "==========";
+                // echo "<br>";
+                // echo "...Nueva venta de un Nuevo mes...";
+                // echo "<br>";
+                // echo "==========";
+                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio) 
+                VALUES (?, ?, ?, ?, ?)";
+                $sentencia = $conexion->prepare($sql);
+                $params = array(
+                    $total_dinero,
+                    $linkeo_venta,
+                    $fechaDia,
+                    $fechaMes,
+                    $fechaYear
+                );
+                $sentencia->execute($params);  
+            }
+        }
+            $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link ORDER BY id DESC");
+            $sentencia->bindParam(":link", $linkeo_venta);
+            $sentencia->execute();
+            $lista_ultimo_update=$sentencia->fetch(PDO::FETCH_LAZY);
+            $id = $lista_ultimo_update['id'];
+            $dia_buscado = $lista_ultimo_update['dia'];
+            $mes_buscado = $lista_ultimo_update['mes'];
+            $anio_buscado = $lista_ultimo_update['anio'];
+
+            if ($dia_buscado != 16 && $dia_buscado == 15 && $fechaMes == $mes_buscado && $fila['anio'] == $fechaYear) {
+                if($fechaDia >= 16 && $fechaMes == $mes_buscado && $fila['anio'] == $fechaYear) {
+                    // echo "...entrando a la validacion de al segunda quincena";
+                    // echo "<br>";
+                 
+                    $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio) 
+                    VALUES (?, ?, ?, ?, ?)";
+                    $sentencia = $conexion->prepare($sql);
+                    $params = array(
+                        $total_dinero,
+                        $linkeo_venta,
+                        $fechaDia,
+                        $fechaMes,
+                        $fechaYear
+                    );
+                    $sentencia->execute($params);  
+                    // echo "..Guardando la segunda quincena...";
+                    // echo "<br>";
+                }
+            }else if($dia_buscado >= 16){
+                // echo "============";
+                // echo "<br>";
+                // echo "...Update a la segunda quincena";
+                // echo "<br>";
+                // echo "============";
+                $sql = "UPDATE dinero_por_quincena SET dinero = ?, dia = ?, mes = ?, anio = ? WHERE id = ?";
+                $sentencia = $conexion->prepare($sql);
+                $params = array(
+                    $fila['dinero'] += $total_dinero,
+                    $fechaDia,
+                    $fechaMes,
+                    $fechaYear,
+                    $id
+                );
+                $sentencia->execute($params);
+            }
+
+      
+    } else {
+        // echo "==========";
+        // echo "<br>";
+        // echo "...Por primera vez haciendo una venta...";
+        // echo "<br>";
+        // echo "==========";
+        $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio) 
+        VALUES (?, ?, ?, ?, ?)";
+        $sentencia = $conexion->prepare($sql);
+        $params = array(
+            $total_dinero,
+            $linkeo_venta,
+            $fechaDia,
+            $fechaMes,
+            $fechaYear
+        );
+        $sentencia->execute($params);  
+    }
+
+    // ================================
     foreach ($cantidades as $id => $cantidad) {
         $total = $totales[$id] ?? 0;
 
@@ -226,13 +350,10 @@ if(isset($_POST['productos_vendidos'])) {
                 $user_id
             );
            $sentencia->execute($params);
-
-
     }
    
     // Validando que todo el proceso fue exitoso
     $venta_realizada = true;
-  
 
     // Redireccionar a la vista de detalle de ventas para generar factura
     if ($venta_realizada) {

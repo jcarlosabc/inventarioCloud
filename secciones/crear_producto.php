@@ -127,7 +127,6 @@ if ($user_id == 1) {
 <script>
 </script>
         <br>
-        <!-- general form elements -->
         <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero crear <strong>categoría</strong> y registrar <strong>proveedor</strong> del producto a crear. </article>
         <br>
         <div class="row no-gutters">

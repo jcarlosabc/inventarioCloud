@@ -9,23 +9,17 @@
 if ($_POST) {
     $usuario_nombre = isset($_POST['usuario_nombre']) ? $_POST['usuario_nombre'] : "";
     $usuario_apellido = isset($_POST['usuario_apellido']) ? $_POST['usuario_apellido'] : "";
+    $username = "u" . $usuario_apellido;
     $usuario_telefono = isset($_POST['usuario_telefono']) ? $_POST['usuario_telefono'] : "";
     $usuario_email = isset($_POST['usuario_email']) ? $_POST['usuario_email'] : "";
     $usuario_clave =  hash('sha256', (isset($_POST['usuario_clave_1']) ? $_POST['usuario_clave_1'] : ""));
-
+    $responsable = isset($_POST['responsable']) ? $_POST['responsable']  : $responsable ;
     $usuario_rol = 2;
     $usuario_empresa = isset($_POST['usuario_empresa']) ? $_POST['usuario_empresa'] : "";
-    if (!$usuario_empresa) {
-        $usuario_empresa = $link;
-    }
-    $usuario_caja = isset($_POST['usuario_caja']) ? $_POST['usuario_caja'] : 0;
-
-    $username = "u" . $usuario_apellido;
-    $responsable = isset($_POST['responsable']) ? $_POST['responsable']  : $responsable ;
+    if (!$usuario_empresa) { $usuario_empresa = $link;  }
     $link =  isset($_POST['link']) ? $_POST['link'] : "";
-     if ($responsable == 1) {
-         $link = $usuario_empresa;
-     }
+     if ($responsable == 1) {$link = $usuario_empresa; }
+    $usuario_caja = isset($_POST['usuario_caja']) ? $_POST['usuario_caja'] : 0;
 
     $sentencia_caja = $conexion->prepare("SELECT * FROM caja WHERE link=:link AND caja_id =:caja_id");
     $sentencia_caja->bindParam(":link", $usuario_empresa);
@@ -99,6 +93,10 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <br>
+    <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero debe crear <strong>Cajas</strong> para asignar a un <strong>Empleado</strong>. 
+        <span><a href="<?php echo $url_base;?>secciones/<?php echo $crear_caja_link;?>"><button type="button" class="btn btn-outline-primary">Crear Caja</button></a></span>
+    </article>
+    <article> <strong class="text-info"><i class="fa fa-info-circle"></i> Nota: </strong>La misma <strong> Caja</strong> puede ser <strong>Asignada </strong>a varios empleados.</article>
     <div class="card card-primary" style="margin-top:7%">
         <div class="card-header" >
             <h2 class="card-title textTabla">REGISTRE NUEVO EMPLEADO &nbsp; <a href="<?php echo $url_base;?>secciones/<?php echo $index_empleados_link;?>" class="btn btn-warning" style="color:black"> Lista de Empleados </a>
@@ -167,13 +165,16 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                         <div class="form-group">
                             <label class="textLabel">Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <div class="form-group">
-                                <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja"
-                                    <?php echo empty($lista_cajas) ? 'disabled' : ''; ?>>
-                                    <option value="">Escoger Caja</option>
-                                    <?php foreach ($lista_cajas as $registro) { ?>
-                                        <option value="<?php echo $registro['caja_id']; ?>"><?php echo $registro['caja_nombre']; ?> - <?php echo $registro['empresa_nombre']; ?></option>
-                                    <?php } ?>
-                                </select>
+                                <?php if($lista_cajas){ ?> 
+                                    <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja">
+                                        <option value="">Escoger Caja</option>
+                                        <?php foreach ($lista_cajas as $registro) { ?>
+                                            <option value="<?php echo $registro['caja_id']; ?>"><?php echo $registro['caja_nombre']; ?> - <?php echo $registro['empresa_nombre']; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                        <?php } else { ?>
+                                           <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Debe tener minimo una caja para asignar al <strong>Empleado</strong></article>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>

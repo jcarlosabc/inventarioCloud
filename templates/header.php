@@ -53,6 +53,8 @@
     //GASTOS 
       $crear_gasto_link = 'crear_gastos.php';
       $index_gastos_link = 'index_gastos.php';
+    //DEVOLUCIONES
+      $index_devoluciones_link = 'index_devoluciones.php';
     
     } else {
       $inicio_link = "index_estadisticas.php?link=".$link;
@@ -81,6 +83,8 @@
     //GASTOS 
       $crear_gasto_link = 'crear_gastos.php?link='.$link;
       $index_gastos_link = 'index_gastos.php?link='.$link;
+    //DEVOLUCIONES
+      $index_devoluciones_link = 'index_devoluciones.php?link='.$link;
   }
 ?>
 <!DOCTYPE html>
@@ -231,6 +235,7 @@
             </li>
   
             <!-- SECCIÓN DE VENTAS -->
+            <!-- Permisos => sudo admin(historial ventas) | admin local | empleado  -->
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-cart-plus fa-lg mr-2"></i>
@@ -240,7 +245,7 @@
                 </p>
               </a>
               <ul class="nav nav-treeview">
-              <?php if (!$_SESSION['rolEmpleado']) { ?>
+              <?php if (!$_SESSION['rolSudoAdmin']) { ?>
                 <li class="nav-item">
                 <a href="<?php echo $url_base;?>secciones/<?php echo $ventas_link; ?>" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
@@ -257,7 +262,9 @@
               </ul>
             </li>
   
-            <!-- SECCIÓN DE PRODUCTOS -->
+          <!-- SECCIÓN DE PRODUCTOS --> 
+          <!-- Permisos => sudo admin | admin local  -->
+          <?php if (!$_SESSION['rolUserEmpleado']) { ?>
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-shopping-basket fa-lg mr-2"></i>
@@ -293,8 +300,10 @@
                 </li>              
               </ul>
             </li>
+          <?php } ?> 
 
-            <!-- SECCIÓN DE CLIENTES -->
+          <!-- SECCIÓN DE CLIENTES -->
+          <!-- Permisos => sudo admin | admin local | empleado -->
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-address-book fa-lg mr-2"></i>
@@ -319,33 +328,35 @@
               </ul>
             </li>
             
-          <!-- menu de proveedores -->
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-truck fa-lg mr-2"></i>
-              <p>
-                PROVEEDORES  
-                <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">              
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/<?php echo $crear_proveedore_link;?>" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Crear Proveedor</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/<?php echo $lista_proveedore_link;?>" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Lista Proveedores</p>
-                </a>
-              </li>
-            </ul>
-          </li>
+          <!-- PROVEEDORES -->
+          <!-- Permisos => sudo admin | admin local | -->
+          <?php if (!$_SESSION['rolUserEmpleado']) { ?>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-truck fa-lg mr-2"></i>
+                <p>
+                  PROVEEDORES  
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $crear_proveedore_link;?>" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Crear Proveedor</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $lista_proveedore_link;?>" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista Proveedores</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
 
-          <?php if ($_SESSION['rolEmpleado'] || $_SESSION['roladminlocal']) { ?>
           <!-- SECCIÓN DE CAJAS -->
+          <!-- Permisos => sudo admin | admin local | -->
             <li class="nav-item">
               <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cash-register fa-lg mr-2"></i>
@@ -370,7 +381,8 @@
               </ul>
             </li>
 
-             <!-- SECCIÓN DE USUARIO -->
+          <!-- SECCIÓN DE USUARIO -->
+          <!-- Permisos => sudo admin | admin local | -->
              <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fa fa-users fa-lg mr-2"></i>
@@ -394,8 +406,10 @@
                 </li>
               </ul>
             </li>
+          <?php } ?> 
 
-            <!-- SECCIÓN DE PENDIENTES -->
+          <!-- SECCIÓN DE PENDIENTES -->
+          <!-- Permisos => sudo admin | admin local | empleado (cuentas clientes) -->
             <li class="nav-item">
               <a href="#" class="nav-link">
               <i class="nav-icon fas fa-money-bill fa-lg mr-2"></i>
@@ -412,7 +426,7 @@
                   </a>
                 </li>
               </ul>
-              <!-- hp if ($_SESSION['rolEmpleado']) { ?>
+              <?php if ($_SESSION['rolSudoAdmin'] || $_SESSION['roladminlocal']) { ?>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
                   <a href="?php echo $url_base;?>secciones/index_pendientes.php" class="nav-link">
@@ -421,9 +435,8 @@
                   </a>
                 </li>
               </ul>
-              ?php } ?> -->
+              <?php } ?> 
             </li>
-            
 
              <!-- CONFIGURACIÓNES -->
             <!-- <li class="nav-item">
@@ -444,36 +457,59 @@
             </ul>
           </li> -->
           <?php } ?>
-          <?php if ($_SESSION['rolEmpleado'] && !$_SESSION['roladminlocal']){ ?>
+          
           <!-- BODEGA -->
-            <li class="nav-item menu-open">
-              <li class="nav-item">
-                <a href="bodega.php" class="nav-link ">
-                  <i class="fa fa-archive nav-icon"></i>
-                  <p>BODEGA</p>
-                </a>
+          <!-- Permisos => sudo admin | -->
+            <?php if ($_SESSION['rolSudoAdmin']){ ?>
+              <li class="nav-item menu-open">
+                <li class="nav-item">
+                  <a href="bodega.php" class="nav-link ">
+                    <i class="fa fa-archive nav-icon"></i>
+                    <p>BODEGA</p>
+                  </a>
+                </li>
               </li>
-            </li>
+        
           <!-- CONFIGURACIÓNES -->
+          <!-- Permisos => sudo admin | -->
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+              <i class="nav-icon fas  fa-cog fa-lg mr-2"></i>
+                <p>
+                  Crear Empresa
+                </p>
+              </a>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/crear_empresa.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Crear</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <?php } ?>
+
+          <!-- DEVOLUCIONES -->
+          <!-- Permisos => sudo admin | admin local | empleado  -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-            <i class="nav-icon fas  fa-cog fa-lg mr-2"></i>
-              <p>
-                Crear Empresa
-              </p>
+              <i class="nav-icon fas fa-retweet fa-lg mr-2"></i>
+                <p>DEVOLUCIONES
+                  <i class="fas fa-angle-left right"></i>
+                </p>
             </a>
             <ul class="nav nav-treeview">              
               <li class="nav-item">
-                <a href="<?php echo $url_base;?>secciones/crear_empresa.php" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Crear</p>
+                <a href="<?php echo $url_base;?>secciones/<?php echo $index_devoluciones_link;?>" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i><p>Lista Devoluciones</p>
                 </a>
               </li>
             </ul>
           </li>
-          <?php } ?>
 
           <!-- GASTOS -->
+          <!-- Permisos => sudo admin | admin local | empleado  -->
           <li class="nav-item">
               <a href="#" class="nav-link">
               <i class="nav-icon fa fa-puzzle-piece fa-lg mr-2"></i>
@@ -503,7 +539,7 @@
       </div>
       <!-- /.sidebar -->
     </aside>
-    <?php } ?>
+    
     <div class="content-wrapper" >
       <!-- Main content -->
       <section class="content">
