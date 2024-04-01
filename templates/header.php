@@ -443,8 +443,7 @@
               </li>
             </ul>
           </li> -->
-          <?php } ?>
-          <?php if ($_SESSION['rolEmpleado'] && !$_SESSION['roladminlocal']){ ?>
+          
           <!-- BODEGA -->
           <!-- Permisos => sudo admin | -->
             <?php if ($_SESSION['rolSudoAdmin']){ ?>
@@ -531,7 +530,9 @@
       </div>
       <!-- /.sidebar -->
     </aside>
+          
     <?php } ?>
+    
     <div class="content-wrapper" >
       <!-- Main content -->
       <section class="content">
