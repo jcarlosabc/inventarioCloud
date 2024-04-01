@@ -456,7 +456,6 @@
               </li>
             </ul>
           </li> -->
-          <?php } ?>
           
           <!-- BODEGA -->
           <!-- Permisos => sudo admin | -->
@@ -564,6 +563,8 @@
       </div>
       <!-- /.sidebar -->
     </aside>
+          
+    <?php } ?>
     
     <div class="content-wrapper" >
       <!-- Main content -->
