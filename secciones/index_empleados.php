@@ -15,13 +15,13 @@ if(isset($_GET['txtID'])){
   $responsable = $_SESSION['usuario_id'];
   if ($responsable == 1) {
     $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre 
-    FROM usuario u INNER JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 ");
+    FROM usuario u LEFT JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 ");
   }else{
     $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre FROM usuario u JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 AND u.link=:link ");
     $sentencia->bindParam(":link",$link);
    }
   $sentencia->execute();
-  $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
+  $lista_empleados=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
 
 ?>
       <br>
@@ -38,23 +38,27 @@ if(isset($_GET['txtID'])){
               <th>#</th>
               <th>Nombres / Apellidos</th>
               <th>Teléfono</th>
+              <th>Cédula</th>
               <th>Correo</th>
               <th>Usuario</th>
               <th>Caja de usuario</th>
+              <th>Rol</th>
               <th>Negocio</th>
               <th>Opciones</th>
             </tr>
             </thead>
             <tbody>
               <?php $count = 0;
-               foreach ($lista_producto as $registro) {?>
+               foreach ($lista_empleados as $registro) {?>
                 <tr>
                   <td scope="row"><?php $count++; echo $count;  ?> </td>
                   <td><?php echo $registro['usuario_nombre']; ?> <?php echo $registro['usuario_apellido']; ?></td>
                   <td><?php echo $registro['usuario_telefono']; ?></td>                
+                  <td><?php echo $registro['usuario_cedula']; ?></td>                
                   <td><?php echo $registro['usuario_email']; ?></td>                
                   <td><?php echo $registro['usuario_usuario']; ?></td>
                   <td><?php echo $registro['caja_nombre']; ?></td>
+                  <td><?php if ($registro['rol'] == 1) { echo "Administrador de Local" ;}else { echo "Empleado" ;} ?></td>
                   <td><?php echo $registro['empresa_nombre']; ?></td>
                   <td>
                     <a class="btn btn-info" href="editar_empleados.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button" title="Editar">

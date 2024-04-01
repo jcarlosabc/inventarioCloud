@@ -10,6 +10,7 @@ if ($_POST) {
     $usuario_nombre = isset($_POST['usuario_nombre']) ? $_POST['usuario_nombre'] : "";
     $usuario_apellido = isset($_POST['usuario_apellido']) ? $_POST['usuario_apellido'] : "";
     $usuario_telefono = isset($_POST['usuario_telefono']) ? $_POST['usuario_telefono'] : "";
+    $usuario_cedula = isset($_POST['usuario_cedula']) ? $_POST['usuario_cedula'] : "";
     $usuario_email = isset($_POST['usuario_email']) ? $_POST['usuario_email'] : "";
     $usuario_clave =  hash('sha256', (isset($_POST['usuario_clave_1']) ? $_POST['usuario_clave_1'] : ""));
 
@@ -43,13 +44,14 @@ if ($_POST) {
         </script>';
     } else {
         $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
-                usuario_nombre, usuario_apellido, usuario_telefono, usuario_email, usuario_usuario,
+                usuario_nombre, usuario_apellido, usuario_telefono, usuario_cedula, usuario_email, usuario_usuario,
                 usuario_clave, rol, caja_id, link, responsable) 
-            VALUES (NULL, :usuario_nombre , :usuario_apellido, :usuario_telefono,:usuario_email , :usuario_usuario, :usuario_clave, :rol, :caja_id, :link, :responsable)");
+            VALUES (NULL, :usuario_nombre , :usuario_apellido, :usuario_telefono, :usuario_cedula, :usuario_email , :usuario_usuario, :usuario_clave, :rol, :caja_id, :link, :responsable)");
 
         $sentencia->bindParam(":usuario_nombre", $usuario_nombre);
         $sentencia->bindParam(":usuario_apellido", $usuario_apellido);
         $sentencia->bindParam(":usuario_telefono", $usuario_telefono);
+        $sentencia->bindParam(":usuario_cedula", $usuario_cedula);
         $sentencia->bindParam(":usuario_email", $usuario_email);
         $sentencia->bindParam(":usuario_usuario", $username);
         $sentencia->bindParam(":usuario_clave", $usuario_clave);
@@ -125,6 +127,12 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                         <div class="form-group">
                             <label class="textLabel">Teléfono</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="number" class="form-control camposTabla" name="usuario_telefono" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label class="textLabel">Cédula</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                            <input type="text" class="form-control camposTabla" name="usuario_cedula" required>
                         </div>
                     </div>
                     <div class="col-sm-2">
