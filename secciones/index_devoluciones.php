@@ -20,25 +20,31 @@ if(isset($_GET['txtID'])){
   $sentencia->execute();
   
 }
-if($_SESSION['rolSudoAdmin']){
-$sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*, empresa.empresa_nombre
-FROM venta 
-INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
-INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
-INNER JOIN empresa ON venta.link = empresa.link;");
 
+// FALTA ********************
+// Arreglar ver devoluciones desde el admin del local se repite en sudo admin y en adminlocal
+// poner el responsable correcto en la lista (opcional) pero seria genial hacerlo
+
+if($_SESSION['rolSudoAdmin']){
+  $sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*, empresa.empresa_nombre, devolucion.*, producto.*
+  FROM venta 
+  INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
+  INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
+  INNER JOIN empresa ON venta.link = empresa.link
+  INNER JOIN devolucion ON venta.link = devolucion.link
+  INNER JOIN producto ON devolucion.producto_id = producto.producto_id;");
 }else{
-$link=(isset($_GET['link']))?$_GET['link']:"";
-$sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*, 
-empresa.empresa_nombre, empresa.codigo_seguridad, devolucion.*, producto.*
-FROM venta 
-INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
-INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
-INNER JOIN empresa ON venta.link = empresa.link
-INNER JOIN devolucion ON venta.link = devolucion.link
-INNER JOIN producto ON devolucion.producto_id = producto.producto_id
-WHERE venta.link = :link ");
-$sentencia->bindParam(":link",$link);
+  $link=(isset($_GET['link']))?$_GET['link']:"";
+  $sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*, 
+  empresa.empresa_nombre, empresa.codigo_seguridad, devolucion.*, producto.*
+  FROM venta 
+  INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
+  INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
+  INNER JOIN empresa ON venta.link = empresa.link
+  INNER JOIN devolucion ON venta.link = devolucion.link
+  INNER JOIN producto ON devolucion.producto_id = producto.producto_id
+  WHERE venta.link = :link");
+  $sentencia->bindParam(":link",$link);
 }
 $sentencia->execute();
 $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -52,6 +58,7 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
           <table id="historialVentas" class="table table-bordered table-striped" style="text-align:center"> 
             <thead>
             <tr>
+              <th>#</th>
               <th>Código de Venta</th>
               <th>Código del Producto</th>
               <th>Producto</th>
@@ -67,9 +74,10 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
             </tr>
             </thead>
             <tbody>
-              <?php foreach ($lista_ventas as $registro) {?>
+              <?php $count = 0; foreach ($lista_ventas as $registro) {?>
                 <tr>
-                    <td scope="row"><?php echo $registro['venta_codigo']; ?></td>
+                    <td scope="row"><?php $count++; echo $count; ?></td>
+                    <td><?php echo $registro['venta_codigo']; ?></td>
                     <td><?php echo $registro['producto_codigo']; ?></td>
                     <td><?php echo $registro['producto_nombre']; ?></td>
                     <td><?php if ($registro['monto_devolucion'] > 0) { echo "Dinero"; }else { echo "Articulo"; } ?></td>

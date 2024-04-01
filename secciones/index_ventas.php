@@ -65,8 +65,10 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
             </thead>
             <tbody>
               <?php foreach ($lista_ventas as $registro) {?>
-                <tr class="">
-                <input type="hidden" name="codigo_seguridad" value="<?php echo $registro['codigo_seguridad']; ?>">
+                <tr>
+                <?php if (!$_SESSION['rolSudoAdmin']) { ?>
+                  <input type="text" name="codigo_seguridad" value="<?php echo $registro['codigo_seguridad']; ?>">
+                <?php } ?>     
                   <td scope="row"><?php echo $registro['venta_codigo']; ?></td>
                   <td><?php echo $registro['venta_fecha']; ?> / <?php echo $registro['venta_hora']; ?></td>
                   <td class="tdColor"><?php echo '$' . number_format($registro['venta_total'], 0, '.', ','); ?></td>

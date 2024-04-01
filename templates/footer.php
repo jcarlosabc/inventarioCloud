@@ -306,16 +306,19 @@
     document.addEventListener("DOMContentLoaded", function () {
       mostrarOcultarPartes(); 
     });
-    function mostrarOcultarPartes() {
-        var metodoPago = document.getElementById("metodoPago");
-        var partesCampo = document.getElementById("partes");
+      function mostrarOcultarPartes() {
+          var metodoPago = document.getElementById("metodoPago");
+          var partesCampo = document.getElementById("partes");
 
-        if (metodoPago.value == "2") { // "2" es el valor de "A Crédito"
+          if (metodoPago.value == "2") { // "2" es el valor de "A Crédito"
             partesCampo.style.display = "block";
-        } else {
-            partesCampo.style.display = "none";
-        }
-    }
+            partesCampo.style.border = "1px solid #9f9f9f";
+            partesCampo.style.padding = "16px";
+            partesCampo.style.borderRadius = "13px";
+          } else {
+              partesCampo.style.display = "none";
+          }
+      }
 
     // Validando que la clave sean iguales para la vista de crear productos
     document.addEventListener("DOMContentLoaded", function() {
@@ -344,13 +347,13 @@
 
     // Función formato dinero 
     // campos agregados: cajas, caja_edit, producto_precio_compra, producto_precio_venta, producto_precio_compra_edit,
-    // gasto_precio, montoDevolucion
+    // gasto_precio, montoDevolucion, nominaCantidad
   $(document).ready(function() {
       function formatDineroSinDecimales(valor) {
           return "$" + parseFloat(valor).toFixed(0).replace(/\d(?=(\d{3})+$)/g, "$&,");
       }
       $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta, " + 
-        "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion").on("input", function() {
+        "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad").on("input", function() {
           var valor = $(this).val().replace(/[^0-9]/g, '');
           $(this).val(formatDineroSinDecimales(valor));
       });
@@ -358,7 +361,7 @@
       // Evento al enviar el formulario
       $("form").submit(function() {
           var valor = $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta," +
-          "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion").val().replace(/[^0-9]/g, ''); 
+          "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad").val().replace(/[^0-9]/g, ''); 
           $("#cajaEfectivo").val(valor);
       });
   });
@@ -405,12 +408,31 @@
           return false;
       }
     }else if (id == 3) {
-      var categoriaSeleccionada = document.forms["formGastos"]["usuario_empresa_gastos"].value;
-      if (categoriaSeleccionada == "") {
+      var usuario_empresaSeleccionada = document.forms["formGastos"]["usuario_empresa_gastos"].value;
+      if (usuario_empresaSeleccionada == "") {
           Swal.fire({
               icon: 'error',
               title: 'Oops...',
               text: 'Por favor, seleccione una Empresa.',
+          });
+          return false;
+      }
+    }else if (id == 4) {
+      var negocioSeleccionada = document.forms["formNomina"]["nomina_empresa"].value;
+      var nomina_empleadosSeleccionada = document.forms["formNomina"]["nomina_empleados"].value;
+      if (negocioSeleccionada == "") {
+          Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Por favor, seleccione una Empresa.',
+          });
+          return false;
+      }
+      if (nomina_empleadosSeleccionada == "") {
+          Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Por favor, seleccione un Empleado.',
           });
           return false;
       }

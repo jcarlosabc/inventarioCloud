@@ -111,13 +111,29 @@ if(isset($_POST['productos_vendidos'])) {
     $linkeo_venta = isset($_POST['link_venta']) ? $_POST['link_venta'] : $_POST['link_venta'];
     
     $estado_ventas = 0;
-    if ($metodo_pago == 0 || $metodo_pago == 1) {
+    if ($metodo_pago == 0 || $metodo_pago == 1 || $metodo_pago == 3) {
         $estado_ventas = 1;
     }
     $partes = isset($_POST['partes']) ? $_POST['partes'] : $_POST['partes'];
    
     $user_id = $_SESSION['usuario_id'];
     $venta_realizada = false;
+
+    $sentencia=$conexion->prepare("SELECT * FROM caja WHERE caja_id = :caja_id");
+    $sentencia->bindParam(":caja_id",$caja_id);
+    $sentencia->execute();
+    $result_caja=$sentencia->fetch(PDO::FETCH_LAZY);
+    $result_cajaId = $result_caja['caja_id'];
+    $caja_efectivo = $result_caja['caja_efectivo'];
+    $caja_efectivo = $caja_efectivo + $total_dinero;
+    // Actualizando caja 
+    $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ?";
+        $sentencia = $conexion->prepare($sql);
+        $params = array(
+            $caja_efectivo, 
+            $result_cajaId  
+        );
+    $sentencia->execute($params);
 
     $sql = "INSERT INTO venta (venta_codigo, venta_fecha, venta_hora, venta_total, venta_pagado, venta_cambio, 
                         venta_metodo_pago, partes, cliente_id, caja_id, link, responsable, estado_venta) 
@@ -370,7 +386,7 @@ if(isset($_POST['productos_vendidos'])) {
                 }
             })
             </script>';
-        } else if($metodo_pago == 1){
+        } else if($metodo_pago == 1 || $metodo_pago == 3){
             echo '<script>
             Swal.fire({
                 title: "¡Venta Exitosa: recuerda que el dinero lo tendras en la cuenta del local!",
@@ -530,8 +546,8 @@ if(isset($_POST['productos_vendidos'])) {
                                                 <select class="form-control camposTabla" id="metodoPago" name="metodo_pago" onchange="mostrarOcultarPartes()">                                    
                                                     <option value="0" style="color:#22c600">Efectivo</option> 
                                                     <option value="1" style="color:#009fc1">Transferencia</option> 
+                                                    <option value="3" style="color:#d50000">Datafono</option>  
                                                     <option value="2" style="color:#f4a700">A Crédito</option>
-                                                    <option value="3" style="color:#d50000">Por Datafono</option>  
                                                 </select>
                                             </div>
                                         </div>
@@ -540,13 +556,24 @@ if(isset($_POST['productos_vendidos'])) {
                                         #partes {
                                             display: none;
                                         }
+                                        #tiempo {
+                                            display: none;
+                                        }
                                         span.select2-selection.select2-selection--single{
                                             height: 38px;
                                         }
                                         </style>
                                     <div class="col-5">
                                         <div class="form-group">
-                                            <span id="partes"> Número de Cuotas: <br><input type="number" required name="partes" value="0"></span>
+                                            <div class="row" id="partes">
+                                                <div class="col-4"><input type="number" class="form-control" required name="cantDiasMeses" value="0"></div>
+                                                <div class="col-5">
+                                                    <select class="form-control select2" name="tiempoDiasMeses" style="height: 20px">
+                                                        <option value="0">Dias</option> 
+                                                        <option value="1">Mes</option> 
+                                                    </select> 
+                                                </div>
+                                            </div>
                                             <label class="textLabel">Cliente</label> 
                                             <select class="form-control select2" name="cliente_id" style="height: 20px">
                                                 <option value="0">Público General </option> 

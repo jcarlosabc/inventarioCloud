@@ -20,7 +20,9 @@ if ($responsable == 1) {
   $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre FROM gastos g JOIN empresa e ON e.link = g.link");
 
 }else { 
-  $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre FROM gastos g JOIN empresa e ON e.link = g.link WHERE g.link =:link");
+  $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre, u.usuario_nombre, u.usuario_apellido 
+  FROM gastos g JOIN empresa e ON e.link = g.link 
+  LEFT JOIN usuario u ON u.responsable = g.responsable WHERE g.link =:link");
   $sentencia->bindParam(":link",$link);
 }
 
@@ -43,6 +45,7 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Motivo de la Compra</th>
               <th>Precio</th>
               <th>Negocio</th>
+              <th>Responsable</th>
               <?php if ($_SESSION['rolSudoAdmin']) { ?>
               <th>Opciones</th>
               <?php } ?>
@@ -56,6 +59,7 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['gasto_fecha']; ?> // <?php echo $registro['gasto_hora']; ?></td>
                   <td><?php echo $registro['gasto_producto']; ?></td>
                   <td><?php echo $registro['gasto_motivo']; ?></td>
+                  <td><?php echo $registro['usuario_nombre'] . " " . $registro['usuario_apellido'] ?></td>
                   <td class="tdColor"> <?php echo '$' . number_format($registro['gasto_precio'], 0, '.', ','); ?></td>
                   <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td> 
                   <?php if ($_SESSION['rolSudoAdmin']) { ?>

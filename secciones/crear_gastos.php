@@ -93,6 +93,8 @@ if ($_POST) {
                         <textarea name="gasto_motivo" style="height: 50px;" class="form-control camposTabla" cols="20" rows="2" required></textarea>
                     </div>
                 </div>
+            </div>
+            <div class="row" style="justify-content:center">
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label for="producto_precio_compra" class="textLabel">Precio</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
@@ -100,7 +102,7 @@ if ($_POST) {
                     </div>
                 </div>
                 <?php if ($responsable == 1) { ?>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="form-group">
                             <label class="textLabel">Negocio</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <div class="form-group">

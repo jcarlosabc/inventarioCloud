@@ -46,7 +46,6 @@ if(isset($_GET['txtID'])){
     $sentencia_venta->bindParam(":venta_codigo",$venta_codigo);
     $sentencia_venta->execute();
     $sentencia_venta = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
-    $sentencia_venta = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
     $detalle_venta = $sentencia_venta;
 
 }
@@ -135,7 +134,7 @@ if ($_POST) {
                 </script>';
             }
     }
-    }
+    
 ?>
 
 <br>

@@ -470,21 +470,30 @@
                 </li>
               </li>
         
-            <li class="nav-item menu-open">
-              <li class="nav-item">
-                <a href="bodega.php" class="nav-link ">
-                  <i class="fa fa-archive nav-icon"></i>
-                  <p>BODEGA</p>
-                </a>
-              </li>
-            </li>
-            <li class="nav-item menu-open">
-              <li class="nav-item">
-                <a href="nomina.php" class="nav-link ">
-                  <i class="fa fa-list-alt nav-icon"></i>
+          <!-- NÓMINA -->
+          <!-- Permisos => sudo admin | -->
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+              <i class="fa fa-list-alt nav-icon"></i>
                   <p>NÓMINA</p>
-                </a>
-              </li>
+                  <i class="fas fa-angle-left right"></i>
+              </a>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="crear_nomina.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Pagar Nómina</p>
+                  </a>
+                </li>
+              </ul>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="nomina.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Historial Nómina</p>
+                  </a>
+                </li>
+              </ul>
             </li>
           <!-- CONFIGURACIÓNES -->
           <!-- Permisos => sudo admin | -->

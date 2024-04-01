@@ -47,7 +47,7 @@ if ($_POST) {
     $cuota= isset($_POST['cuotas']) ? $_POST['cuotas'] : "";
     $historial_abono= isset($_POST['historial_abono']) ? $_POST['historial_abono'] : "";
     $venta_cambio= isset($_POST['venta_cambio']) ? $_POST['venta_cambio'] : "";    
-    $$partes= isset($_POST['$partes']) ? $_POST['$partes'] : "";    
+    $partes= isset($_POST['$partes']) ? $_POST['$partes'] : "";    
     $responsable = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
     $fecha_abono=$fechaActual;
     $hora_abono=$horaActual;
