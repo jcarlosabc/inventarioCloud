@@ -1,6 +1,6 @@
 <?php include("../templates/header.php") ?>
 <?php 
-    $sentencia=$conexion->prepare("SELECT usuario_usuario, usuario_clave, empresa.* FROM usuario 
+    $sentencia=$conexion->prepare("SELECT usuario_usuario, usuario_clave, info_clave, empresa.* FROM usuario 
     JOIN empresa ON empresa.link = usuario.link GROUP BY empresa_id");
     $sentencia->execute();
     $empresa_creadas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -35,12 +35,16 @@
                                 <strong><?php echo $registro['empresa_nombre']; ?></strong>
                             </div>
                         </div>
-                        <strong>Código del Local: </strong> <?php echo $registro['link'] ?><br>
-                        <small>Teléfono: <?php echo $registro['empresa_telefono']; ?></small><br>
-                        <small>Dirección: <?php echo $registro['empresa_direccion']; ?></small><br>
-                        <small>Código de Permisos: <?php echo $registro['codigo_seguridad']; ?></small><br>
-                        Usuario: <?php echo $registro['usuario_usuario']; ?>--
-                        <span>Contraseña: Es el mismo usuario</span>
+                        <strong>Código del Local: </strong> <span style="color:yellow;"><?php echo $registro['link']; ?></span><br>
+                        <small><strong>Teléfono: </strong> <span style="color:yellow;"><?php echo $registro['empresa_telefono']; ?></span></small><br>
+                        <small><strong>Dirección: </strong> <span style="color:yellow;"><?php echo $registro['empresa_direccion']; ?></span></small><br>
+                        <small><strong>Código de Seguridad: </strong> <span style="color:yellow;"><?php echo $registro['codigo_seguridad']; ?></span></small><br>
+                        <strong>Usuario: </strong><span style="color:yellow;"><?php echo $registro['usuario_usuario']; ?></span> -- 
+                        <?php if (!$registro['info_clave']) {?>
+                          <span>Contraseña: <?php echo $registro['usuario_usuario']; ?> </span>
+                       <?php } else{ ?>
+                        <span>Contraseña: <?php echo $registro['info_clave']; ?> </span>
+                      <?php } ?>
                     </div>
                 </a>
                 <br>

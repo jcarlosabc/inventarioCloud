@@ -513,7 +513,7 @@
               <a href="#" class="nav-link">
               <i class="nav-icon fas  fa-cog fa-lg mr-2"></i>
                 <p>
-                  Crear Empresa
+                  CREAR EMPRESA
                 </p>
               </a>
               <ul class="nav nav-treeview">              

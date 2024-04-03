@@ -14,23 +14,11 @@ if ($_POST) {
     //link_empresa 
     $link_empresa = isset($_POST['link_empresa']) ?  $_POST['link_empresa']  : " ";
     $codigo_seguridad = isset($_POST['codigo_seguridad']) ? $_POST['codigo_seguridad'] : " ";
-    $empresa_logo = "";
-
-
-    //valiadaciones para la fotos !! Jmendoza
-    if(isset($_FILES['logo_empresa']) && $_FILES['logo_empresa']['error'] === UPLOAD_ERR_OK && $_FILES['logo_empresa']['size'] > 0){
-
-        $tipo = $_FILES['logo_empresa']['type'];
-        $tamano = $_FILES['logo_empresa']['size'];
-        $imagen_temporal = $_FILES['logo_empresa']['tmp_name'];
-        $empresa_logo = base64_encode(file_get_contents($imagen_temporal));
-
-    }
 
     //  GUARDANDO LA EMPRSA CREADA
     $sql = "INSERT INTO empresa (empresa_nombre, empresa_telefono, empresa_email,
-    empresa_direccion, empresa_nit, empresa_logo, link, codigo_seguridad , responsable) 
-    VALUES (?,?,?,?,?,?,?,?,?)";
+    empresa_direccion, empresa_nit, link, codigo_seguridad , responsable) 
+    VALUES (?,?,?,?,?,?,?,?)";
 
     $sentencia = $conexion->prepare($sql);
     $params = array(
@@ -39,7 +27,6 @@ if ($_POST) {
         $email_empresa,
         $direccion_empresa,
         $nit_empresa,
-        $empresa_logo,
         $link_empresa,
         $codigo_seguridad,
         $responsable
@@ -128,14 +115,6 @@ if ($_POST) {
                         <div class="form-group">
                             <label class="textLabel">Dirección</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="text" class="form-control camposTabla" name="direccion_empresa" required >
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <div class="form-group">
-                            <label class="textLabel">Logo</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
-                            <input type="file" class="form-control camposTabla" aria-label="file example" name="logo_empresa" id="logo_empresa" accept=".png" maxlength="600000" >
-                            <!-- El valor de maxlength es para 600 KB -->
-                            <div class="invalid-feedback">Example invalid form file feedback</div>
                         </div>
                     </div>
                     <div class="col-sm-3">
