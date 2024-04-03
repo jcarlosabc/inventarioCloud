@@ -41,6 +41,7 @@
     //SECCIÓN DE CLIENTES
       $crear_cliente_link = 'crear_cliente.php';
       $lista_cliente_link = 'index_clientes.php';
+      $editar_cliente_link = 'editar_clientes.php';
     //SECCIÓN DE PROVEEDORES
       $crear_proveedore_link = 'crear_proveedor.php';
       $lista_proveedore_link = 'index_proveedores.php';
@@ -55,6 +56,8 @@
       $index_gastos_link = 'index_gastos.php';
     //DEVOLUCIONES
       $index_devoluciones_link = 'index_devoluciones.php';
+    //BODEGA
+    $producto_bodega_link = 'producto_bodega.php';
     //SECCIÓN CREDITOS
       $index_pendientes_link = 'index_pendientes.php';
 
@@ -74,12 +77,14 @@
     //SECCIÓN DE CLIENTES
       $crear_cliente_link = 'crear_cliente.php?link='.$link;
       $lista_cliente_link = 'index_clientes.php?link='.$link;
+      $editar_cliente_link = 'editar_clientes.php?link='.$link;
     //SECCIÓN DE PROVEEDORES
       $crear_proveedore_link = 'crear_proveedor.php?link='.$link;
       $lista_proveedore_link = 'index_proveedores.php?link='.$link;
     //SECCIÓN DE CAJAS
       $crear_caja_link = 'crear_caja.php?link='.$link;               
       $index_cajas_link = 'index_cajas.php?link='.$link; 
+      $asignar_caja_link = 'asignar_caja.php?link='.$link; 
     //SECCIÓN DE USUARIO
       $crear_empleado_link = 'crear_empleado.php?link='.$link; 
       $index_empleados_link = 'index_empleados.php?link='.$link;
@@ -370,7 +375,15 @@
                   <i class="fas fa-angle-left right"></i>
                 </p>
               </a>
-              <ul class="nav nav-treeview">  
+              <ul class="nav nav-treeview"> 
+            <?php if ($_SESSION['roladminlocal']) { ?>
+              <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $asignar_caja_link;?>" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Asignar Caja</p>
+                  </a>
+                </li>  
+              <?php } ?>
               <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/<?php echo $crear_caja_link;?>" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
@@ -513,6 +526,14 @@
                   <a href="<?php echo $url_base;?>secciones/crear_empresa.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Crear</p>
+                  </a>
+                </li>
+              </ul>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/index_empresas.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Locales</p>
                   </a>
                 </li>
               </ul>
