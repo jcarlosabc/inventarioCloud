@@ -26,24 +26,25 @@ if(isset($_GET['txtID'])){
 // poner el responsable correcto en la lista (opcional) pero seria genial hacerlo
 
 if($_SESSION['rolSudoAdmin']){
-  $sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*, empresa.empresa_nombre, devolucion.*, producto.*
-  FROM venta 
-  INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
+  $sentencia=$conexion->prepare("SELECT venta.*, cliente.*, empresa.empresa_nombre, devolucion.*, usuario.*, producto.*
+  FROM venta
   INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
   INNER JOIN empresa ON venta.link = empresa.link
   INNER JOIN devolucion ON venta.link = devolucion.link
-  INNER JOIN producto ON devolucion.producto_id = producto.producto_id;");
+  INNER JOIN usuario ON devolucion.responsable = usuario.usuario_id
+  INNER JOIN producto ON devolucion.producto_id = producto.producto_id
+  GROUP BY devolucion.id;");
 }else{
   $link=(isset($_GET['link']))?$_GET['link']:"";
   $sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*, 
   empresa.empresa_nombre, empresa.codigo_seguridad, devolucion.*, producto.*
   FROM venta 
-  INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
   INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
   INNER JOIN empresa ON venta.link = empresa.link
   INNER JOIN devolucion ON venta.link = devolucion.link
+  INNER JOIN usuario ON devolucion.responsable = usuario.usuario_id 
   INNER JOIN producto ON devolucion.producto_id = producto.producto_id
-  WHERE venta.link = :link");
+  WHERE venta.link = :link GROUP BY devolucion.id");
   $sentencia->bindParam(":link",$link);
 }
 $sentencia->execute();
@@ -94,7 +95,7 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     <td><?php if ($registro['monto_devolucion'] > 0) { echo '$' . number_format($registro['monto_devolucion'], 0, '.', ',');}else { echo "Se hizo entrega por otro Articulo"; } ?></td>
                     <td><?php echo $registro['devolucion_fecha'] . " " . $registro['devolucion_hora'] ?></td>
                     <?php if ($_SESSION['rolSudoAdmin']) { ?> <td><?php echo  $registro['empresa_nombre']; ?></td> <?php }?>
-                    <td><?php echo $registro['usuario_usuario'] . " " . $registro['usuario_apellido']; ?></td>
+                    <td><?php echo $registro['usuario_nombre'] . " " . $registro['usuario_apellido']; ?></td>
                   </td>
                 </tr>  
               <?php } ?>

@@ -10,6 +10,13 @@ if ($_SESSION['valSudoAdmin']) {
 error_reporting(E_ERROR | E_PARSE);$caja_id = $_SESSION['caja_id'];
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
 
+//No Caja Asignada
+$sentencia_caja = $conexion->prepare("SELECT caja_id FROM usuario WHERE usuario_id = :usuario_id");
+$sentencia_caja->bindParam(":usuario_id", $_SESSION['usuario_id']);
+$sentencia_caja->execute();
+$caja_usuario = $sentencia_caja->fetch(PDO::FETCH_ASSOC); 
+$noSeller = ($caja_usuario['caja_id'] == 0);
+
 //Eliminar Elementos
 if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
@@ -531,13 +538,17 @@ if(isset($_POST['productos_vendidos'])) {
                             </div>
                         </div>
                     </div>
-
                     <div class="col-6">
                         <div class="card card-success">
                             <div class="card-header">
                                 <h3 class="card-title textTabla">DETALLES</h3>
                             </div>
-                            <div class="card-body">
+                        <?php if ($noSeller) { ?>
+                            <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero asignar una <strong>caja</strong> para poder realizar una <strong>Venta.</strong></article>
+
+
+                            <?php } else { ?>
+                                <div class="card-body">
                                 <div class="row">
                                     <div class="col-4">
                                         <div class="form-group">
@@ -615,10 +626,13 @@ if(isset($_POST['productos_vendidos'])) {
                                     </div>
                                 </div>
                             </div>
+                            <?php } ?>         
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </form>
-        </div>
-    </div>
+            </div>
     <?php include("../templates/footer.php") ?>
+
+                            

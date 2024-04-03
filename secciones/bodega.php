@@ -33,7 +33,7 @@
            <a href="crear_producto.php"> <button type="button" class="btn btn-block btn-outline-primary btn-lg" >Crear Producto</button></a>
           </div>
           <div class="col-3">
-           <a href="crear_empresa.php"> <button type="button" class="btn btn-block btn-outline-primary btn-lg" >Crear Negocio</button></a>
+           <a href="producto_bodega.php"> <button type="button" class="btn btn-block btn-outline-primary btn-lg" >Crear Negocio</button></a>
           </div>
           <div class="col-3">
            <a href="crear_empresa.php"> <button type="button" class="btn btn-block btn-outline-primary btn-lg" >Crear Negocio</button></a>

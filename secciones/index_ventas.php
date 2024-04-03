@@ -67,14 +67,20 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <?php foreach ($lista_ventas as $registro) {?>
                 <tr>
                 <?php if (!$_SESSION['rolSudoAdmin']) { ?>
-                  <input type="text" name="codigo_seguridad" value="<?php echo $registro['codigo_seguridad']; ?>">
+                  <input type="hidden" name="codigo_seguridad" value="<?php echo $registro['codigo_seguridad']; ?>">
                 <?php } ?>     
                   <td scope="row"><?php echo $registro['venta_codigo']; ?></td>
                   <td><?php echo $registro['venta_fecha']; ?> / <?php echo $registro['venta_hora']; ?></td>
                   <td class="tdColor"><?php echo '$' . number_format($registro['venta_total'], 0, '.', ','); ?></td>
                   <td class="tdColor"><?php echo '$' . number_format($registro['venta_pagado'], 0, '.', ','); ?></td> 
                   <td class="tdColor"><?php echo ($registro['venta_metodo_pago'] == 0 || $registro['venta_metodo_pago'] == 1) ? '$' . number_format($registro['venta_cambio'], 0, '.', ',') : "Credito Saldado"; ?></td>
-                  <td><a  <?php if($registro['cliente_id'] != 0 ){ ?> href="../editar_clientes.php?txtID=<?php echo $registro['cliente_id']; ?>" <?php }?>    ><?php echo $registro['cliente_nombre']; ?></a></td>
+                <?php if ($_SESSION['rolSudoAdmin']) { ?>
+
+                  <td><a  <?php if($registro['cliente_id'] != 0 ){ ?> href="<?php echo $url_base;?>secciones/<?php echo $editar_cliente_link . '?' . http_build_query(['data-value' => $registro['link']]); ?><?php echo '&txtID=' . $registro['cliente_id']; ?>" <?php }?>><?php echo $registro['cliente_nombre']; ?></a></td>
+
+                <?php } else { ?>                   
+                  <td><a  <?php if($registro['cliente_id'] != 0 ){ ?> href="<?php echo $url_base;?>secciones/<?php echo $editar_cliente_link . '&txtID=' . $registro['cliente_id']; ?>" <?php }?>><?php echo $registro['cliente_nombre']; ?></a></td>
+                  <?php } ?> 
                   <td><?php echo  $registro['usuario_nombre']; ?></td>
                   <?php if ($_SESSION['rolSudoAdmin']) { ?>
                     <td><?php echo  $registro['empresa_nombre']; ?></td>
