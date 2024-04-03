@@ -17,7 +17,7 @@ if(isset($_GET['txtID'])){
 }
 $responsable = $_SESSION['usuario_id'];
 if ($responsable == 1) {
-  $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre FROM gastos g JOIN empresa e ON e.link = g.link");
+  $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre, u.usuario_nombre, u.usuario_apellido FROM gastos g JOIN empresa e ON e.link = g.link LEFT JOIN usuario u ON u.responsable = g.responsable");
 
 }else { 
   $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre, u.usuario_nombre, u.usuario_apellido 
@@ -44,7 +44,9 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Producto Adquirido</th>
               <th>Motivo de la Compra</th>
               <th>Precio</th>
+              <?php if ($_SESSION['rolSudoAdmin']) { ?>
               <th>Negocio</th>
+              <?php } ?>
               <th>Responsable</th>
               <?php if ($_SESSION['rolSudoAdmin']) { ?>
               <th>Opciones</th>
@@ -59,9 +61,11 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['gasto_fecha']; ?> // <?php echo $registro['gasto_hora']; ?></td>
                   <td><?php echo $registro['gasto_producto']; ?></td>
                   <td><?php echo $registro['gasto_motivo']; ?></td>
-                  <td><?php echo $registro['usuario_nombre'] . " " . $registro['usuario_apellido'] ?></td>
                   <td class="tdColor"> <?php echo '$' . number_format($registro['gasto_precio'], 0, '.', ','); ?></td>
-                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td> 
+                  <?php if ($_SESSION['rolSudoAdmin']) { ?>
+                    <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                     
+                  <?php }?>
+                  <td><?php echo $registro['usuario_nombre'] . " " . $registro['usuario_apellido'] ?></td>
                   <?php if ($_SESSION['rolSudoAdmin']) { ?>
                   <td>
                     <a class="btn btn-danger"href="index_gastos.php?txtID=<?php echo $registro['gasto_id']; ?>" role="button" title="Eliminar">

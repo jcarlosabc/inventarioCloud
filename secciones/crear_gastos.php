@@ -39,6 +39,23 @@ if ($_POST) {
             $responsable 
             );
           $resultado = $sentencia->execute($params);
+          
+    //Restar el Gasto en la quincena
+     $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link ORDER BY id DESC");
+        $sentencia->bindParam(":link", $link);
+        $sentencia->execute();
+        $lista_ultimo_update=$sentencia->fetch(PDO::FETCH_LAZY);
+        $id = $lista_ultimo_update['id'];
+        $dinero = $lista_ultimo_update['dinero'];
+        $gasto_precio = $dinero - $gasto_precio;
+        
+        $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id = ?";
+            $sentencia = $conexion->prepare($sql);
+            $params = array(
+                $gasto_precio, 
+                $id  
+            );
+        $resultado = $sentencia->execute($params);
 
     if ($resultado) {
         echo '<script>
