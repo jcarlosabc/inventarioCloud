@@ -67,7 +67,7 @@ if(isset($_GET['txtID'])){
  
   // Mostrar lista comprados
   if($_SESSION['rolSudoAdmin']){
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
@@ -75,7 +75,7 @@ if(isset($_GET['txtID'])){
     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
 
   }else{
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
@@ -196,6 +196,8 @@ if(isset($_GET['txtID'])){
                       'precio_venta' => $registro['venta_detalle_precio_venta'],
                       'total' => $registro['venta_detalle_total'],
                       'fecha_garantia' => $registro['producto_fecha_garantia'],
+                      'producto_marca' => $registro['producto_marca'],
+                      'producto_modelo' => $registro['producto_modelo'],
                     );
                 }
                 ?>

@@ -240,7 +240,7 @@
  
     //  CONFIGURANDO TABLAS
     $(document).ready(function () {
-    var table = $("#vBuscar, #vBuscar_bodega, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario, #lista_categoria").DataTable({
+    var table = $("#vBuscar, #vBuscar_bodega, #producto_bodega, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario, #lista_categoria").DataTable({
         "responsive": true,
         "lengthChange": false,
         "autoWidth": false,

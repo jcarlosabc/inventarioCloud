@@ -11,16 +11,10 @@ $responsable = $_SESSION['usuario_id'];
 if(isset($_GET['link']) || $responsable == 1){
     if ($responsable == 1) {
        $txtID_productos=(isset($_GET['txtID']))?$_GET['txtID']:"";
-       $sentencia=$conexion->prepare("SELECT * FROM producto WHERE producto_id=:producto_id");
+       $sentencia=$conexion->prepare("SELECT * FROM bodega WHERE producto_id=:producto_id");
        $sentencia->bindParam(":producto_id",$txtID_productos);
-    }else {
-        $link=(isset($_GET['link']))?$_GET['link']:"";
-        $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-        $sentencia=$conexion->prepare("SELECT * FROM producto WHERE link=:link AND producto_id = :txtID");
-        $sentencia->bindParam(":txtID",$txtID);
-        $sentencia->bindParam(":link",$link);
-
     }
+
     $sentencia->execute();
     $registro=$sentencia->fetch(PDO::FETCH_LAZY);
     $producto_id=$registro["producto_id"];
@@ -35,37 +29,26 @@ if(isset($_GET['link']) || $responsable == 1){
     $producto_fecha_garantia=$registro["producto_fecha_garantia"];  
     $link=$registro["link"];  
 }
-        // Obtener la categoría actual del producto
-        $sentencia_categoria = $conexion->prepare("SELECT p.categoria_id, c.categoria_nombre FROM producto p
-            JOIN categoria c ON p.categoria_id = c.categoria_id
-            WHERE p.producto_id=:producto_id");
-        $sentencia_categoria->bindParam(":producto_id", $producto_id);
-        
-        $sentencia_categoria->execute();
-        $categoria_actual = $sentencia_categoria->fetch(PDO::FETCH_ASSOC);
+    // Obtener la categoría actual del producto
+    $sentencia_categoria = $conexion->prepare("SELECT p.categoria_id, c.categoria_nombre FROM bodega p
+        JOIN categoria c ON p.categoria_id = c.categoria_id
+        WHERE p.producto_id=:producto_id");
+    $sentencia_categoria->bindParam(":producto_id", $producto_id);
+    $sentencia_categoria->execute();
+    $categoria_actual = $sentencia_categoria->fetch(PDO::FETCH_ASSOC);
 
 
 if(isset($_GET['link']) || $responsable == 1){
-    if ($responsable == 1) {
-
-        // Obtener todas las categorías disponibles
-        if(isset($_GET['data-value'])){ $linkeo=(isset($_GET['data-value']))?$_GET['data-value']:"";}
-        $sentencia_todas = $conexion->prepare("SELECT categoria_id, categoria_nombre FROM categoria WHERE link=:linkeo");
-        $sentencia_todas->bindParam(":linkeo", $linkeo);
-    }else {
-        // Obtener todas las categorías disponibles
-        if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
-        $sentencia_todas = $conexion->prepare("SELECT categoria_id, categoria_nombre FROM categoria WHERE link=:linkeo");
-        $sentencia_todas->bindParam(":linkeo", $linkeo);
-    }
+    // Obtener todas las categorías disponibles
+    if(isset($_GET['data-value'])){ $linkeo=(isset($_GET['data-value']))?$_GET['data-value']:"";}
+    $sentencia_todas = $conexion->prepare("SELECT categoria_id, categoria_nombre FROM categoria WHERE link=:linkeo");
+    $sentencia_todas->bindParam(":linkeo", $linkeo);
     $sentencia_todas->execute();
     $categorias_disponibles = $sentencia_todas->fetchAll(PDO::FETCH_ASSOC);
 }
-
-    
    // Consulta para obtener el proveedor actual del producto
     $sentencia_proveedor = $conexion->prepare("SELECT p.proveedor_id, pro.nombre_proveedores
-    FROM producto p
+    FROM bodega p
     JOIN proveedores pro ON p.proveedor_id = pro.id_proveedores
     WHERE p.producto_id = :producto_id");
     $sentencia_proveedor->bindParam(":producto_id", $producto_id);
@@ -101,7 +84,7 @@ if ($_POST) {
     $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
     $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
     
-    $sentencia_edit = $conexion->prepare("UPDATE producto SET 
+    $sentencia_edit = $conexion->prepare("UPDATE bodega SET 
     producto_codigo=:producto_codigo,
     producto_fecha_garantia=:producto_fecha_garantia,
     producto_fecha_editado=:producto_fecha_editado,
@@ -137,7 +120,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/'.$lista_productos_link.'";
+                window.location.href = "'.$url_base.'secciones/producto_bodega.php";
             }
         })
         </script>';
@@ -157,8 +140,8 @@ if ($_POST) {
         <br>
             <!-- general form elements -->
             <div class="card card-warning" style="margin-top:7%">
-              <div class="card-header">
-                <h3 class="card-title textTabla">EDITE EL PRODUCTO</h3>
+              <div class="card-header"style="background: #493a3be0" >
+                <h3 class="card-title textTabla text-white">EDITE EL PRODUCTO</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start --> 

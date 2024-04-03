@@ -96,7 +96,7 @@
             $detalle_pv = '$ ' . number_format($detalle['precio_venta'], 0, '.', ','); 
             $detalle_total = '$ ' . number_format($detalle['total'], 0, '.', ','); 
             /*----------  Detalles de la tabla  ----------*/
-            $pdf->MultiCell(0,4,iconv("UTF-8", "ISO-8859-1"," " . $detalle['descripcion']),0,'C',false);
+            $pdf->MultiCell(0,4,iconv("UTF-8", "ISO-8859-1"," " . $detalle['descripcion']." / ".$detalle['producto_marca']." / ".$detalle['producto_modelo']),0,'C',false);
             $pdf->Cell(10,4,iconv("UTF-8", "ISO-8859-1"," " . $detalle['cantidad']),0,0,'C');
             $pdf->Cell(19,4,iconv("UTF-8", "ISO-8859-1"," " . $detalle_pv),0,0,'C');
             $pdf->Cell(19,4,iconv("UTF-8", "ISO-8859-1"," "),0,0,'C');

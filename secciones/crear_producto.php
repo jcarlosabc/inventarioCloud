@@ -55,8 +55,8 @@ if ($_POST) {
         $categoria_id,
         $proveedor_id
     );
-    $resultado = $sentencia->execute($params);
-    if ($resultado) {
+    $resultado_bodega = $sentencia->execute($params);
+    if ($resultado_bodega) {
         echo '<script>
         // Código JavaScript para mostrar SweetAlert
         Swal.fire({
@@ -101,28 +101,28 @@ if ($_POST) {
             $idResponsable 
         );
         $resultado = $sentencia->execute($params);
-    }
-    if ($resultado) {
-        echo '<script>
-        // Código JavaScript para mostrar SweetAlert
-        Swal.fire({
-            title: "¡Producto creado Exitosamente!!",
-            icon: "success",
-            confirmButtonText: "¡Entendido!"
-        }).then((result) => {
-            if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/'.$lista_producto_link.'";
-            }
-        })
-        </script>';
-    }else {
-        echo '<script>
-        Swal.fire({
-            title: "Error al Crear Producto",
-            icon: "error",
-            confirmButtonText: "¡Entendido!"
-        });
-        </script>';
+        if ($resultado) {
+            echo '<script>
+            // Código JavaScript para mostrar SweetAlert
+            Swal.fire({
+                title: "¡Producto creado Exitosamente!!",
+                icon: "success",
+                confirmButtonText: "¡Entendido!"
+            }).then((result) => {
+                if(result.isConfirmed){
+                    window.location.href = "'.$url_base.'secciones/'.$lista_producto_link.'";
+                }
+            })
+            </script>';
+        }else {
+            echo '<script>
+            Swal.fire({
+                title: "Error al Crear Producto",
+                icon: "error",
+                confirmButtonText: "¡Entendido!"
+            });
+            </script>';
+        }
     }
 }
 

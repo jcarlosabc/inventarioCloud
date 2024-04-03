@@ -19,7 +19,7 @@ $responsable = $_SESSION['usuario_id'];
 <br>
 <div class="card card-primary">
         <div class="card-header">
-          <h2 class="card-title textTabla">LISTA DE LOCALES &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $crear_caja_link;?>" role="button">Crear Caja</a></h2>
+          <h2 class="card-title textTabla">LISTA DE LOCALES &nbsp;&nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/crear_empresa.php" role="button">Crear Empresa</a></h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -28,10 +28,11 @@ $responsable = $_SESSION['usuario_id'];
             <tr>
                 <th>#</th>
                 <th>Local </th>
-                <th>Telefono </th>
-                <th>Direccion </th> 
+                <th>Teléfono </th>
+                <th>Dirección </th> 
                 <th>Nit</th>
-                <th>Codigo de seguridad</th>  
+                <th>Código de seguridad</th>  
+                <th>Opciones</th>  
             </tr>
             </thead>
             <tbody>

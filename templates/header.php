@@ -520,6 +520,7 @@
               <i class="nav-icon fas  fa-cog fa-lg mr-2"></i>
                 <p>
                   Crear Empresa
+                  <i class="fas fa-angle-left right"></i>
                 </p>
               </a>
               <ul class="nav nav-treeview">              

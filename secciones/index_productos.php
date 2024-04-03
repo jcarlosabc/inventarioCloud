@@ -24,7 +24,6 @@ if ($responsable == 1) {
 }else { 
   $sentencia=$conexion->prepare("SELECT p.*, c.*, e.empresa_nombre
   FROM producto p LEFT JOIN categoria c ON p.categoria_id = c.categoria_id LEFT JOIN empresa e ON p.link = e.link WHERE p.link = :link");
-  FROM producto p LEFT JOIN categoria c ON p.categoria_id = c.categoria_id LEFT JOIN empresa e ON p.link = e.link WHERE p.link = :link");
   $sentencia->bindParam(":link",$link);
 }
 

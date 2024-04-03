@@ -162,7 +162,7 @@ $resultado = $sentencia_usuario->execute($params);
 
             <div class="card-footer" style="text-align:center">
                 <input type="hidden" id="link" name="link" value="<?=$link?>">
-                <input type="text" id="empresa_id" name="empresa_id" value="<?=$txtID?>">
+                <input type="hidden" id="empresa_id" name="empresa_id" value="<?=$txtID?>">
                 <button type="submit" class="btn btn-primary btn-lg" name="guardar">Guardar</button>
             </div>
         </form>

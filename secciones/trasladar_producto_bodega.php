@@ -14,12 +14,12 @@ $fechaActual = date("d-m-Y");
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
 
-    $sentencia=$conexion->prepare("SELECT * FROM bodega WHERE id=:id");
+    $sentencia=$conexion->prepare("SELECT * FROM bodega WHERE producto_id=:id");
     $sentencia->bindParam(":id",$txtID);
     $sentencia->execute();
     $registro=$sentencia->fetch(PDO::FETCH_LAZY);
 
-    $producto_id=$registro["id"];
+    $producto_id=$registro["producto_id"];
     $producto_codigo=$registro["producto_codigo"];
     $producto_nombre=$registro["producto_nombre"];
     $producto_precio_compra=$registro["producto_precio_compra"];  
@@ -33,14 +33,14 @@ if(isset($_GET['txtID'])){
 }
 
 // Obtener la categoría actual del producto
-$sentencia_categoria = $conexion->prepare("SELECT c.categoria_nombre FROM bodega b JOIN categoria c ON b.categoria_id = c.categoria_id WHERE b.id=:id");
+$sentencia_categoria = $conexion->prepare("SELECT c.categoria_nombre FROM bodega b JOIN categoria c ON b.categoria_id = c.categoria_id WHERE b.producto_id = :id");
 $sentencia_categoria->bindParam(":id", $producto_id);
 $sentencia_categoria->execute();
 $registro_categoria = $sentencia_categoria->fetch(PDO::FETCH_LAZY);
 $categoria_actual = $registro_categoria["categoria_nombre"];
 
 // Obtener proveedor actual del producto
-$sentencia_proveedor = $conexion->prepare("SELECT p.nombre_proveedores FROM bodega b JOIN proveedores p ON b.proveedor_id = p.id_proveedores WHERE b.id=:id");
+$sentencia_proveedor = $conexion->prepare("SELECT p.nombre_proveedores FROM bodega b JOIN proveedores p ON b.proveedor_id = p.id_proveedores WHERE b.producto_id=:id");
 $sentencia_proveedor->bindParam(":id", $producto_id);
 $sentencia_proveedor->execute();
 $registro_proveedor = $sentencia_proveedor->fetch(PDO::FETCH_LAZY);
@@ -60,10 +60,6 @@ if ($_POST) {
     $producto_precio_venta = (isset($_POST['producto_precio_venta'])) ? $_POST['producto_precio_venta'] : "";
     $producto_marca = (isset($_POST['producto_marca'])) ? $_POST['producto_marca'] : "";
     $producto_modelo = (isset($_POST['producto_modelo'])) ? $_POST['producto_modelo'] : "";
-
-    
-    
-    
 
     $cantidad_enviada = (isset($_POST['productoSend'])) ? $_POST['productoSend'] : "";
     $producto_codigo = isset($_POST['producto_codigo']) ? $_POST['producto_codigo'] : "";
@@ -193,6 +189,8 @@ if ($_POST) {
                                 <input type="text" class="form-control camposTabla" name="producto_marca" readonly value="<?php echo $producto_marca;?>" >
                             </div>
                         </div>
+                    </div>
+                    <div class="row" style="justify-content:center">
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
@@ -226,13 +224,13 @@ if ($_POST) {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="texto" class="form-control camposTabla_dinero" readonly value="<?php echo $producto_precio_compra; ?>" id="precio_compra_stock" name="producto_precio_compra">
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="texto" class="form-control camposTabla_dinero " readonly value="<?php echo $producto_precio_venta; ?>" id="precio_venta_stock" name="producto_precio_venta">                                 
@@ -242,23 +240,28 @@ if ($_POST) {
                     </div>
                 </div>
                 <div class="row" style="justify-content:center">
-                    <div class="form-group">
-                                <label class="textLabel">Enviar a:</label> &nbsp;<i class="nav-icon fas fa-share"></i> 
-                                <div class="form-group camposTabla">
-                                    <select class="form-control select2 camposTabla" style="width: 100%;" name="empresa_destino">                                    
-                                        <option value="">Escoger Local</option> 
-                                        <?php foreach ($lista_empresas as $registro) {?>   
-                                            <option value="<?php echo $registro['empresa_id'] . '-' . $registro['link']?>"><?php echo $registro['empresa_nombre']; ?></option> 
-                                        <?php } ?>
-                                    </select>
-                                </div>
-                        </div>
+                    <div class="col-2">
                         <div class="form-group">
-                                <label class="textLabel">Cantidad a Enviar</label>
-                                <div class="form-group">
-                                    <input type="text" class="form-control camposTabla" required name="productoSend" >
-                                </div>
+                            <label class="textLabel">Enviar a:</label> &nbsp;<i class="nav-icon fas fa-share"></i> 
+                            <div class="form-group camposTabla">
+                                <select class="form-control select2 camposTabla"name="empresa_destino">                                    
+                                    <option value="">Escoger Local</option> 
+                                    <?php foreach ($lista_empresas as $registro) {?>   
+                                        <option value="<?php echo $registro['empresa_id'] . '-' . $registro['link']?>"><?php echo $registro['empresa_nombre']; ?></option> 
+                                    <?php } ?>
+                                </select>
                             </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="col-2">    
+                        <div class="form-group">
+                            <label class="textLabel">Cantidad a Enviar</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control camposTabla" required name="productoSend" >
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <br><br>
                 <!-- /.card-body -->
