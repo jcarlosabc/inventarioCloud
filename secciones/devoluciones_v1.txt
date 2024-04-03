@@ -1,7 +1,7 @@
 <?php include("../templates/header.php") ?>
 <?php 
 date_default_timezone_set('America/Bogota');
-$fecha_actual = date("d/m/Y");
+$fecha_actual = date("d-m-Y");
 $horaActual = date("h:i a");
 
 if(isset($_GET['txtID'])){
@@ -266,7 +266,7 @@ if ($_POST) {
 <?php include("../templates/header.php") ?>
 <?php 
 date_default_timezone_set('America/Bogota');
-$fecha_actual = date("d/m/Y");
+$fecha_actual = date("d-m-Y");
 $horaActual = date("h:i a");
 
 if(isset($_GET['txtID'])){

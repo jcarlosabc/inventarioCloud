@@ -35,6 +35,10 @@
 
     $venta_cambio = isset($_POST['venta_cambio']) ? $_POST['venta_cambio'] : "No hay nada";
     $venta_cambio = '$ ' . number_format($venta_cambio, 0, '.', ','); 
+
+    $plazo = isset($_POST['plazo']) ? $_POST['plazo'] : "No hay nada";
+    $tiempo = isset($_POST['tiempo']) ? $_POST['tiempo'] : "No hay nada";
+
     // Datos detalles ventas
     $detalles_venta_json = isset($_POST['detalles_venta']) ? $_POST['detalles_venta'] : null;
  
@@ -142,9 +146,20 @@
     $pdf->Ln(5);
 
     $pdf->Cell(18,5,iconv("UTF-8", "ISO-8859-1",""),0,0,'C');
-    $pdf->Cell(22,5,iconv("UTF-8", "ISO-8859-1","CAMBIO"),0,0,'C');
+    if ($venta_metodo_pago == "Credito") {
+        $pdf->Cell(22,5,iconv("UTF-8", "ISO-8859-1","CREDITO PENDIENTE"),0,0,'C');
+    } else { 
+        $pdf->Cell(22,5,iconv("UTF-8", "ISO-8859-1","CAMBIO"),0,0,'C');
+    } 
     $pdf->Cell(32,5,iconv("UTF-8", "ISO-8859-1"," " . $venta_cambio),0,0,'C');
 
+    if ($venta_metodo_pago == "Credito") {
+    $pdf->Ln(5);
+
+    $pdf->Cell(18,5,iconv("UTF-8", "ISO-8859-1",""),0,0,'C');
+    $pdf->Cell(22,5,iconv("UTF-8", "ISO-8859-1","PLAZO PARA PAGAR"),0,0,'C');
+    $pdf->Cell(32,5,iconv("UTF-8", "ISO-8859-1"," " . $plazo ." ". $tiempo),0,0,'C');
+    } 
     // $pdf->Ln(5);
 
     // $pdf->Cell(18,5,iconv("UTF-8", "ISO-8859-1",""),0,0,'C');

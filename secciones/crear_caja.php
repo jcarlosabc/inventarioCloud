@@ -83,7 +83,7 @@ if ($_POST) {
                     <div class="col-sm-3">
                         <div class="form-group">
                             <label for="cajaEfectivo" class="textLabel">Efectivo</label> 
-                            <input type="text" class="form-control camposTabla" id="cajaEfectivo" name="caja_efectivo" required>
+                            <input type="text" class="form-control camposTabla_dinero" id="cajaEfectivo" name="caja_efectivo" required>
                         </div>                                
                     </div>
                 </div>

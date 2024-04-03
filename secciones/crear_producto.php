@@ -34,7 +34,7 @@ if ($_POST) {
     $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
 
     date_default_timezone_set('America/Bogota'); 
-    $fechaActual = date("d/m/Y");
+    $fechaActual = date("d-m-Y");
 
     if ($idResponsable == 1) {
         $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion,
@@ -56,6 +56,28 @@ if ($_POST) {
         $proveedor_id
     );
     $resultado = $sentencia->execute($params);
+    if ($resultado) {
+        echo '<script>
+        // Código JavaScript para mostrar SweetAlert
+        Swal.fire({
+            title: "¡Producto creado Exitosamente!!",
+            icon: "success",
+            confirmButtonText: "¡Entendido!"
+        }).then((result) => {
+            if(result.isConfirmed){
+                window.location.href = "'.$url_base.'secciones/producto_bodega.php";
+            }
+        })
+        </script>';
+    }else {
+        echo '<script>
+        Swal.fire({
+            title: "Error al Crear Producto",
+            icon: "error",
+            confirmButtonText: "¡Entendido!"
+        });
+        </script>';
+    }
     } else { 
 
         $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion,

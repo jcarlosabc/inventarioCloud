@@ -11,7 +11,7 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_POST) {
     date_default_timezone_set('America/Bogota'); 
-    $fechaActual = date("d/m/Y");
+    $fechaActual = date("d-m-Y");
     $hora_actual = date("h:i:s A");
 
     $gasto_producto = isset($_POST['gasto_producto']) ? $_POST['gasto_producto'] : "";

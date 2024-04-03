@@ -1,34 +1,33 @@
 <?php include("../templates/header.php") ?>
-<?php 
-if ($_SESSION['valSudoAdmin']) {
-    $ventas_link = "crear_venta.php";
-    $ventas_detalles_link = "detalles.php";
- }else{
-    $ventas_link = "crear_venta.php?link=".$link;
-    $ventas_detalles_link = "detalles.php?link=".$link;
- }
-error_reporting(E_ERROR | E_PARSE);$caja_id = $_SESSION['caja_id'];
+<?php
+$linkeo = "sudo_admin"; 
+$crear_ventas_link_bodega_delete = "crear_venta_bodega.php?link=".$linkeo;
+$crear_ventas_link_bodega = "crear_venta_bodega.php";
+$ventas_link_bodega = "venta_bodega.php";
+$caja_id = 0;
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
+$txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
 
 //Eliminar Elementos
 if(isset($_GET['link'])){
-  $link=(isset($_GET['link']))?$_GET['link']:"";
-  $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-
-  $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id = :id AND link = :link");
-  $sentencia->bindParam(":id",$txtID);
-  $sentencia->bindParam(":link",$link);
-  $sentencia->execute();
-
-  // Mostrar el carrito
-  $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, marca, modelo FROM carrito WHERE estado = 0 AND link = :link");
-  $sentencia->bindParam(":link",$link);
-  $sentencia->execute();
-  $lista_carrito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
-}
-    // Mostrando los productos del local
-    $sentencia=$conexion->prepare("SELECT * FROM `producto` WHERE link = :link");
-    $sentencia->bindParam(":link", $linkeo);
+    $linkeo=(isset($_GET['link']))?$_GET['link']:"";
+    $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
+  
+    $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id = :id AND link = :link");
+    $sentencia->bindParam(":id",$txtID);
+    $sentencia->bindParam(":link",$linkeo);
+    $sentencia->execute();
+  
+    // Mostrar el carrito
+    $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, marca, modelo FROM carrito WHERE estado = 0 AND link = :link");
+    $sentencia->bindParam(":link",$linkeo);
+    $sentencia->execute();
+    $lista_carrito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+  }
+// ================================================================
+    $linkeo = "sudo_admin";
+    // Mostrando los productos de la bodega
+    $sentencia=$conexion->prepare("SELECT * FROM bodega");
     $sentencia->execute();
     $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
@@ -42,7 +41,8 @@ if(isset($_GET['link'])){
 
 // Guardar productos escogidos, al carrito
 if(isset($_POST['producto_seleccionado'])) {
-    $linkeo = isset($_POST['link']) ? $_POST['link'] : $_POST['link'];
+    // $linkeo = isset($_POST['link']) ? $_POST['link'] : $_POST['link'];
+    $linkeo = "sudo_admin";
     $producto_seleccionado_encoded = $_POST['producto_seleccionado'];
     $producto_seleccionado = unserialize(base64_decode($producto_seleccionado_encoded));
     $producto_id = $producto_seleccionado['producto_id'];
@@ -94,7 +94,7 @@ if(isset($_POST['productos_vendidos'])) {
     $cambio_dinero = str_replace(array('$','.', ','), '', $cambio_dinero);
     $cliente_id = isset($_POST['cliente_id']) ? $_POST['cliente_id'] : $_POST['cliente_id'];
     $metodo_pago = isset($_POST['metodo_pago']) ? $_POST['metodo_pago'] : $_POST['metodo_pago'];
-    $linkeo_venta = isset($_POST['link_venta']) ? $_POST['link_venta'] : $_POST['link_venta'];
+    $linkeo_venta = "sudo_admin";
     
     $estado_ventas = 0;
     if ($metodo_pago == 0 || $metodo_pago == 1 || $metodo_pago == 3) {
@@ -300,7 +300,7 @@ if(isset($_POST['productos_vendidos'])) {
         $id_carrito = $row_carrito['id'];
 
         // Buscandolos en la tabla productos para restar stock
-        $sentencia_producto = $conexion->prepare("SELECT producto_stock_total, producto_precio_compra, producto_precio_venta FROM producto WHERE producto_id = :producto_id");
+        $sentencia_producto = $conexion->prepare("SELECT producto_stock_total, producto_precio_compra, producto_precio_venta FROM bodega WHERE producto_id = :producto_id");
         $sentencia_producto->bindParam(":producto_id", $producto_id);
         $sentencia_producto->execute();
 
@@ -327,7 +327,7 @@ if(isset($_POST['productos_vendidos'])) {
         }
 
         // Actualizando stock en el inventario 
-        $sql = "UPDATE producto SET producto_stock_total = ? WHERE producto_id = ?";
+        $sql = "UPDATE bodega SET producto_stock_total = ? WHERE producto_id = ?";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
                     $total_stock, 
@@ -379,7 +379,7 @@ if(isset($_POST['productos_vendidos'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result)=>{
                 if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$ultimo_id_insertado.'";
+                    window.location.href = "'.$url_base.'secciones/'.$ventas_link_bodega.'";
 
                 }
             })
@@ -392,7 +392,7 @@ if(isset($_POST['productos_vendidos'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result)=>{
                 if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$ultimo_id_insertado.'";
+                    window.location.href = "'.$url_base.'secciones/'.$ventas_link_bodega.'";
                 }
             })
             </script>'; 
@@ -404,7 +404,7 @@ if(isset($_POST['productos_vendidos'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result)=>{
                 if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$ultimo_id_insertado.'";
+                    window.location.href = "'.$url_base.'secciones/'.$ventas_link_bodega.'";
                 }
             })
             </script>'; 
@@ -423,13 +423,13 @@ if(isset($_POST['productos_vendidos'])) {
 ?>
 <br>
     <div class="card card-success">
-        <div class="card-header">
+        <div class="card-header" style="background: #493a3be0">
             <h3 class="card-title textTabla">PRODUCTOS DISPONIBLES</h3>
         </div>
         <div class="card-body ">
             <div class="card card-info">
                 <div class="card-body">
-                    <table id="vBuscar" class="table table-bordered table-striped" style="text-align:center">
+                    <table id="vBuscar_bodega" class="table table-bordered table-striped" style="text-align:center">
                         <thead>
                             <tr>
                                 <th>Código</th>
@@ -459,7 +459,7 @@ if(isset($_POST['productos_vendidos'])) {
                                     <td><?php echo $registro['producto_marca']; ?></td>
                                     <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td>
-                                        <form action="<?php echo $ventas_link ?>" method="POST">
+                                        <form action="<?php echo $crear_ventas_link_bodega ?>" method="POST">
                                             <input type="hidden" name="link" value="<?php echo $linkeo; ?>">
                                             <input type="hidden" name="producto_id" value="<?php echo $registro['producto_id']; ?>">
                                             <input type="hidden" name="producto_codigo" value="<?php echo $registro['producto_codigo']; ?>">
@@ -482,7 +482,7 @@ if(isset($_POST['productos_vendidos'])) {
                 <div class="row">
                     <div class="col-6">
                         <div class="card card-success">
-                            <div class="card-header">
+                            <div class="card-header" style="background: #493a3be0">
                                 <h3 class="card-title textTabla">PRODUCTOS ESCOGIDOS</h3>
                             </div>
                             <div class="card-body" style="overflow-x: auto;">
@@ -516,7 +516,8 @@ if(isset($_POST['productos_vendidos'])) {
                                                 <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
                                                 <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
                                                     <div class="btn-group">
-                                                        <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link . '&txtID=' . $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
+                                                        <!-- <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $crear_ventas_link_bodega.'?txtID='.$registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                     -->
+                                                        <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $crear_ventas_link_bodega_delete.'&txtID='.$registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
                                                     </div>  
                                                 </td>
                                             </tr>  
@@ -530,7 +531,7 @@ if(isset($_POST['productos_vendidos'])) {
 
                     <div class="col-6">
                         <div class="card card-success">
-                            <div class="card-header">
+                            <div class="card-header" style="background: #493a3be0">
                                 <h3 class="card-title textTabla">DETALLES</h3>
                             </div>
                             <div class="card-body">
@@ -539,7 +540,7 @@ if(isset($_POST['productos_vendidos'])) {
                                         <div class="form-group">
                                             <label class="textLabel">Métodos de Pago</label> 
                                             <div class="form-group">
-                                                <select class="form-control camposTabla" id="metodoPago" name="metodo_pago" onchange="mostrarOcultarPartes(1)">                                    
+                                                <select class="form-control camposTabla" id="metodoPago" name="metodo_pago" onchange="mostrarOcultarPartes()">                                    
                                                     <option value="0" style="color:#22c600">Efectivo</option> 
                                                     <option value="1" style="color:#009fc1">Transferencia</option> 
                                                     <option value="3" style="color:#d50000">Datafono</option>  

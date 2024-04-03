@@ -51,4 +51,12 @@
 .tdColor{
     color: #0db734;font-weight: 700;
 }
-
+ /* Ocultar las flechas de incremento/decremento en campos numéricos */
+ input[type=number]::-webkit-inner-spin-button,
+ input[type=number]::-webkit-outer-spin-button {
+     -webkit-appearance: none;
+     margin: 0;
+ }
+ input[type=number] {
+     -moz-appearance: textfield; /* Firefox */
+ }

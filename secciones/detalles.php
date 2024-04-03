@@ -30,14 +30,19 @@ if(isset($_GET['txtID'])){
   $venta_codigo=$registro["venta_codigo"];
   $venta_total=$registro["venta_total"];
   $venta_pagado=$registro["venta_pagado"];  
-  $venta_cambio=$registro["venta_cambio"];  
+  $venta_cambio=$registro["venta_cambio"];
+  $venta_cambio = abs($venta_cambio);  
   $venta_metodo_pago=$registro["venta_metodo_pago"];  
+  $plazo=$registro["plazo"];  
+  $tiempo=$registro["tiempo"];
+  
+  $tiempo == 0 ? $tiempo = "Días" : $tiempo = "Meses";
 
   if ($venta_metodo_pago == 0) {
     $venta_metodo_pago = "Efectivo";
   }else if($venta_metodo_pago == 1){
     $venta_metodo_pago = "Transferencia";
-  }else if(2){
+  }else if($venta_metodo_pago == 2){
     $venta_metodo_pago = "Credito";
   }else {
     $venta_metodo_pago = "Datafono";
@@ -107,10 +112,14 @@ if(isset($_GET['txtID'])){
                   <strong>Fecha de la Venta: </strong> <?php echo $venta_fecha;?><br>                    
                   <strong>Nro. de Factura: </strong><?php echo $venta_id;?><br>
                   <strong>Codigo de Venta: </strong><?php echo $venta_codigo;?><br>
+                  <?php if ($venta_metodo_pago == "Credito") { ?>
+                    <strong>Plazo del Pago: </strong><?php echo $plazo . " " . $tiempo;?><br>
+                  <?php } ?>
                 </address>
               </div>
               <!-- /.col -->
               <div class="col-sm-4 invoice-col">
+                <br>
                 <address>
                   <strong>Caja: </strong><?php echo $caja_id;?><br>
                     <strong>Vendedor: </strong><?php echo $usuario_nombre;?><br>
@@ -157,14 +166,18 @@ if(isset($_GET['txtID'])){
                   <table class="table">
                     <tr>
                       <th style="width:50%">Total:</th>
-                      <td></strong><?php echo '$' . number_format($venta_total, 0, '.', ','); ?></td>
+                      <td class="tdColor"></strong><?php echo '$' . number_format($venta_total, 0, '.', ','); ?></td>
                     </tr>
                     <tr>
                       <th>Pagado:</th>
                       <td></strong><?php echo '$' . number_format($venta_pagado, 0, '.', ','); ?></td>
                     </tr>                      
                     <tr>
-                      <th>Cambio:</th>
+                      <?php if ($venta_metodo_pago == "Credito") { ?>
+                        <th>Credito Pendiente:</th>
+                      <?php } else { ?>
+                        <th>Cambio:</th>
+                      <?php } ?>
                       <td></strong><?php echo '$' . number_format($venta_cambio, 0, '.', ','); ?></td>
                     </tr>
                   </table>
@@ -210,6 +223,8 @@ if(isset($_GET['txtID'])){
               <input type="hidden" name="venta_total" value="<?php echo $venta_total ?>">
               <input type="hidden" name="venta_pagado" value="<?php echo $venta_pagado ?>">
               <input type="hidden" name="venta_cambio" value="<?php echo $venta_cambio ?>">
+              <input type="hidden" name="plazo" value="<?php echo $plazo ?>">
+              <input type="hidden" name="tiempo" value="<?php echo $tiempo ?>">
 
               <input type="hidden" name="detalles_venta" value='<?php echo json_encode($detalles_venta_array); ?>'>
 

@@ -16,7 +16,7 @@
     }
 
     date_default_timezone_set('America/Bogota'); 
-    $fechaActual = date("d/m/Y");
+    $fechaActual = date("d-m-Y");
     $horaActual = date("h:i a");
 
     $valSudoAdmin = $_SESSION['valSudoAdmin'];
@@ -55,7 +55,10 @@
       $index_gastos_link = 'index_gastos.php';
     //DEVOLUCIONES
       $index_devoluciones_link = 'index_devoluciones.php';
-    
+    //SECCIÓN CREDITOS
+      $index_pendientes_link = 'index_pendientes.php';
+
+
     } else {
       $inicio_link = "index_estadisticas.php?link=".$link;
     //SECCIÓN DE VENTAS
@@ -85,6 +88,8 @@
       $index_gastos_link = 'index_gastos.php?link='.$link;
     //DEVOLUCIONES
       $index_devoluciones_link = 'index_devoluciones.php?link='.$link;
+    //SECCIÓN CREDITOS
+      $index_pendientes_link = 'index_pendientes.php?link='.$link;
   }
 ?>
 <!DOCTYPE html>
@@ -420,7 +425,7 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/index_pendientes.php" class="nav-link">
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $index_pendientes_link; ?>" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Cuentas Clientes</p>
                   </a>

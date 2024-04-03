@@ -2,17 +2,20 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
   $lista_cliente_link  = "index_clientes.php";
+  $crear_productos_link  = "crear_productos.php";
   $lista_productos_link  = "index_productos.php";
   $index_cajas_link  = "index_cajas.php";
+  $crear_ventas_link  = "crear_venta.php";
   $index_ventas_link  = "index_ventas.php";
   $lista_categorias_link  = "lista_categorias.php";
   $index_pendientes_link ="index_pendientes.php";
-  
 
 }else{
   $lista_cliente_link  = "index_clientes.php?link=".$link;
+  $crear_productos_link  = "crear_productos.php?link=".$link;
   $lista_productos_link  = "index_productos.php?link=".$link;
   $index_cajas_link  = "index_cajas.php?link=".$link;
+  $crear_ventas_link  = "crear_venta.php?link=".$link;
   $index_ventas_link  = "index_ventas.php?link=".$link;
   $lista_categorias_link  = "lista_categorias.php?link=".$link;
   $index_pendientes_link = "index_pendientes.php?link=".$link;
@@ -29,7 +32,7 @@ if ($usuario_sesion == 1) {
   $sentencia_clientes->bindParam(":link", $linkeo);
 }
 $sentencia_clientes->execute();
-$contardor_usuario=$sentencia_clientes->fetchAll(PDO::FETCH_ASSOC);
+$contador_usuario=$sentencia_clientes->fetchAll(PDO::FETCH_ASSOC);
 
 //Total Productos en Stock
 if ($usuario_sesion == 1) {
@@ -39,7 +42,17 @@ if ($usuario_sesion == 1) {
   $sentencia_stock->bindParam(":link", $linkeo);
 }
 $sentencia_stock->execute();
-$contardor_producto=$sentencia_stock->fetchAll(PDO::FETCH_ASSOC); 
+$contador_producto=$sentencia_stock->fetchAll(PDO::FETCH_ASSOC); 
+
+//Producto mas vendido 
+// if ($usuario_sesion == 1) {
+//   $sentencia_stock=$conexion->prepare("SELECT COUNT(producto_stock_total) as total_stock FROM venta");
+// }else {
+//   $sentencia_stock=$conexion->prepare("SELECT COUNT(producto_stock_total) as total_stock FROM producto WHERE producto_id > 0 AND link = :link");
+//   $sentencia_stock->bindParam(":link", $linkeo);
+// }
+// $sentencia_stock->execute();
+// $contador_producto=$sentencia_stock->fetchAll(PDO::FETCH_ASSOC); 
 
 //Total Ventas
 if ($usuario_sesion == 1) {
@@ -50,7 +63,7 @@ if ($usuario_sesion == 1) {
 }
 $sentencia_ventas->bindParam(":fechaActual", $fechaActual);
 $sentencia_ventas->execute();
-$contardor_ventas =$sentencia_ventas->fetchAll(PDO::FETCH_ASSOC); 
+$contador_ventas =$sentencia_ventas->fetchAll(PDO::FETCH_ASSOC); 
 
 // consulta para el dinero de la caja que inicio session 
 if ($usuario_sesion == 1) {
@@ -152,7 +165,7 @@ if ($_POST) {
             <div class="col-lg-3 col-6">
               <div class="small-box bg-info">
                 <div class="inner">
-                  <h3><?php echo (isset( $contardor_producto[0]['total_stock']))?$contardor_producto[0]['total_stock']: 0;?></h3>
+                  <h3><?php echo (isset( $contador_producto[0]['total_stock']))?$contador_producto[0]['total_stock']: 0;?></h3>
                   <p>Productos</p>
                 </div>
                 <div class="icon">
@@ -166,7 +179,7 @@ if ($_POST) {
           <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
               <div class="inner" style="color: white !important">
-                <h3 ><?php echo (isset($contardor_usuario[0]['total_clientes']))?$contardor_usuario[0]['total_clientes']: 0 ;?></h3>
+                <h3 ><?php echo (isset($contador_usuario[0]['total_clientes']))?$contador_usuario[0]['total_clientes']: 0 ;?></h3>
                 <p>Clientes Registrados</p>
               </div>
               <div class="icon">
@@ -179,8 +192,9 @@ if ($_POST) {
           <div class="col-lg-3 col-6">
             <div class="small-box bg-danger">
               <div class="inner">
-                <h3><?php echo (isset( $contardor_ventas[0]['total_ventas']))?$contardor_ventas[0]['total_ventas']: 0;?></h3>
-                <p>Ventas del Día</p>
+                <h3><?php echo (isset( $contador_ventas[0]['total_ventas']))?$contador_ventas[0]['total_ventas']: 0;?></h3>
+              <?php if($_SESSION['rolUserEmpleado']) { ?> <p>Ventas del día hechas por mi</p> <?php } else { echo "Total Ventas del día"; } ?>
+
               </div>
               <div class="icon">
                 <i class="ion ion-pie-graph"></i>
@@ -260,20 +274,32 @@ if ($_POST) {
               <div class="card-body">
                 <ul class="todo-list" data-widget="todo-list">
                   <li>
-                    <a href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>"><h4 class="text">Lista de Cajas</h4></a>&nbsp;
-                    <i class="fas fa-cash-register" aria-hidden="true" style="font-size: 24px;"></i>
-                  </li>
-                  <li>
-                    <a href="<?php echo $url_base;?>secciones/<?php echo $index_ventas_link;?>"><h4 class="text">Hitorial de Ventas</h4></a>&nbsp;
                     <i class="fa fa-cart-plus" aria-hidden="true" style="font-size: 24px;"></i>
+                    <?php if (!$_SESSION['rolSudoAdmin']) { ?>
+                      <a href="<?php echo $url_base;?>secciones/<?php echo $crear_ventas_link;?>"><h4 class="text">Vender</h4></a>&nbsp;
+                      ||
+                    <?php } ?>
+                    <a href="<?php echo $url_base;?>secciones/<?php echo $index_ventas_link;?>"><h4 class="text">Hitorial de Ventas</h4></a>&nbsp;
                   </li>
                   <li>
-                    <a href="<?php echo $url_base;?>secciones/<?php echo $lista_productos_link;?>"><h4 class="text">Lista de Productos</h4></a>&nbsp;
                     <i class="fa fa-shopping-basket" aria-hidden="true" style="font-size: 24px;"></i>
+                    <?php if ($_SESSION['roladminlocal'] || $_SESSION['rolSudoAdmin']) { ?>
+                      <a href="<?php echo $url_base;?>secciones/<?php echo $lista_productos_link;?>"><h4 class="text">Crear Producto</h4></a>&nbsp;
+                      ||
+                    <?php } ?>
+                    <a href="<?php echo $url_base;?>secciones/<?php echo $lista_productos_link;?>"><h4 class="text">Lista de Productos</h4></a>&nbsp;
                   </li>
                   <li>
-                    <a href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>"><h4 class="text">Lista de Categorías</h4></a>&nbsp;
+                    <i class="fas fa-cash-register" aria-hidden="true" style="font-size: 24px;"></i>
+                    <a href="<?php echo $url_base;?>secciones/<?php echo $crear_cliente_link;?>"><h4 class="text">Registrar Cliente</h4></a>&nbsp;
+                    ||
+                    <a href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>"><h4 class="text">Lista de Clientes</h4></a>&nbsp;
+                  </li>
+                  <li>
                     <i class="fa fa-retweet" aria-hidden="true" style="font-size: 24px;"></i>
+                    <a href="<?php echo $url_base;?>secciones/<?php echo $crear_categoria_link;?>"><h4 class="text">Crear Categoría</h4></a>&nbsp;
+                    ||
+                    <a href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>"><h4 class="text">Lista de Categorías</h4></a>&nbsp;
                   </li>
                 </ul>
               </div>

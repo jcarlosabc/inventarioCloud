@@ -240,7 +240,7 @@
  
     //  CONFIGURANDO TABLAS
     $(document).ready(function () {
-    var table = $("#vBuscar, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario, #lista_categoria").DataTable({
+    var table = $("#vBuscar, #vBuscar_bodega, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario, #lista_categoria").DataTable({
         "responsive": true,
         "lengthChange": false,
         "autoWidth": false,
@@ -304,21 +304,30 @@
 
     // Ocultar y mostrar campo de cuotas cuando pagan a credito
     document.addEventListener("DOMContentLoaded", function () {
-      mostrarOcultarPartes(); 
+      mostrarOcultarPartes();
     });
-      function mostrarOcultarPartes() {
-          var metodoPago = document.getElementById("metodoPago");
-          var partesCampo = document.getElementById("partes");
 
-          if (metodoPago.value == "2") { // "2" es el valor de "A Crédito"
-            partesCampo.style.display = "block";
-            partesCampo.style.border = "1px solid #9f9f9f";
-            partesCampo.style.padding = "16px";
-            partesCampo.style.borderRadius = "13px";
-          } else {
-              partesCampo.style.display = "none";
-          }
-      }
+function mostrarOcultarPartes() {
+    var metodoPago = document.getElementById("metodoPago");
+    var partesCampo = document.getElementById("partes");
+
+    if (metodoPago.value == "2") { // "2" es el valor de "A Crédito"
+        partesCampo.style.display = "block";
+        partesCampo.style.border = "1px solid #9f9f9f";
+        partesCampo.style.padding = "16px";
+        partesCampo.style.borderRadius = "13px";
+
+        // Cambiar el estilo para mostrar los campos uno al lado del otro
+        var inputCampo = document.querySelector('#partes input');
+        var selectCampo = document.querySelector('#partes select');
+
+        inputCampo.style.display = 'inline-block';
+        selectCampo.style.display = 'inline-block';
+    } else {
+        partesCampo.style.display = "none";
+    }
+}
+
 
     // Validando que la clave sean iguales para la vista de crear productos
     document.addEventListener("DOMContentLoaded", function() {
@@ -353,7 +362,8 @@
           return "$" + parseFloat(valor).toFixed(0).replace(/\d(?=(\d{3})+$)/g, "$&,");
       }
       $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta, " + 
-        "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad").on("input", function() {
+        "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad, " +
+        "#historialAbono").on("input", function() {
           var valor = $(this).val().replace(/[^0-9]/g, '');
           $(this).val(formatDineroSinDecimales(valor));
       });
@@ -361,7 +371,8 @@
       // Evento al enviar el formulario
       $("form").submit(function() {
           var valor = $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta," +
-          "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad").val().replace(/[^0-9]/g, ''); 
+          "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio," + 
+          "#historialAbono, #montoDevolucion, #nominaCantidad").val().replace(/[^0-9]/g, ''); 
           $("#cajaEfectivo").val(valor);
       });
   });
