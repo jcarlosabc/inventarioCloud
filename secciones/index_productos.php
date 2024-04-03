@@ -24,6 +24,7 @@ if ($responsable == 1) {
 }else { 
   $sentencia=$conexion->prepare("SELECT p.*, c.*, e.empresa_nombre
   FROM producto p LEFT JOIN categoria c ON p.categoria_id = c.categoria_id LEFT JOIN empresa e ON p.link = e.link WHERE p.link = :link");
+  FROM producto p LEFT JOIN categoria c ON p.categoria_id = c.categoria_id LEFT JOIN empresa e ON p.link = e.link WHERE p.link = :link");
   $sentencia->bindParam(":link",$link);
 }
 
@@ -65,6 +66,11 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>                
                   <td><?php echo $registro['producto_marca']; ?></td>
                   <td><?php echo $registro['producto_modelo']; ?></td>
+                  <td>
+                    <?php if($registro['categoria_id'] == 0){ ?>
+                      <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Este producto viene de Bodega debe <strong>Asignarle o Crearle </strong>una <strong>Categoria.</strong></article>
+                    <?php } else { echo $registro['categoria_nombre']; }?>
+                  </td>
                   <td>
                     <?php if($registro['categoria_id'] == 0){ ?>
                       <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Este producto viene de Bodega debe <strong>Asignarle o Crearle </strong>una <strong>Categoria.</strong></article>

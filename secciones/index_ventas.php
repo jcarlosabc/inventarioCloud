@@ -68,7 +68,6 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                 <tr>
                 <?php if (!$_SESSION['rolSudoAdmin']) { ?>
                   <input type="hidden" name="codigo_seguridad" value="<?php echo $registro['codigo_seguridad']; ?>">
-                  <input type="hidden" name="codigo_seguridad" value="<?php echo $registro['codigo_seguridad']; ?>">
                 <?php } ?>     
                   <td scope="row"><?php echo $registro['venta_codigo']; ?></td>
                   <td><?php echo $registro['venta_fecha']; ?> / <?php echo $registro['venta_hora']; ?></td>

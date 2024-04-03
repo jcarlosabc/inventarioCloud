@@ -42,6 +42,7 @@
       $crear_cliente_link = 'crear_cliente.php';
       $lista_cliente_link = 'index_clientes.php';
       $editar_cliente_link = 'editar_clientes.php';
+      $editar_cliente_link = 'editar_clientes.php';
     //SECCIÓN DE PROVEEDORES
       $crear_proveedore_link = 'crear_proveedor.php';
       $lista_proveedore_link = 'index_proveedores.php';
