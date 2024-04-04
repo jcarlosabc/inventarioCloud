@@ -64,7 +64,7 @@
                     <?php if ($registro['estado_venta'] != 1) { ?>
                         <?php echo $plazo . " " ; if ($registro['tiempo'] == 0) { echo "Dias" ;}else {echo "Meses" ;}; ?>
                         <?php if ($registro['plazo'] <= 3) { ?>
-                          <article><strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Quedan <strong> <?php echo $registro['plazo'] ;?></strong> días <br>para vencerse el plazo, del pago de esta <strong>Factura</strong>.</article>
+                          <article><strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Quedan <strong> <?php echo $plazo ;?></strong> días <br>para vencerse el plazo, del pago de esta <strong>Factura</strong>.</article>
                         <?php } ?>
                     <?php } else { ?>
                         <a class="btn btn-success btn-sm" role="button" title="Pagado">

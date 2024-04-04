@@ -17,7 +17,7 @@ if(isset($_GET['txtID'])){
     $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre 
     FROM usuario u LEFT JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 ");
   }else{
-    $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre FROM usuario u JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 AND u.link=:link ");
+        $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre FROM usuario u JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 AND u.link=:link AND u.rol = 2");
     $sentencia->bindParam(":link",$link);
    }
   $sentencia->execute();

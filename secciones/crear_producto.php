@@ -37,13 +37,14 @@ if ($_POST) {
     $fechaActual = date("d-m-Y");
 
     if ($idResponsable == 1) {
-        $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion,
+        $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion, producto_fecha_ingreso,
         producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo,
-    categoria_id,proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    categoria_id,proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $sentencia = $conexion->prepare($sql);
     $params = array(
         $producto_codigo, 
+        $fechaActual, 
         $fechaActual, 
         $fechaGarantia, 
         $producto_nombre,
@@ -55,7 +56,19 @@ if ($_POST) {
         $categoria_id,
         $proveedor_id
     );
+
+    try {
+        // $resultado = $sentencia->execute($params);
     $resultado_bodega = $sentencia->execute($params);
+
+        if ($resultado_bodega) {
+            echo "¡La devolución se insertó correctamente en la base de datos!";
+        } else {
+            echo "¡Error al insertar la devolución!";
+        }
+    } catch (PDOException $e) {
+        echo "Error de la base de datos: " . $e->getMessage();
+    }
     if ($resultado_bodega) {
         echo '<script>
         // Código JavaScript para mostrar SweetAlert

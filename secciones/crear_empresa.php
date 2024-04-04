@@ -3,16 +3,16 @@
 
 if ($_POST) {
 
-    $nit_empresa = isset($_POST['nit_empresa']) ?   $_POST['nit_empresa']  : " ";
+    $nit_empresa = isset($_POST['nit_empresa']) ? $_POST['nit_empresa'] : "";
     $nombre_empresa = isset($_POST['nombre_empresa']) ? $_POST['nombre_empresa'] : "";
-    $clave_user = isset($_POST['nombre_empresa']) ? str_replace(" ",'', $_POST['nombre_empresa']) : "";
+    $clave_user = isset($_POST['nombre_empresa']) ? str_replace(" ", '', $_POST['nombre_empresa']) : "";
     $telefono_empresa = isset($_POST['telefono_empresa']) ? $_POST['telefono_empresa'] : "";
     $email_empresa = isset($_POST['email_empresa']) ? $_POST['email_empresa'] : "";
     $direccion_empresa = isset($_POST['direccion_empresa']) ? $_POST['direccion_empresa'] : "";
-    $responsable = isset($_SESSION['usuario_id']) ?  $_SESSION['usuario_id']  : 0;
+    $responsable = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 0;
 
     //link_empresa 
-    $link_empresa = isset($_POST['link_empresa']) ?  $_POST['link_empresa']  : " ";
+    $link_empresa = isset($_POST['link_empresa']) ? $_POST['link_empresa'] : " ";
     $codigo_seguridad = isset($_POST['codigo_seguridad']) ? $_POST['codigo_seguridad'] : " ";
 
     //  GUARDANDO LA EMPRSA CREADA
@@ -34,12 +34,13 @@ if ($_POST) {
     $sentencia->execute($params);
 
     // GUARDAR USUARIO DE LA EMPRESA
-    $sql = "INSERT INTO usuario (usuario_nombre, usuario_apellido, usuario_telefono, usuario_email, usuario_usuario,
+    $sql = "INSERT INTO usuario (usuario_nombre, usuario_apellido, usuario_telefono, usuario_cedula, usuario_email, usuario_usuario,
     usuario_clave, rol, usuario_foto, caja_id, link ,responsable) 
-    VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
     $sentencia_usuario = $conexion->prepare($sql);
     $params = array(
         "Admin_".$nombre_empresa,
+        "N/A",
         "N/A",
         "N/A",
         "N/A",

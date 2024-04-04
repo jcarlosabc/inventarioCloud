@@ -51,7 +51,9 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Cantidad en Stock</th>
               <th>Garantía</th>
               <th>Empresa</th>
-              <?php if (!$_SESSION['rolUserEmpleado']) { ?> <th>Editar</th> <?php } ?>
+                          
+
+              <?php if (!$_SESSION['rolUserEmpleado']) { ?> <th>Opciones</th> <?php } ?>
             </tr>
             </thead>
             <tbody>
@@ -70,14 +72,11 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                       <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Este producto viene de Bodega debe <strong>Asignarle o Crearle </strong>una <strong>Categoria.</strong></article>
                     <?php } else { echo $registro['categoria_nombre']; }?>
                   </td>
-                  <td>
-                    <?php if($registro['categoria_id'] == 0){ ?>
-                      <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Este producto viene de Bodega debe <strong>Asignarle o Crearle </strong>una <strong>Categoria.</strong></article>
-                    <?php } else { echo $registro['categoria_nombre']; }?>
-                  </td>
                   <td><?php echo $registro['producto_stock_total']; ?></td>
                   <td><?php echo $registro['producto_fecha_garantia']; ?></td>
-                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td> 
+                   <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td> 
+     
+                   
                   <?php if (!$_SESSION['rolUserEmpleado']) { ?>
                   <td>
                     <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Añadir Stock">
