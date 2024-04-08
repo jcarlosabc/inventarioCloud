@@ -68,7 +68,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['producto_marca']; ?></td>
                   <td><?php echo $registro['producto_modelo']; ?></td>
                   <td>
-                    <?php if($registro['categoria_id'] == 0){ ?>
+                 <!-- corregir mostrar de donde llega el producto -->   <?php if($registro['categoria_id'] == 0){ ?> 
                       <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Este producto viene de Bodega debe <strong>Asignarle o Crearle </strong>una <strong>Categoria.</strong></article>
                     <?php } else { echo $registro['categoria_nombre']; }?>
                   </td>
@@ -91,6 +91,12 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                        <i class="fas fa-edit"></i>Editar
                    </a>
                    <?php } ?>
+                   </a>
+                   <?php if (!$_SESSION['rolSudoAdmin']) { ?>
+                    <a class="btn btn-primary" href="<?php echo $url_base;?>secciones/<?php echo $trasladar_producto_local_link . '&txtID=' . $registro['producto_id']; ?>"role="button"title="Enviar">
+                      <i class="fa fa-share"></i>Enviar
+                    </a>
+                    <?php } ?>
                     <?php if ($_SESSION['rolSudoAdmin']) { ?>
                     <a class="btn btn-danger" href="index_productos.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar">
                       <i class="far fa-trash-alt"></i>Eliminar 

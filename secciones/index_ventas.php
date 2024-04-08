@@ -55,6 +55,7 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Total</th>
               <th>Pagado</th>
               <th>Cambio</th>
+              <th>Metodo de Pago</th>
               <th>Cliente</th>
               <th>responsable</th>
               <?php if ($_SESSION['rolSudoAdmin']) { ?>
@@ -74,6 +75,16 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td class="tdColor"><?php echo '$' . number_format($registro['venta_total'], 0, '.', ','); ?></td>
                   <td class="tdColor"><?php echo '$' . number_format($registro['venta_pagado'], 0, '.', ','); ?></td> 
                   <td class="tdColor"><?php echo ($registro['venta_metodo_pago'] == 0 || $registro['venta_metodo_pago'] == 1) ? '$' . number_format($registro['venta_cambio'], 0, '.', ',') : '$' . number_format($registro['venta_cambio'], 0, '.', ',') ; ?></td>
+                  
+                  <?php if ($registro['venta_metodo_pago'] == 0) { ?>
+                  <td>Efectivo</td>
+                  <?php } if ($registro['venta_metodo_pago'] == 1)  {?>  
+                      <td>Transfencia</td>
+                    <?php } if ($registro['venta_metodo_pago'] == 2)  {?>  
+                      <td>Credito</td>
+                    <?php } if ($registro['venta_metodo_pago'] == 3)  {?>  
+                      <td>Datafono</td>
+                    <?php } ?>      
                   <td><a  <?php if($registro['cliente_id'] != 0 ){ ?> href="<?php echo $url_base;?>secciones/<?php echo $editar_cliente_link . '?' . http_build_query(['data-value' => $registro['link']]); ?><?php echo '&txtID=' . $registro['cliente_id']; ?>" <?php }?>><?php echo $registro['cliente_nombre']; ?></a></td>
                   <td><?php echo  $registro['usuario_nombre']; ?></td>
                   <?php if ($_SESSION['rolSudoAdmin']) { ?>

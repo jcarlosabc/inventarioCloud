@@ -35,6 +35,7 @@ if(isset($_GET['txtID'])){
   $venta_metodo_pago=$registro["venta_metodo_pago"];  
   $plazo=$registro["plazo"];  
   $tiempo=$registro["tiempo"];
+  $cliente_telefono=$registro["cliente_telefono"];
   
   $tiempo == 0 ? $tiempo = "Días" : $tiempo = "Meses";
 
@@ -231,10 +232,15 @@ if(isset($_GET['txtID'])){
               <input type="hidden" name="detalles_venta" value='<?php echo json_encode($detalles_venta_array); ?>'>
 
               <div class="row no-print">
-                <div class="col-12">
+                <div class="col-12">                    
                   <button type="submit" class="btn btn-primary float-right" style="margin-right: 5px;">
-                    <i class="fas fa-download"></i> Generar Ticket
-                  </button>
+                    <i class="fas fa-download"></i> Generar Ticket                    
+                  </button>   
+                  <a href="https://api.whatsapp.com/send?phone=57<?php echo $cliente_telefono ?>&text=aqui van los datos" class="btn btn-success float-right" style="margin-right: 5px;" target="_blank">
+                      <i class="fab fa-whatsapp"></i> WhatsApp
+                  </a><!-- intentar que abra whatssap WEB -->
+                  
+               
                   <!-- <div id="ID_mostrar_info"></div> -->
                 </div>
               </div>

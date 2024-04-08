@@ -2,13 +2,18 @@
 
     session_start();
     include("../db.php");
-    $url_base = "https://sunny-part.000webhostapp.com/";
-    
-    $sentencia=$conexion->prepare("SELECT empresa_logo, empresa_nombre FROM empresa LIMIT 1 ");
-    $sentencia->execute();
-    $lista_empresa=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
+    $url_base = "http://localhost/inventariocloud/";
 
-    $logo_empresa = isset($lista_empresa[0]['empresa_logo'])? $lista_empresa[0]['empresa_logo']:'';
+    
+    $link = (isset($_GET['link']))?$_GET['link']:"";
+    $sentencia=$conexion->prepare("SELECT empresa_nombre FROM empresa WHERE link = :link LIMIT 1 ");
+    $sentencia->bindParam(":link",$link);
+    
+    $sentencia->execute();    
+    $lista_empresa=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
+    
+
+    //$logo_empresa = isset($lista_empresa[0]['empresa_logo'])? $lista_empresa[0]['empresa_logo']:'';
     $nombre_empresa = isset($lista_empresa[0]['empresa_nombre'])? $lista_empresa[0]['empresa_nombre'] : '';
 
     if (!isset($_SESSION['usuario_usuario'])) {
@@ -75,6 +80,7 @@
       $crear_producto_link = 'crear_producto.php?link='.$link;
       $lista_producto_link ='index_productos.php?link='.$link;
       $editar_producto_link ='editar_productos.php?link='.$link;
+      $trasladar_producto_local_link ='trasladar_producto_local.php?link='.$link;
     //SECCIÓN DE CLIENTES
       $crear_cliente_link = 'crear_cliente.php?link='.$link;
       $lista_cliente_link = 'index_clientes.php?link='.$link;
@@ -135,6 +141,9 @@
   <!-- Select2 -->
   <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
   <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+<!-- Whatssap -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-NHunfPAzTJH7s1weDQ8q5PXdvXEZEfPeF2dQu9KcKzS0/OjLJNSU+87HwGY5HV0HdGbh+Kmt7lC3FRJ0wGF+1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -194,10 +203,14 @@
       <!-- Main Sidebar Container -->
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
-      <!-- <a href="#" class="brand-link">
-        <img src="<?php echo "data:image/png;base64,".$logo_empresa;?>" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light"><?php echo $nombre_empresa;?></span>
-      </a> -->
+       <a href="#" class="brand-link">
+        <img src="../dist/img/logos/logo_empresa.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <?php if ($_SESSION['rolSudoAdmin']) { ?>
+          <span class="brand-text font-weight-light">Bodega</span>
+          <?php } else {?>
+            <span class="brand-text font-weight-light"><?php echo $nombre_empresa;?></span>
+        <?php } ?>
+        </a> 
     
       <!-- Sidebar -->
       <div class="sidebar">
@@ -496,6 +509,14 @@
                   <p>NÓMINA</p>
                   <i class="fas fa-angle-left right"></i>
               </a>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="adelanto_nomina.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Adelantar Nómina</p>
+                  </a>
+                </li>
+              </ul>
               <ul class="nav nav-treeview">              
                 <li class="nav-item">
                   <a href="crear_nomina.php" class="nav-link">
