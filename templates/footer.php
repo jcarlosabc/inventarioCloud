@@ -310,6 +310,7 @@
 function mostrarOcultarPartes() {
     var metodoPago = document.getElementById("metodoPago");
     var partesCampo = document.getElementById("partes");
+    var transferenciaCampo = document.getElementById("metodo_transferencia");
 
     if (metodoPago.value == "2") { // "2" es el valor de "A Crédito"
         partesCampo.style.display = "block";
@@ -327,8 +328,25 @@ function mostrarOcultarPartes() {
     } else {
         partesCampo.style.display = "none";
     }
-  
+    if (metodoPago.value == "1") { // "1" es el valor de "Transferencia"
+        transferenciaCampo.style.display = "inline";
+        transferenciaCampo.style.padding = "16px";
+        transferenciaCampo.style.borderRadius = "13px";
+
+        // Cambiar el estilo para mostrar los campos uno al lado del otro
+        var inputCampo = document.querySelector('#metodo_transferencia input');
+        var selectCampo = document.querySelector('#metodo_transferencia select');
+
+        inputCampo.style.display = 'inline-block';
+        selectCampo.style.display = 'inline-block';
+    } else {
+        transferenciaCampo.style.display = "none";
+    }
+
+    
 }
+
+
 
 
     // Validando que la clave sean iguales para la vista de crear productos

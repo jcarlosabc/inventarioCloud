@@ -1,10 +1,15 @@
 <?php include("../templates/header.php") ?>
 <?php 
+
+  if ($_SESSION['rolSudoAdmin']) {
+    $sentencia=$conexion->prepare("SELECT * FROM venta WHERE venta_metodo_pago = 2 ");
+  }else {
     if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
     $sentencia=$conexion->prepare("SELECT * FROM venta WHERE venta_metodo_pago = 2 AND link=:link");
     $sentencia->bindParam(":link",$linkeo);
-    $sentencia->execute();
-    $lista_ventas_credito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+  }
+  $sentencia->execute();
+  $lista_ventas_credito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
     date_default_timezone_set('America/Bogota'); 
     $fechaActual = date("d-m-Y");

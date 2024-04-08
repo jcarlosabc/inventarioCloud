@@ -7,7 +7,6 @@ if ($_SESSION['valSudoAdmin']) {
     $ventas_link = "crear_venta.php?link=".$link;
     $ventas_detalles_link = "detalles.php?link=".$link;
  }
-error_reporting(E_ERROR | E_PARSE);$caja_id = $_SESSION['caja_id'];
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
 
 //No Caja Asignada
@@ -15,7 +14,7 @@ $sentencia_caja = $conexion->prepare("SELECT caja_id FROM usuario WHERE usuario_
 $sentencia_caja->bindParam(":usuario_id", $_SESSION['usuario_id']);
 $sentencia_caja->execute();
 $caja_usuario = $sentencia_caja->fetch(PDO::FETCH_ASSOC); 
-$noSeller = ($caja_usuario['caja_id'] == 0);
+if($caja_usuario['caja_id'] == 0){$noSeller = true ;} else {$caja_id = $caja_usuario['caja_id'] ;}
 
 //Eliminar Elementos
 if(isset($_GET['link'])){
@@ -107,6 +106,19 @@ if(isset($_POST['productos_vendidos'])) {
     if ($metodo_pago == 0 || $metodo_pago == 1 || $metodo_pago == 3) {
         $estado_ventas = 1;
     }
+    if ($metodo_pago == 1) {
+        $transferenciaMetodo = isset($_POST['transferenciaMetodo']) ? $_POST['transferenciaMetodo'] : $_POST['transferenciaMetodo'];
+    }else {
+        $transferenciaMetodo = "";
+    }
+    $creditoAbono_efectivo = false;
+    $metodo_credito = 0;
+    if ($metodo_pago == 2) {
+        $metodo_credito = 1;
+        $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+        if($tipoAbono == 2){$creditoAbono_efectivo == true;}
+    }
+
     $plazo = isset($_POST['plazo']) ? $_POST['plazo'] : $_POST['plazo'];
     $tiempo = isset($_POST['tiempoDiasMeses']) ? $_POST['tiempoDiasMeses'] : $_POST['tiempoDiasMeses'];
    
@@ -122,19 +134,22 @@ if(isset($_POST['productos_vendidos'])) {
     $caja_efectivo = $result_caja['caja_efectivo'];
     $caja_efectivo = $caja_efectivo + $total_dinero;
 
-    // Actualizando el dinero de la caja
-    $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ?";
-        $sentencia = $conexion->prepare($sql);
-        $params = array(
-            $caja_efectivo, 
-            $result_cajaId  
-        );
-    $sentencia->execute($params);
+
+    if ($metodo_pago == 0 || $creditoAbono_efectivo) {
+        // Actualizando el dinero de la caja
+        $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ?";
+            $sentencia = $conexion->prepare($sql);
+            $params = array(
+                $caja_efectivo, 
+                $result_cajaId  
+            );
+        $sentencia->execute($params);
+    }
     
     // Guardando la venta
     $sql = "INSERT INTO venta (venta_codigo, venta_fecha, venta_hora, venta_total, venta_pagado, venta_cambio, 
-                        venta_metodo_pago, plazo, tiempo, cliente_id, caja_id, link, responsable, estado_venta) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        venta_metodo_pago, transferencia_metodo,  plazo, tiempo, cliente_id, caja_id, link, responsable, estado_venta) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $sentencia = $conexion->prepare($sql);
             $params = array(
             $codigo_factura, 
@@ -144,6 +159,7 @@ if(isset($_POST['productos_vendidos'])) {
             $recibe_dinero, 
             $cambio_dinero, 
             $metodo_pago,
+            $transferenciaMetodo,
             $plazo,
             $tiempo,
             $cliente_id,
@@ -176,12 +192,12 @@ if(isset($_POST['productos_vendidos'])) {
 }
 
    date_default_timezone_set('America/Bogota'); 
-   $fechaDia = date("d");
-   $fechaMes = date("m");
+//    $fechaDia = date("d");
+//    $fechaMes = date("m");
+//    $fechaYear = date("Y");
+   $fechaDia = 20;
+   $fechaMes = 04;
    $fechaYear = date("Y");
-   // $fechaDia = 13;
-   // $fechaMes = 04;
-   // $fechaYear = date("Y");
    
    // GUARDAR SUMA DE DINERO PARA NÓMINA
     $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link");
@@ -190,14 +206,15 @@ if(isset($_POST['productos_vendidos'])) {
     $lista_dinero=$sentencia->fetchAll(PDO::FETCH_ASSOC);
     $valNuevoMes = false ;
     if ($lista_dinero) {
+        $existeRegistro = false;
         foreach ($lista_dinero as $fila) {
             if ($fechaDia <= 15 && $fila['mes'] == $fechaMes) {
-                if ($fila['dia'] <= 15 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear) {
-                    // echo "=============";                    
-                    // echo "<br>";                    
-                    // echo "...Haciendo Update de la primera quincena...";
-                    // echo "<br>";                    
-                    // echo "=============";                    
+                if ($fila['dia'] <= 15 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear && $fila['metodo_pago'] == $metodo_pago && $fila['transferencia_metodo'] == $transferenciaMetodo ) {
+                    echo "=============";                    
+                    echo "<br>";                    
+                    echo "...Haciendo Update de la primera quincena...";
+                    echo "<br>";                    
+                    echo "=============";                    
 
                     $sql = "UPDATE dinero_por_quincena SET dinero = ?, dia = ?, mes = ?, anio = ? WHERE id = ?";
                     $sentencia = $conexion->prepare($sql);
@@ -209,65 +226,133 @@ if(isset($_POST['productos_vendidos'])) {
                         $fila['id']
                     );
                     $sentencia->execute($params);
+                    $existeRegistro = true;
+                    break; 
                 }
             }else {
                 $valNuevoMes =true;
             }
-        }
-        if ($valNuevoMes == true) {
-            if($fechaDia <= 15 && $fila['mes'] != $fechaMes) {
-                // echo "==========";
-                // echo "<br>";
-                // echo "...Nueva venta de un Nuevo mes...";
-                // echo "<br>";
-                // echo "==========";
-                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio) 
-                VALUES (?, ?, ?, ?, ?)";
+        }     
+        // Insertando cuando el metodo de pago es diferente a los demas o la negacion de la condicion de arriba
+        if (!$existeRegistro && $fechaDia <= 15 && !$valNuevoMes) {
+            echo "==========";
+            echo "<br>";
+            echo "... INSERTANDO NUEVO METODO DE PAGO...";
+            echo "<br>";
+            echo "==========";
+            $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, metodo_credito ) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
                     $total_dinero,
                     $linkeo_venta,
                     $fechaDia,
                     $fechaMes,
-                    $fechaYear
+                    $fechaYear,
+                    $metodo_pago,
+                    $transferenciaMetodo,
+                    $metodo_credito
+                    
                 );
                 $sentencia->execute($params);  
+        }
+       
+        if ($valNuevoMes == true) {
+            if($fechaDia <= 15 && $fila['mes'] != $fechaMes) {
+                echo "==========";
+                echo "<br>";
+                echo "...Nueva venta de un Nuevo mes...";
+                echo "<br>";
+                echo "==========";
+                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo,  metodo_credito ) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                $sentencia = $conexion->prepare($sql);
+                $params = array(
+                    $total_dinero,
+                    $linkeo_venta,
+                    $fechaDia,
+                    $fechaMes,
+                    $fechaYear,
+                    $metodo_pago,
+                    $transferenciaMetodo,
+                    $metodo_credito
+                );
+                $sentencia->execute($params); 
             }
         }
-            $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link ORDER BY id DESC");
+            echo "link venta => " . $linkeo_venta;
+            echo "<br>";
+            echo "metodo_pago => " . $metodo_pago;
+            echo "<br>";
+            echo "transferenciaMetodo => " . $transferenciaMetodo;
+            echo "<br>";
+        
+            // $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link AND dia <= '15' AND metodo_pago ORDER BY dia DESC limit 1;");
+            $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link AND metodo_pago =:metodo_pago AND transferencia_metodo=:transferenciaMetodo AND mes=:fechaMes ORDER BY id DESC LIMIT 1");
             $sentencia->bindParam(":link", $linkeo_venta);
+            $sentencia->bindParam(":metodo_pago", $metodo_pago);
+            $sentencia->bindParam(":transferenciaMetodo", $transferenciaMetodo);
+            $sentencia->bindParam(":fechaMes", $fechaMes);
             $sentencia->execute();
             $lista_ultimo_update=$sentencia->fetch(PDO::FETCH_LAZY);
-            $id = $lista_ultimo_update['id'];
-            $dia_buscado = $lista_ultimo_update['dia'];
-            $mes_buscado = $lista_ultimo_update['mes'];
-            $anio_buscado = $lista_ultimo_update['anio'];
+            if ($lista_ultimo_update) {
+                $id = $lista_ultimo_update['id'];
+                $dia_buscado = $lista_ultimo_update['dia'];
+                $mes_buscado = $lista_ultimo_update['mes'];
+                $anio_buscado = $lista_ultimo_update['anio'];
+            }
 
-            if ($dia_buscado != 16 && $dia_buscado == 15 && $fechaMes == $mes_buscado && $fila['anio'] == $fechaYear) {
-                if($fechaDia >= 16 && $fechaMes == $mes_buscado && $fila['anio'] == $fechaYear) {
-                    // echo "...entrando a la validacion de al segunda quincena";
-                    // echo "<br>";
-                 
-                    $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio) 
-                    VALUES (?, ?, ?, ?, ?)";
+
+            echo "edia buscado carajo => " .$dia_buscado;
+
+            if(!$lista_ultimo_update){
+                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, metodo_credito) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                     $sentencia = $conexion->prepare($sql);
                     $params = array(
                         $total_dinero,
                         $linkeo_venta,
                         $fechaDia,
                         $fechaMes,
-                        $fechaYear
+                        $fechaYear,
+                        $metodo_pago,
+                        $transferenciaMetodo,
+                        $metodo_credito
+                    );
+                    $sentencia->execute($params); 
+                    echo "<br>"; 
+                    echo "..INSERTANDO NUEVO METODO DE PAGO===============>  pero de la segunda quincena nene...";
+                    echo "<br>";
+            }
+
+            if ($dia_buscado != 16 && $dia_buscado < 16 && $fechaMes == $mes_buscado && $anio_buscado == $fechaYear) {
+                if($fechaDia >= 16 && $fechaMes == $mes_buscado && $anio_buscado == $fechaYear) {
+                    echo "...entrando a la validacion de al segunda quincena";
+                    echo "<br>";
+                 
+                    $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, metodo_credito) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    $sentencia = $conexion->prepare($sql);
+                    $params = array(
+                        $total_dinero,
+                        $linkeo_venta,
+                        $fechaDia,
+                        $fechaMes,
+                        $fechaYear,
+                        $metodo_pago,
+                        $transferenciaMetodo,
+                        $metodo_credito
                     );
                     $sentencia->execute($params);  
-                    // echo "..Guardando la segunda quincena...";
-                    // echo "<br>";
+                    echo "..Guardando la segunda quincena...";
+                    echo "<br>";
                 }
             }else if($dia_buscado >= 16){
-                // echo "============";
-                // echo "<br>";
-                // echo "...Update a la segunda quincena";
-                // echo "<br>";
-                // echo "============";
+                echo "============";
+                echo "<br>";
+                echo "...Update a la segunda quincena";
+                echo "<br>";
+                echo "============";
                 $sql = "UPDATE dinero_por_quincena SET dinero = ?, dia = ?, mes = ?, anio = ? WHERE id = ?";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
@@ -282,20 +367,23 @@ if(isset($_POST['productos_vendidos'])) {
 
       
     } else {
-        // echo "==========";
-        // echo "<br>";
-        // echo "...Por primera vez haciendo una venta...";
-        // echo "<br>";
-        // echo "==========";
-        $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio) 
-        VALUES (?, ?, ?, ?, ?)";
+        echo "==========";
+        echo "<br>";
+        echo "...Por primera vez haciendo una venta...";
+        echo "<br>";
+        echo "==========";
+        $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, metodo_credito ) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $sentencia = $conexion->prepare($sql);
         $params = array(
             $total_dinero,
             $linkeo_venta,
             $fechaDia,
             $fechaMes,
-            $fechaYear
+            $fechaYear,
+            $metodo_pago,
+            $transferenciaMetodo,
+            $metodo_credito
         );
         $sentencia->execute($params);  
     }
@@ -576,8 +664,10 @@ if(isset($_POST['productos_vendidos'])) {
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- A credito --> 
                                     <style>
-                                        #partes {
+                                        #partes,#metodo_transferencia{
                                             display: none;
                                         }
                                         span.select2-selection.select2-selection--single{
@@ -606,9 +696,35 @@ if(isset($_POST['productos_vendidos'])) {
                                                     <!-- <option value="1">Mes</option>  -->
                                                 </select> 
                                                 <br>
+                                                <table style="width: 100%">
+                                                    <tr>     
+                                                        <td ><input checked type="radio" name="tipoAbono" value="1"> No hay abono</td>
+                                                        <td><input type="radio" value="2" name="tipoAbono"> Efectivo</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><input type="radio" value="02" name="tipoAbono"> Nequi</td>
+                                                        <td><input type="radio" value="00" name="tipoAbono"> Davivienda</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2"><input type="radio" value="01" name="tipoAbono"> Bancolombia</td>
+                                                    </tr>
+                                                </table>
+                                                <br>
                                                 <article style=" padding: 0px 0px 10px;"> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Escoger  <strong>Cliente</strong>. </article>
                                                  🔻⬇️⬇️🔻
                                             </div>
+
+                                            <div class="row" id="metodo_transferencia">
+                                                <div class="form-group">
+                                                <label class="textLabel">Eliga Banco</label> 
+                                                <select class="form-control camposTabla" id="transferenciaMetodo" name="transferenciaMetodo">                                    
+                                                    <option value="00" style="color:#22c600">davivienda</option> 
+                                                    <option value="01" style="color:#009fc1">bancolombia</option> 
+                                                    <option value="02" style="color:#d50000">nequi</option>
+                                                </select>
+                                            </div>
+                                            </div>
+
                                             <label class="textLabel">Cliente</label> 
                                             <select class="form-control select2" name="cliente_id" style="height: 20px">
                                                 <option value="0">Público General </option> 

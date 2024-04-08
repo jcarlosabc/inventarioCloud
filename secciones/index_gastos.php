@@ -17,12 +17,12 @@ if(isset($_GET['txtID'])){
 }
 $responsable = $_SESSION['usuario_id'];
 if ($responsable == 1) {
-  $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre, u.usuario_nombre, u.usuario_apellido FROM gastos g JOIN empresa e ON e.link = g.link LEFT JOIN usuario u ON u.responsable = g.responsable");
+  $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre, u.usuario_nombre, u.usuario_apellido FROM gastos g JOIN empresa e ON e.link = g.link LEFT JOIN usuario u ON u.usuario_id = g.responsable");
 
 }else { 
   $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre, u.usuario_nombre, u.usuario_apellido 
   FROM gastos g JOIN empresa e ON e.link = g.link 
-  LEFT JOIN usuario u ON u.responsable = g.responsable WHERE g.link =:link");
+  LEFT JOIN usuario u ON u.usuario_id = g.responsable WHERE g.link =:link");
   $sentencia->bindParam(":link",$link);
 }
 

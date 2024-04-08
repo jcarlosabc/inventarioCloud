@@ -13,9 +13,12 @@ $fechaActual = date("d-m-Y");
 // Mostrar los datos del producto a trasladar
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
+    $link=(isset($_GET['link']))?$_GET['link']:"";   
 
-    $sentencia=$conexion->prepare("SELECT * FROM bodega WHERE producto_id=:id");
+
+    $sentencia=$conexion->prepare("SELECT * FROM producto WHERE producto_id=:id AND link = :link");
     $sentencia->bindParam(":id",$txtID);
+    $sentencia->bindParam(":link",$link);
     $sentencia->execute();
     $registro=$sentencia->fetch(PDO::FETCH_LAZY);
 
@@ -33,14 +36,14 @@ if(isset($_GET['txtID'])){
 }
 
 // Obtener la categoría actual del producto
-$sentencia_categoria = $conexion->prepare("SELECT c.categoria_nombre FROM bodega b JOIN categoria c ON b.categoria_id = c.categoria_id WHERE b.producto_id = :id");
+$sentencia_categoria = $conexion->prepare("SELECT c.categoria_nombre FROM producto p JOIN categoria c ON p.categoria_id = c.categoria_id WHERE p.producto_id = :id");
 $sentencia_categoria->bindParam(":id", $producto_id);
 $sentencia_categoria->execute();
 $registro_categoria = $sentencia_categoria->fetch(PDO::FETCH_LAZY);
 $categoria_actual = $registro_categoria["categoria_nombre"];
 
 // Obtener proveedor actual del producto
-$sentencia_proveedor = $conexion->prepare("SELECT p.nombre_proveedores FROM bodega b JOIN proveedores p ON b.proveedor_id = p.id_proveedores WHERE b.producto_id=:id");
+$sentencia_proveedor = $conexion->prepare("SELECT p.nombre_proveedores FROM producto pr JOIN proveedores p ON pr.proveedor_id = p.id_proveedores WHERE pr.producto_id=:id");
 $sentencia_proveedor->bindParam(":id", $producto_id);
 $sentencia_proveedor->execute();
 $registro_proveedor = $sentencia_proveedor->fetch(PDO::FETCH_LAZY);
@@ -52,7 +55,6 @@ $sentencia_empresas->execute();
 $lista_empresas = $sentencia_empresas->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_POST) {   
-    
     $producto_fecha_garantia = (isset($_POST['producto_fecha_garantia'])) ? $_POST['producto_fecha_garantia'] : "";
     $producto_nombre = (isset($_POST['producto_nombre'])) ? $_POST['producto_nombre'] : "";
     $producto_stock_total = (isset($_POST['producto_stock_total'])) ? $_POST['producto_stock_total'] : "";
@@ -78,20 +80,20 @@ if ($_POST) {
     if ($lista_producto_buscado) {
         echo " SI hay un producto con ese codigo... ";
         echo "<br>";
-        $traslado ="tb";
+        $traslado= "tl";
         // Actualizando la cantidad en el stock del LOCAL que le pasamos de bodega
-        $sql = "UPDATE producto SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ?, traslado = ? WHERE producto_codigo = ? AND link= ?";
+        $sql = "UPDATE producto SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ? , traslado = ? WHERE producto_codigo = ? AND link= ?";
         $sentencia_envio = $conexion->prepare($sql);
         $params = array($fechaActual,$cantidad_enviada,$traslado,$producto_codigo, $link_empresa);
         $resultado = $sentencia_envio->execute($params);
         echo "...| Realizando actualizacion al estock del local |...";
         echo "<br>";
 
-        echo "...| Actualizando nueva cantidad en el stock de BODEGA |...";
+        echo "...| Actualizando nueva cantidad en el stock de local enviante |...";
         // Actualizando nueva cantidad en el stock de BODEGA
-        $sql = "UPDATE bodega SET producto_stock_total = producto_stock_total - ? WHERE producto_codigo = ?"; 
+        $sql = "UPDATE producto SET producto_stock_total = producto_stock_total - ? WHERE producto_codigo = ? AND link = ?" ; 
         $sentencia_bodega = $conexion->prepare($sql);
-        $params = array($cantidad_enviada, $producto_codigo);
+        $params = array($cantidad_enviada, $producto_codigo,$link);
         $resultado_bodega = $sentencia_bodega->execute($params);
         
     }else{
@@ -99,7 +101,7 @@ if ($_POST) {
         echo "<br>";
         echo "INSERTANDO NUEVO PRODUCTO";
      $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion, producto_fecha_garantia,producto_nombre, producto_stock_total,
-        producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo, categoria_id,proveedor_id, link, responsable, traslado )         
+        producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo, categoria_id,proveedor_id, link, traslado )         
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $sentencia = $conexion->prepare($sql);
@@ -116,16 +118,15 @@ if ($_POST) {
         0,
         0,
         $link_empresa,
-        1,
         $traslado
     );
     $resultado = $sentencia->execute($params);
 
-    echo "...| Actualizando nueva cantidad en el stock de BODEGA |...";
+    echo "...| Actualizando nueva cantidad en el stock de local enviante |...";
     // Actualizando nueva cantidad en el stock de BODEGA
-    $sql = "UPDATE bodega SET producto_stock_total = producto_stock_total - ? WHERE producto_codigo = ?"; 
+    $sql = "UPDATE producto SET producto_stock_total = producto_stock_total - ? WHERE producto_codigo = ? AND link = ?" ; 
     $sentencia_bodega = $conexion->prepare($sql);
-    $params = array($cantidad_enviada, $producto_codigo);
+    $params = array($cantidad_enviada, $producto_codigo,$link);
     $resultado_bodega = $sentencia_bodega->execute($params);
 
     }
@@ -138,7 +139,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/'.$producto_bodega_link.'";
+                window.location.href = "'.$url_base.'secciones/'.$lista_productos_link.'";
             }
         })
         </script>';
@@ -269,7 +270,7 @@ if ($_POST) {
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
                     <button type="submit" class="btn btn-success btn-lg"> Enviar </button>
-                    <a class="btn btn-danger btn-lg" href="<?php echo $url_base;?>secciones/producto_bodega.php" role="button">Cancelar</a>
+                    <a class="btn btn-danger btn-lg" href="<?php echo $url_base;?>secciones/<?php echo $lista_productos_link;?>" role="button">Cancelar</a>
                 </div>
               </form>
             </div>
