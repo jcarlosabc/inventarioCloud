@@ -61,12 +61,16 @@ if(isset($_GET['txtID'])){
                   <td><?php if ($registro['rol'] == 1) { echo "Administrador de Local" ;}else { echo "Empleado" ;} ?></td>
                   <td><?php echo $registro['empresa_nombre']; ?></td>
                   <td>
-                    <!-- colocar un boton para pagar nomina. y que te mande para una vista igual a la de editar -->
+                    <?php if ($_SESSION['valSudoAdmin']) { ?> 
+                      <a class="btn btn-success" href="crear_nomina.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button" title="Nomina">
+                      <i class="fa fa-list-alt nav-icon"></i> Nomina
+                      </a>
+                  <?php } ?> 
                     <a class="btn btn-info" href="editar_empleados.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button" title="Editar">
-                        <i class="fas fa-edit"></i>Editar
+                        <i class="fas fa-edit"></i> Editar
                     </a>
                     <a class="btn btn-danger"href="index_empleados.php?txtID=<?php echo $registro['usuario_id']; ?>" role="button" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i>Eliminar
+                        <i class="fas fa-trash-alt"></i> Eliminar
                     </a>
                   </td>
                 </tr>  
