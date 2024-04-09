@@ -61,6 +61,7 @@ if(isset($_GET['txtID'])){
                   <td><?php if ($registro['rol'] == 1) { echo "Administrador de Local" ;}else { echo "Empleado" ;} ?></td>
                   <td><?php echo $registro['empresa_nombre']; ?></td>
                   <td>
+                    <!-- colocar un boton para pagar nomina. y que te mande para una vista igual a la de editar -->
                     <a class="btn btn-info" href="editar_empleados.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button" title="Editar">
                         <i class="fas fa-edit"></i>Editar
                     </a>
