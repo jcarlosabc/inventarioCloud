@@ -26,13 +26,12 @@ if ($_POST) {
 
     if ($resultado) {
         echo '<script>
-        // Código JavaScript para mostrar SweetAlert
         Swal.fire({
             title: "¡Categoría creada Exitosamente!",
             icon: "success",
-            confirmButtonText: "¡Entendido!"
+            timer: 1000 // Tiempo en milisegundos (5 segundos = 5000 milisegundos)
         }).then((result) => {
-            if(result.isConfirmed){
+            if (result.dismiss === Swal.DismissReason.timer) {
                 window.location.href = "'.$url_base.'secciones/'.$lista_categoria_link.'";
             }
         });

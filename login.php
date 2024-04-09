@@ -6,17 +6,26 @@ $valSudoAdmin = false;
 if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
 
+
   $sentencia=$conexion->prepare("SELECT * FROM usuario WHERE link=:link");
   $sentencia->bindParam(":link",$link);
   $sentencia->execute();
   $registro=$sentencia->fetch(PDO::FETCH_LAZY);
   
-  
-  $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link=:link");
-  $sentencia_empresa->bindParam(":link",$link);
-  $sentencia_empresa->execute();
-  $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
-  $empresa_login = $registro_empresa['empresa_nombre'];
+  if (!$link == "sudo_bodega") {
+    $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link=:link");
+    $sentencia_empresa->bindParam(":link",$link);
+    $sentencia_empresa->execute();
+    $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+    $empresa_login = $registro_empresa['empresa_nombre'];
+  }else {
+    $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa_bodega WHERE link=:link");
+    $sentencia_empresa->bindParam(":link",$link);
+    $sentencia_empresa->execute();
+    $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+    $empresa_login = $registro_empresa['bodega_nombre'];
+  }
+
 
   $link = $registro["link"];
   $valSudoAdmin;
@@ -110,7 +119,7 @@ if ($_POST) {
   <div class="login-box">
     <div class="card card-outline card-primary">
       <div class="card-header text-center">
-        <a href="#" class="h2"><b>Sistema </b><?php echo $empresa_login; ?></a>
+        <a class="h2"><b>Sistema </b><?php echo $empresa_login; ?></a>
       </div>
       <div class="card-body">
         <?php if (isset($mensaje)) { ?>

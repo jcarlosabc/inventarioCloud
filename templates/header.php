@@ -2,7 +2,7 @@
 
     session_start();
     include("../db.php");
-    $url_base = "https://sunny-part.000webhostapp.com/";
+    $url_base = "http://localhost/inventariocloud/";
     
     $sentencia=$conexion->prepare("SELECT empresa_logo, empresa_nombre FROM empresa LIMIT 1 ");
     $sentencia->execute();

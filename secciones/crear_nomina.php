@@ -1,3 +1,5 @@
+
+
 <?php include("../templates/header.php") ?>
 <?php
     $index_nomina  = "nomina.php";

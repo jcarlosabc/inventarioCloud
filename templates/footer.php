@@ -317,6 +317,7 @@ function mostrarOcultarPartes() {
         partesCampo.style.padding = "16px";
         partesCampo.style.borderRadius = "13px";
 
+
         // Cambiar el estilo para mostrar los campos uno al lado del otro
         var inputCampo = document.querySelector('#partes input');
         var selectCampo = document.querySelector('#partes select');
@@ -326,6 +327,7 @@ function mostrarOcultarPartes() {
     } else {
         partesCampo.style.display = "none";
     }
+  
 }
 
 
@@ -534,6 +536,43 @@ document.addEventListener('DOMContentLoaded', function() {
           }
       });
   });
+
+    // Ocultar y mostrar campo de TRANSFERENCIAS cuando pagan en:: ABONO
+    document.addEventListener("DOMContentLoaded", function () {
+      mostrarOcultarPartesAbono();
+    });
+
+  function mostrarOcultarPartesAbono() {
+      var metodoPagoAbono = document.getElementById("metodoPagoAbono");
+      var tipoTransferenciaCampo = document.getElementById("tipoTransferencia");
+
+      if (metodoPagoAbono.value == "1") { // "2" es el valor de "A Crédito"
+          tipoTransferenciaCampo.style.display = "block";
+          tipoTransferenciaCampo.style.borderRadius = "13px";
+
+          // Cambiar el estilo para mostrar los campos uno al lado del otro
+          var inputCampo = document.querySelector('#tipoTransferencia input');
+          var selectCampo = document.querySelector('#tipoTransferencia select');
+
+          inputCampo.style.display = 'inline-block';
+          selectCampo.style.display = 'inline-block';
+      } else {
+          tipoTransferenciaCampo.style.display = "none";
+      }
+  }
+
+  // validando logo para bodega
+    document.getElementById('crearBodega').addEventListener('submit', function(event) {
+        const fileInput = document.getElementById('logoBodega');
+        if (fileInput.files.length > 0) {
+            const fileSize = fileInput.files[0].size; // Tamaño en bytes
+            const maxSize = 10 * 1024 * 1024; // 10 MB
+            if (fileSize > maxSize) {
+                alert('La imagen excede el tamaño máximo permitido de 10 MB.');
+                event.preventDefault(); // Evita que el formulario se envíe
+            }
+        }
+    });
 
 </script>
 </body>

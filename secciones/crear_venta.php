@@ -156,6 +156,25 @@ if(isset($_POST['productos_vendidos'])) {
     // Obtener el ID de la última fila afectada
    $ultimo_id_insertado = $conexion->lastInsertId();
 
+   // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
+   if ($metodo_pago == 2) {
+    $sql = "INSERT INTO historial_credito (historial_venta_id, historial_venta_codigo, 
+            historial_cliente_id, historial_abono, historial_dinero_pendiente, 
+            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sentencia = $conexion->prepare($sql);
+        $params = array(
+        $ultimo_id_insertado, 
+        $codigo_factura, 
+        $cliente_id, 
+        $recibe_dinero,
+        $cambio_dinero, 
+        $fechaActual, 
+        $horaActual,
+        $user_id
+      );
+    $sentencia->execute($params);
+}
+
    date_default_timezone_set('America/Bogota'); 
    $fechaDia = date("d");
    $fechaMes = date("m");
@@ -541,8 +560,6 @@ if(isset($_POST['productos_vendidos'])) {
                             </div>
                         <?php if ($noSeller) { ?>
                             <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero asignar una <strong>caja</strong> para poder realizar una <strong>Venta.</strong></article>
-
-
                             <?php } else { ?>
                                 <div class="card-body">
                                 <div class="row">
@@ -576,6 +593,7 @@ if(isset($_POST['productos_vendidos'])) {
                                             -moz-appearance: textfield; /* Firefox */
                                         }
                                         </style>
+
                                     <div class="col-5">
                                         <div class="form-group">
                                             <div class="row" id="partes">
@@ -585,7 +603,7 @@ if(isset($_POST['productos_vendidos'])) {
                                                 <br>
                                                 En Dias o Meses: <select class="form-control select2" name="tiempoDiasMeses" style="height: 20px">
                                                     <option value="0">Dias</option> 
-                                                    <option value="1">Mes</option> 
+                                                    <!-- <option value="1">Mes</option>  -->
                                                 </select> 
                                                 <br>
                                                 <article style=" padding: 0px 0px 10px;"> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Escoger  <strong>Cliente</strong>. </article>
@@ -600,12 +618,12 @@ if(isset($_POST['productos_vendidos'])) {
                                             </select>  
                                         </div>
                                     </div>
-                                    <div class="col-3">
+                                    <!-- <div class="col-3">
                                         <div class="form-group">
                                         <label class="textLabel">Fecha de Venta</label> 
                                             <input type="text" class="form-control" style="text-align:center;font-weight:600" readonly value="<?php echo $fechaActual ?>">
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                                 <br>
                                 <br>

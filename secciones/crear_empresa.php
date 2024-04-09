@@ -1,6 +1,18 @@
 <?php include("../templates/header.php") ?>
 <?php
 
+    // Contando la cantidad maxima de empresa ya que son 6 
+    // 5 locales y 1 bodega
+    $sentencia = $conexion->prepare("SELECT COUNT(*) as total_empresas FROM empresa ");
+    $sentencia->execute();
+    $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+    $limite_empresas = false;
+    if ($lista_empresas) {$total_empresas = $lista_empresas[0]['total_empresas'];
+        if ($total_empresas == 5) {$limite_empresas = true;}
+    }
+
+
 if ($_POST) {
 
     $nit_empresa = isset($_POST['nit_empresa']) ? $_POST['nit_empresa'] : "";
@@ -58,12 +70,12 @@ if ($_POST) {
         Swal.fire({
             title: "Empresa Creada Correctamente!",
             icon: "success",
-            confirmButtonText: "¡Entendido!"
-        }).then((result)=>{
-            if(result.isConfirmed){
+            timer: 1000 // Tiempo en milisegundos (5 segundos = 5000 milisegundos)
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.timer) {
                 window.location.href="'.$url_base.'secciones/"
             }
-        })
+        });
         </script>';
     } else {
         echo '<script>
@@ -87,16 +99,30 @@ if ($_POST) {
         </div>
         <!-- /.card-header -->
         <!-- form start -->
-        <form action=" " method="post" enctype="multipart/form-data" id="form">
+        <?php if($limite_empresas) { ?>
             <div class="card-body">
                 <div class="row" style="justify-content:center">
                     <div class="col-sm-3">
+                        <h3>Límite de Empresas superado</h3>
+                        <article style="padding: 0px 0px 10px;"> 
+                            <strong class="text-info"><i class="fa fa-info-circle"></i> 
+                                Recuerde: </strong>El maximo de empresas <strong>5</strong> + 1 <strong>Bodega</strong>. 
+                                Contacte al Desarrollador. Para ampliar la capacidad de crear <strong>Empresas.</strong>
+                        </article>
+                    </div>
+                </div>
+            </div>   
+        <?php }else { ?>
+            <form action=" " method="post" enctype="multipart/form-data" id="form">
+            <div class="card-body">
+                <div class="row" style="justify-content:center">
+                    <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Nit </label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="text" class="form-control camposTabla" name="nit_empresa" required >
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <div class="form-group">
                             <!-- <input type="hidden" class="form-control camposTabla" name="txtID" id="nombre_empresa" required value=""> -->
                             <input type="hidden" class="form-control camposTabla" name="txtResponsable_empresa">
@@ -104,7 +130,7 @@ if ($_POST) {
                             <input type="text" class="form-control camposTabla" name="nombre_empresa" required>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Teléfono</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="text" class="form-control camposTabla" name="telefono_empresa" required >
@@ -118,7 +144,7 @@ if ($_POST) {
                             <input type="text" class="form-control camposTabla" name="direccion_empresa" required >
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Clave para Permisos</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="text" class="form-control camposTabla"name="codigo_seguridad" required>
@@ -131,7 +157,9 @@ if ($_POST) {
                 <input type="hidden" id="linkEmpresa" name="link_empresa">
                 <button type="submit" class="btn btn-primary btn-lg" name="guardar">Guardar</button>
             </div>
-        </form>
+        </form>        
+            <?php } ?>
+    
     </div>
     <!-- /.card -->
 </div>
