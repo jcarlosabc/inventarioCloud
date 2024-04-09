@@ -345,6 +345,25 @@ function mostrarOcultarPartes() {
 
     
 }
+/*mostrar metodo nomina*/
+function mostrarMetodosNomina() {
+    var metodoPago = document.getElementById("metodoPago_nomina");
+    var transferenciaCampo = document.getElementById("metodo_transferencia_nomina");
+
+    if (metodoPago.value == "1") { // "1" es el valor de "Transferencia"
+      transferenciaCampo.style.display = "flex";
+      transferenciaCampo.style.borderRadius = "13px";
+
+        // Cambiar el estilo para mostrar los campos uno al lado del otro
+        var inputCampo = document.querySelector('#partes input');
+        var selectCampo = document.querySelector('#partes select');
+
+        inputCampo.style.display = 'inline-flex';
+        selectCampo.style.display = 'inline-flex';
+    } else {
+      transferenciaCampo.style.display = "none";
+    }
+}
 
 
 
