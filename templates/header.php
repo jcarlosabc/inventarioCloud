@@ -190,7 +190,16 @@
               </div>
             </form>
           </div>
+      <?php if ($_SESSION['valSudoAdmin']) { ?>
+
+        <li class="nav-item">
+          <a class="nav-link" href="editar_empleados.php?txtID=<?php echo $_SESSION['usuario_id'] ?>" role="button">
+            <i class="fas fa-cogs"></i>
+          </a>
         </li>
+      </li>
+      <?php } ?>
+
         <li class="nav-item">
           <a class="nav-link" data-widget="fullscreen" href="#" role="button">
             <i class="fas fa-expand-arrows-alt"></i>
@@ -509,22 +518,22 @@
                   <p>NÓMINA</p>
                   <i class="fas fa-angle-left right"></i>
               </a>
-              <ul class="nav nav-treeview">              
+              <!-- <ul class="nav nav-treeview">              
                 <li class="nav-item">
                   <a href="adelanto_nomina.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Adelantar Nómina</p>
                   </a>
                 </li>
-              </ul>
-              <ul class="nav nav-treeview">              
+              </ul> -->
+              <!-- <ul class="nav nav-treeview">              
                 <li class="nav-item">
                   <a href="crear_nomina.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Pagar Nómina</p>
                   </a>
                 </li>
-              </ul>
+              </ul> -->
               <ul class="nav nav-treeview">              
                 <li class="nav-item">
                   <a href="nomina.php" class="nav-link">

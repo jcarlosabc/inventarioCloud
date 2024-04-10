@@ -180,6 +180,24 @@ if ($_POST) {
 }
 
 }
+//estadisticas de dinero de empresas
+$sentencia_estadisticas = $conexion->prepare("  SELECT 
+    e.empresa_nombre AS empresa,
+    SUM(c.caja_efectivo) AS efectivo,
+    SUM(c.nequi) AS nequi,
+    SUM(c.davivienda) AS davivienda,
+    SUM(c.bancolombia) AS bancolombia,
+    SUM(c.caja_efectivo + c.nequi + c.davivienda + c.bancolombia) AS total
+  FROM 
+    caja c
+  INNER JOIN 
+    empresa e ON c.link = e.link
+  GROUP BY 
+    c.link;
+");
+  $sentencia_estadisticas->execute();
+  $lista_estadisticas =$sentencia_estadisticas;
+
 ?>
         <!-- Preloader -->
         <div class="preloader flex-column justify-content-center align-items-center">
@@ -286,6 +304,7 @@ if ($_POST) {
                 </div>
               </div>
           </div>
+         
         </div>
         <div class="row">
           <section class="col-lg-5 connectedSortable">      
@@ -332,5 +351,39 @@ if ($_POST) {
               </div>
             </div>
           </section>
+           <!--Estadisticas de Dinero -->
+          
+  <?php if ($_SESSION['valSudoAdmin']) { ?>
+    <?php
+    while ($row = $lista_estadisticas->fetch(PDO::FETCH_ASSOC)) {
+      $empresa = $row['empresa'];
+      $efectivo = $row['efectivo'];
+      $nequi = $row['nequi'];
+      $davivienda = $row['davivienda'];
+      $bancolombia = $row['bancolombia'];
+      $total = $row['total'];
+      ?>
+  
+    <div class="col-lg-2 col-4">
+        <div class="small-box bg-success">
+            <div class="inner" style="color: white !important">
+                <h3><?php echo '$' . number_format($total, 0, '.', ','); ?></h3>
+                <p  style="font-size: 20px"><?php echo $empresa; ?></p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-cash"></i> <!-- Cambiar el icono según sea necesario -->
+            </div>
+            <div class="small-box-footer">
+                <p>Efectivo: <?php echo '$' . number_format($efectivo, 0, '.', ','); ; ?></p>
+                <p>Nequi: <?php echo '$' . number_format($nequi, 0, '.', ',');  ?></p>
+                <p>Davivienda: <?php echo '$' . number_format($davivienda, 0, '.', ','); ?></p>
+                <p>Bancolombia: <?php echo '$' . number_format($bancolombia, 0, '.', ','); ?></p>
+            </div>
+        </div>
+    </div>
+    <?php } ?>
+<?php } ?>
+ 
+          <!--Estadisticas de Dinero -->
       
 <?php include("../templates/footer.php") ?>

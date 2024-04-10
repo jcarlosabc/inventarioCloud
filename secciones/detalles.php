@@ -236,7 +236,7 @@ if(isset($_GET['txtID'])){
                   <button type="submit" class="btn btn-primary float-right" style="margin-right: 5px;">
                     <i class="fas fa-download"></i> Generar Ticket                    
                   </button>   
-                  <a href="https://api.whatsapp.com/send?phone=57<?php echo $cliente_telefono ?>&text=aqui van los datos" class="btn btn-success float-right" style="margin-right: 5px;" target="_blank">
+                  <a href="https://api.whatsapp.com/send?phone=57<?php echo $cliente_telefono ?>" class="btn btn-success float-right" style="margin-right: 5px;" target="_blank">
                       <i class="fab fa-whatsapp"></i> WhatsApp
                   </a><!-- intentar que abra whatssap WEB -->
                   

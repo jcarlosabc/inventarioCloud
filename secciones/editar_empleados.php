@@ -79,26 +79,32 @@ if (isset($_GET['txtID'])) {
     <br>
     <div class="card card-warning" style="margin-top:7%">
         <div class="card-header text-center">
-            <h2 class="card-title textTabla">EDITAR EMPLEADO &nbsp; 
-            </h2>
+        <?php if ($_SESSION['valSudoAdmin']) { ?>
+            <h2 class="card-title textTabla">EDITAR ADMIN &nbsp;</h2>
+            <?php } else{ ?>
+            <h2 class="card-title textTabla">EDITAR EMPLEADOS &nbsp;</h2>            
+            <?php }?>
+           
         </div>
         <form action=" " method="post">
             <div class="card-body">
+            <div class="row" style="justify-content:center">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="producto_nombre" class="textLabel">Nombres</label>
+                        <input type="hidden" name="txtID" value="<?= $txtID ?>">
+                        <input type="text" class="form-control camposTabla" name="usuario_nombre" value="<?= $usuario_nombre ?>">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="textLabel">Apellidos</label>
+                        <input type="text" class="form-control camposTabla" name="usuario_apellido" value="<?= $usuario_apellido ?>">
+                    </div>
+                </div>
+            </div>
                 <div class="row" style="justify-content:center">
-                    <div class="col-sm-2">
-                        <div class="form-group">
-                            <label for="producto_nombre" class="textLabel">Nombres</label>
-                            <input type="hidden" name="txtID" value="<?= $txtID ?>">
-                            <input type="text" class="form-control camposTabla" name="usuario_nombre" value="<?= $usuario_nombre ?>">
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
-                        <div class="form-group">
-                            <label class="textLabel">Apellidos</label>
-                            <input type="text" class="form-control camposTabla" name="usuario_apellido" value="<?= $usuario_apellido ?>">
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="form-group">
                             <label class="textLabel">Teléfono</label>
                             <input type="text" class="form-control camposTabla" name="usuario_telefono" value="<?= $usuario_telefono ?>">
@@ -112,14 +118,14 @@ if (isset($_GET['txtID'])) {
                     </div>
                 </div>
                 <div class="row" style="justify-content:center">
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="form-group">
                             <label class="textLabel">Clave</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="hidden" class="form-control camposTabla" name="usuario_clave_db" value="<?php echo $usuario_clave ?>" >
                             <input type="password" class="form-control camposTabla" name="usuario_clave_1" id="usuario_clave_1E" >
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="form-group">
                             <label class="textLabel">Confime la Clave</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="password" class="form-control camposTabla" name="usuario_clave_2" id="usuario_clave_2E" >
