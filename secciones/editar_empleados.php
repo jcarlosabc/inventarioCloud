@@ -30,22 +30,44 @@ if (isset($_GET['txtID'])) {
         $username = "u" . $usuario_apellido;
         $responsable = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
 
-        $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
-        usuario_nombre=:usuario_nombre, usuario_apellido=:usuario_apellido,usuario_telefono=:usuario_telefono,
-        usuario_email=:usuario_email, usuario_usuario =:usuario_usuario,
-        usuario_clave=:usuario_clave, responsable = :responsable
-        WHERE usuario_id =:usuario_id");
+        if ($_SESSION['valSudoAdmin']) {
+            $admin = "admin";
+            $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
+            usuario_nombre=:usuario_nombre, usuario_apellido=:usuario_apellido,usuario_telefono=:usuario_telefono,
+            usuario_email=:usuario_email, usuario_usuario =:usuario_usuario,
+            usuario_clave=:usuario_clave, responsable = :responsable
+            WHERE usuario_id =:usuario_id");
+    
+            $sentencia_edit->bindParam(":usuario_id", $txtID);
+            $sentencia_edit->bindParam(":usuario_nombre", $usuario_nombre);
+            $sentencia_edit->bindParam(":usuario_apellido", $usuario_apellido);
+            $sentencia_edit->bindParam(":usuario_telefono", $usuario_telefono);
+            $sentencia_edit->bindParam(":usuario_email", $usuario_email);
+            $sentencia_edit->bindParam(":usuario_usuario", $admin);
+            $sentencia_edit->bindParam(":usuario_clave", $usuario_clave);
+            // $sentencia_edit->bindParam(":rol", $usuario_rol);
+            // $sentencia_edit->bindParam(":caja_id", $usuario_caja);
+            $sentencia_edit->bindParam(":responsable", $responsable);
+           
+        }else{
+            $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
+            usuario_nombre=:usuario_nombre, usuario_apellido=:usuario_apellido,usuario_telefono=:usuario_telefono,
+            usuario_email=:usuario_email, usuario_usuario =:usuario_usuario,
+            usuario_clave=:usuario_clave, responsable = :responsable
+            WHERE usuario_id =:usuario_id");
+    
+            $sentencia_edit->bindParam(":usuario_id", $txtID);
+            $sentencia_edit->bindParam(":usuario_nombre", $usuario_nombre);
+            $sentencia_edit->bindParam(":usuario_apellido", $usuario_apellido);
+            $sentencia_edit->bindParam(":usuario_telefono", $usuario_telefono);
+            $sentencia_edit->bindParam(":usuario_email", $usuario_email);
+            $sentencia_edit->bindParam(":usuario_usuario", $username);
+            $sentencia_edit->bindParam(":usuario_clave", $usuario_clave);
+            // $sentencia_edit->bindParam(":rol", $usuario_rol);
+            // $sentencia_edit->bindParam(":caja_id", $usuario_caja);
+            $sentencia_edit->bindParam(":responsable", $responsable);
 
-        $sentencia_edit->bindParam(":usuario_id", $txtID);
-        $sentencia_edit->bindParam(":usuario_nombre", $usuario_nombre);
-        $sentencia_edit->bindParam(":usuario_apellido", $usuario_apellido);
-        $sentencia_edit->bindParam(":usuario_telefono", $usuario_telefono);
-        $sentencia_edit->bindParam(":usuario_email", $usuario_email);
-        $sentencia_edit->bindParam(":usuario_usuario", $username);
-        $sentencia_edit->bindParam(":usuario_clave", $usuario_clave);
-        // $sentencia_edit->bindParam(":rol", $usuario_rol);
-        // $sentencia_edit->bindParam(":caja_id", $usuario_caja);
-        $sentencia_edit->bindParam(":responsable", $responsable);
+        }
         $resultado_edit = $sentencia_edit->execute();
 
         if ($resultado_edit) {
