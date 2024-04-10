@@ -71,7 +71,7 @@ if(isset($_GET['txtID'])){
                   <td>
                     <?php if ($_SESSION['valSudoAdmin']) { ?> 
                       <a class="btn btn-success" href="crear_nomina.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button" title="Nomina">
-                      <i class="fa fa-list-alt nav-icon"></i> Nomina
+                      <i class="fa fa-list-alt nav-icon"></i> Nómina
                       </a>
                   <?php } ?> 
                     <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_empleados_link . '&txtID=' . $registro['usuario_id']; ?>"role="button" title="Editar">

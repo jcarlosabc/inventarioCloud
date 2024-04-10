@@ -18,7 +18,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
       <br>
       <div class="card card-primary">
         <div class="card-header">
-        <h2 class="card-title textTabla">LISTA DE NÓMINA &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $crear_nomina;?>">Procesar Pago</a></h2>
+        <h2 class="card-title textTabla">LISTA DE NÓMINA &nbsp;</h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -29,7 +29,8 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Cédula</th>
               <th>Nombres / Apellidos</th>
               <th>Teléfono</th> 
-              <th>Monto</th> 
+              <th>Monto</th>
+              <th>Adelanto</th> 
               <th>Negocio</th>
               <th>Estado</th>
               <th>Fecha</th>              
@@ -43,11 +44,14 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['usuario_cedula']; ?></td>
                   <td><?php echo $registro['usuario_nombre']; ?> <?php echo $registro['usuario_apellido']; ?></td>                               
                   <td><?php echo $registro['usuario_telefono']; ?></td>                  
-                  <td class="tdColor"><?php echo '$ ' . number_format($registro['nomina_cantidad'], 0, '.', ',') ?></td>                  
+                  <td class="tdColor"><?php echo '$ ' . number_format($registro['nomina_cantidad'], 0, '.', ',') ?></td>    
+                  <td class="tdColor text-warning"><?php echo '$ ' . number_format($registro['nomina_prestamo'], 0, '.', ',') ?></td>                
                   <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <td>
                   <?php
-                    if ($registro['nomina_estado']==1) {
+                     if ($registro['nomina_estado']==2) {
+                        echo '<span class="badge bg-warning" style="font-size: 15px;">Prestamo</span>';    
+                     }else if ($registro['nomina_estado']==1) {
                         echo '<span class="badge bg-success" style="font-size: 15px;">Pagado</span>';    
                     }else{
                         echo '<span class="badge bg-danger" style="font-size: 15px;">No Pagado</span>';

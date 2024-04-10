@@ -38,11 +38,11 @@ if ($_POST) {
     //    $fechaYear = date("Y");
         if (empty($lista_efectivo)) {
             
-            echo "=============";
-            echo "<br>";
-            echo "...Añadieron Efectivo a la Nomina...";
-            echo "<br>";
-            echo "=============";
+           // echo "=============";
+           // echo "<br>";
+           // echo "...Añadieron Efectivo a la Nomina...";
+           // echo "<br>";
+           // echo "=============";
 
         $sentencia = $conexion->prepare("INSERT INTO dinero_por_quincena(dinero, metodo_pago,link, dia, mes, anio, transferencia_metodo) 
             VALUES (:dinero, :metodo_pago,:link, :dia, :mes,:anio, :transferencia_metodo)");
@@ -56,14 +56,14 @@ if ($_POST) {
         $sentencia->execute();
         } else {
             foreach ($lista_efectivo as $fila) {
-                echo "Aqui suma la tabla";
+               //// echo "Aqui suma la tabla";
                 if ($fechaDia <= 15 && $fila['mes'] == $fechaMes) {
                     if ($fechaDia <= 15 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear && $fila['metodo_pago']==$metodo_pago && $fila['transferencia_metodo'] == '' && $fila['link']== $link) {
-                        echo "=============";                    
-                        echo "<br>";                    
-                        echo "... | Sumar dinero de caja nueva a dinero quincena |...";
-                        echo "<br>";                    
-                        echo "=============";   
+                       // echo "=============";                    
+                       // echo "<br>";                    
+                       // echo "... | Sumar dinero de caja nueva a dinero quincena |...";
+                       // echo "<br>";                    
+                       // echo "=============";   
 
                         $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id = ?";
                         $sentencia = $conexion->prepare($sql);
@@ -74,19 +74,19 @@ if ($_POST) {
                         $resul_nuevaCaja = $sentencia->execute($params);
 
                         if ($resul_nuevaCaja) {
-                           echo "... | Sumando dinero a la primera quincena por la caja nueva |...";
+                         //  echo "... | Sumando dinero a la primera quincena por la caja nueva |...";
                         }else {
-                           echo "... | No sumo nada |...";
+                         //  echo "... | No sumo nada |...";
                         }
 
 
                     }
                 }else if ($fechaDia > 15 && $fila['dia'] > 15 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear && $fila['metodo_pago'] == 0 && $fila['link']== $link ) {
-                    echo "=============";                    
-                    echo "<br>";                    
-                    echo "...Sumar dinero de caja nueva a dinero segunda quincena...";
-                    echo "<br>";                    
-                    echo "=============";                    
+                   // echo "=============";                    
+                   // echo "<br>";                    
+                   // echo "...Sumar dinero de caja nueva a dinero segunda quincena...";
+                   // echo "<br>";                    
+                   // echo "=============";                    
     
                     $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id = ?";
                     $sentencia = $conexion->prepare($sql);

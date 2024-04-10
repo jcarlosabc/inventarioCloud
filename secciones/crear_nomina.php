@@ -75,6 +75,8 @@ if ($_POST) {
     $nomina_cantidad = isset($_POST['nomina_cantidad']) ? $_POST['nomina_cantidad'] : "";
     $nomina_cantidad = str_replace(array('$','.', ','), '', $nomina_cantidad);
 
+    $nomina_adelanto = isset($_POST['nomina_adelanto']) ? $_POST['nomina_adelanto'] : "";
+
     //Nomina
     $metodo_pago = isset($_POST['metodo_pago_nomina']) ? $_POST['metodo_pago_nomina'] : $_POST['metodo_pago_nomina'];
   //  print_r(" //Metoro: ".$metodo_pago . " //// ");
@@ -136,6 +138,10 @@ if ($_POST) {
         $transferenciaMetodo = "";
     }
 
+    $estado_prestamo=$conexion->prepare("SELECT nomina_estado FROM nomina WHERE nomina_usuario_id =:usuario_id AND nomina_estado =  2");
+    $estado_prestamo->bindParam(":usuario_id", $usuario_id);
+    $estado_prestamo->execute();
+    $resultado_estado_prestamo = $estado_prestamo->fetch(PDO::FETCH_ASSOC);
 
 
     $sentencia=$conexion->prepare("SELECT * FROM usuario WHERE usuario_id =:usuario_id AND link = :link");
@@ -151,19 +157,35 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         });
         </script>';
-    }else {
-        $sql = "INSERT INTO nomina (nomina_usuario_id, nomina_fecha, nomina_hora, nomina_cantidad, nomina_estado, link) 
-        VALUES (?,?,?,?,?,?)";
-        $sentencia_nomina = $conexion->prepare($sql);
-        $params = array(
-            $usuario_id,
-            $fechaActual,
-            $horaActual,
-            $nomina_cantidad,
-            1,
-            $link
-        );
-        $resultado = $sentencia_nomina->execute($params);
+    }else if($nomina_adelanto == 00){
+        if ($resultado_estado_prestamo && $resultado_estado_prestamo['nomina_estado'] == 2)  {
+
+            $sql = "UPDATE nomina SET nomina_cantidad = ?, nomina_fecha = ?, nomina_hora = ?, nomina_estado = ? WHERE nomina_usuario_id = ?";
+            $sentencia_nomina = $conexion->prepare($sql);
+            $params = array(
+                $nomina_cantidad,
+                $fechaActual,
+                $horaActual,
+                1,
+                $usuario_id
+            );
+            $resultado = $sentencia_nomina->execute($params);
+
+        }else{
+            $sql = "INSERT INTO nomina (nomina_usuario_id, nomina_fecha, nomina_hora, nomina_cantidad, nomina_estado, link) 
+            VALUES (?,?,?,?,?,?)";
+            $sentencia_nomina = $conexion->prepare($sql);
+            $params = array(
+                $usuario_id,
+                $fechaActual,
+                $horaActual,
+                $nomina_cantidad,
+                1,
+                $link
+            );
+            $resultado = $sentencia_nomina->execute($params);
+
+        }
     
       //  $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link ORDER BY id DESC");
       //  $sentencia->bindParam(":link", $link);
@@ -202,13 +224,67 @@ if ($_POST) {
             });
             </script>';
         }
-    }
+    }else if ($nomina_adelanto == 01) {
+        $sql = "INSERT INTO nomina (nomina_usuario_id, nomina_fecha, nomina_hora, nomina_prestamo, nomina_estado, link) 
+        VALUES (?,?,?,?,?,?)";
+        $sentencia_nomina = $conexion->prepare($sql);
+        $params = array(
+            $usuario_id,
+            $fechaActual,
+            $horaActual,
+            $nomina_cantidad,
+            2,
+            $link
+        );
+        $resultado = $sentencia_nomina->execute($params);
+    
+      //  $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link ORDER BY id DESC");
+      //  $sentencia->bindParam(":link", $link);
+       // $resultado = $sentencia->execute();
+       // $lista_ultimo_update=$sentencia->fetch(PDO::FETCH_LAZY);
+       // $id = $lista_ultimo_update['id'];
+       // $dinero = $lista_ultimo_update['dinero'];
+        //$nomina_cantidad = $dinero - $nomina_cantidad;
+        
+       // $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id = ?";
+       //     $sentencia = $conexion->prepare($sql);
+       //     $params = array(
+       //         $nomina_cantidad, 
+       //        $id  
+       //     );
+       //$resultado = $sentencia->execute($params);
+    
+        if ($resultado) {
+            echo '<script>
+            Swal.fire({
+                title: "¡Prestamo Realizado Exitosamente!",
+                icon: "success",
+                confirmButtonText: "¡Entendido!"
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    window.location.href= "'.$url_base.'secciones/'.$index_nomina.'"
+                }
+            })
+            </script>';
+        } else {
+            echo '<script>
+            Swal.fire({
+                title: "Error al procesar el Prestamo",
+                icon: "error",
+                confirmButtonText: "¡Entendido!"
+            });
+            </script>';
+        }
+        
+    } 
+        
+    
 }
 ?>
 <br>
     <div class="card card-success" style="margin-top:7%">
         <div class="card-header text-center">
-            <h2 class="card-title textTabla">NOMINA &nbsp; 
+            <h2 class="card-title textTabla">NÓMINA &nbsp; 
             </h2>
         </div>
         <form action=" " method="post">
@@ -216,33 +292,34 @@ if ($_POST) {
             <input type="hidden" name="nomina_empleados" value="<?= $txtID ?>">
             <div class="card-body">
                 <div class="row" style="justify-content:center">
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="form-group">
                             <label for="producto_nombre" class="textLabel">Nombres</label>
-                            <input type="text" class="form-control camposTabla" name="usuario_nombre" value="<?= $usuario_nombre ?>"  readonly>
+                            <input type="text" class="form-control camposTabla" name="usuario_nombre" value="<?= $usuario_nombre?>"  readonly>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="form-group">
                             <label class="textLabel">Apellidos</label>
                             <input type="text" class="form-control camposTabla" name="usuario_apellido" value="<?= $usuario_apellido ?>" readonly>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    
+                </div>
+            <div class="row" style="justify-content:center">
+                <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Teléfono</label>
                             <input type="text" class="form-control camposTabla" name="usuario_telefono" value="<?= $usuario_telefono ?>" readonly>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Email</label>
                             <input type="email" class="form-control camposTabla" name="usuario_email" value="<?= $usuario_email ?>" readonly>
                         </div>
                     </div>
-                </div>
-            <div class="row" style="justify-content:center">
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Cedula</label>
                             <input type="num" class="form-control camposTabla" name="usuario_email" value="<?= $usuario_cedula ?>" readonly>
@@ -259,47 +336,38 @@ if ($_POST) {
                     </div>
                 </div>
                  
-                    <div class="col-sm-3">
-                        <label class="textLabel">Escoger Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
-                        <select class="form-control select2 camposTabla" style="width: 100%;" name="nomina_caja">
-                            <option value="">Escoger Caja</option>
-                            <?php foreach ($lista_cajas as $registro) { ?>
-                                <option value="<?php echo $registro['caja_id']; ?>"><?php echo  $registro['caja_nombre'] . " " . " (". " Valor en Caja: ". '$' . number_format($registro['caja_efectivo'], 0, '.', ',') .") - ".$registro['empresa_nombre']; ?></option>
-                            <?php } ?>          
-                        </select>
-                    </div>
                     
              </div>
              <!--Comienzo -->
              <div class="row" style="justify-content:center">
-                    <div class="col-sm-3">
+                <div class="col-sm-2">
+                        <label class="textLabel">Escoger Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                        <select class="form-control select2 camposTabla" style="width: 100%;" name="nomina_caja">
+                            <option value="">Escoger Caja</option>
+                            <?php foreach ($lista_cajas as $registro) { ?>
+                                <option value="<?php echo $registro['caja_id']; ?>"><?php echo  $registro['caja_nombre'] . " " . " (". "Caja: ". '$' . number_format($registro['caja_efectivo'], 0, '.', ',') .") - ".$registro['empresa_nombre']; ?></option>
+                            <?php } ?>          
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                    <label class="textLabel">Adelanto</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                        <select class="form-control select2 camposTabla" id="nomina_adelanto" name="nomina_adelanto">                                    
+                            <option value="00" style="color:#22c600">No</option> 
+                            <option value="01" style="color:#009fc1">Si</option>
+                        </select>
+                     </div>
+                    <div class="col-sm-2">
                         <label class="textLabel">Escoger Metodo de Pago</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                         <select class="form-control select2 camposTabla" id="metodoPago_nomina" name="metodo_pago_nomina" onchange="mostrarMetodosNomina(1)">
                                 <option value="0" style="color:#22c600">Efectivo</option> 
                                 <option value="1" style="color:#009fc1">Transferencia</option> 
                             </select>
                     </div>
+                    
                 </div>
-            
-                <style>
-                #metodo_transferencia_nomina{
-                    display: none;
-                }
-                span.select2-selection.select2-selection--single{
-                    height: 38px;
-                }
-                /* Ocultar las flechas de incremento/decremento en campos numéricos */
-                input[type=number]::-webkit-inner-spin-button,
-                input[type=number]::-webkit-outer-spin-button {
-                    -webkit-appearance: none;
-                    margin: 0;
-                }
-                input[type=number] {
-                    -moz-appearance: textfield; /* Firefox */
-                }
-                 </style>
                 <br>
                 <div class="row" style="justify-content:center" id="metodo_transferencia_nomina">
+                
                     <div class="col-sm-3">
                         <label class="textLabel">Escoger Banco</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                         <select class="form-control select2 camposTabla" id="transferenciaMetodoNomina" name="transferenciaMetodoNomina">                                    
@@ -309,6 +377,7 @@ if ($_POST) {
                         </select>
                     </div>
                 </div>
+               
                 <br>
                 <div class="row" style="justify-content:center">
                     <div class="col-sm-3">
