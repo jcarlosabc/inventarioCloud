@@ -76,21 +76,21 @@ if ($_POST) {
         $producto_id = $partes[0];
         $producto_codigo = $partes[1];
 
-        $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link ORDER BY id DESC");
-        $sentencia->bindParam(":link", $link);
-        $sentencia->execute();
-        $lista_ultimo_update=$sentencia->fetch(PDO::FETCH_LAZY);
-        $id_dinero = $lista_ultimo_update['id'];
-        $dinero = $lista_ultimo_update['dinero'];
-        $dinero = $dinero - $monto_devolucion;
+        // $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link ORDER BY id DESC");
+        // $sentencia->bindParam(":link", $link);
+        // $sentencia->execute();
+        // $lista_ultimo_update=$sentencia->fetch(PDO::FETCH_LAZY);
+        // $id_dinero = $lista_ultimo_update['id'];
+        // $dinero = $lista_ultimo_update['dinero'];
+        // $dinero = $dinero - $monto_devolucion;
 
-        $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id = ?";
-        $sentencia = $conexion->prepare($sql);
-        $params = array(
-            $dinero,
-            $id_dinero
-        );
-        $sentencia->execute($params);
+        // $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id = ?";
+        // $sentencia = $conexion->prepare($sql);
+        // $params = array(
+        //     $dinero,
+        //     $id_dinero
+        // );
+        // $sentencia->execute($params);
     }
     
             // Insertar los datos de la devolución en la base de datos para este producto
