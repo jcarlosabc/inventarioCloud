@@ -5,17 +5,62 @@
     $index_nomina  = "nomina.php";
 
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
-    $datos_usuario = $conexion->prepare("SELECT * FROM usuario  WHERE usuario.usuario_id =:usuario_id");
-    //LLamando datos del usuario
+
+    $datos_usuario = $conexion->prepare("SELECT usuario.*, CASE WHEN nomina.nomina_estado = 2 THEN nomina.nomina_prestamo ELSE NULL END AS nomina_prestamo
+        FROM usuario
+        LEFT JOIN nomina ON usuario.usuario_id = nomina.nomina_usuario_id
+        WHERE usuario.usuario_id = :usuario_id 
+        AND (nomina.nomina_estado = 2 OR nomina.nomina_estado IS NULL)
+");
+
+    //Llamando datos del usuario
     $datos_usuario->bindParam(":usuario_id", $txtID);
     $datos_usuario->execute();
     $registro = $datos_usuario->fetch(PDO::FETCH_ASSOC);
+
+// Comprobamos si $registro contiene datos válidos
+if ($registro && isset($registro["nomina_prestamo"]) && $registro["nomina_prestamo"] !== null) {
+    // Si nomina_estado es 2, entonces se encontró un registro en la tabla nomina con nomina_estado = 2
     $usuario_nombre = $registro["usuario_nombre"];
     $usuario_apellido = $registro["usuario_apellido"];
     $usuario_telefono = $registro["usuario_telefono"];
     $usuario_cedula = $registro["usuario_cedula"];
     $usuario_email = $registro["usuario_email"];
     $usuario_link = $registro["link"];
+    $nomina_prestamo = $registro["nomina_prestamo"];
+} else {
+    // Si nomina_estado no es 2 o no se encontró un registro en la tabla nomina, ejecutar la consulta alternativa
+    $datos_usuario = $conexion->prepare("SELECT * FROM usuario WHERE usuario.usuario_id = :usuario_id");
+    $datos_usuario->bindParam(":usuario_id", $txtID);
+    $datos_usuario->execute();
+    $registro = $datos_usuario->fetch(PDO::FETCH_ASSOC);
+
+    // Asigna los datos del usuario de la consulta alternativa
+    $usuario_nombre = $registro["usuario_nombre"];
+    $usuario_apellido = $registro["usuario_apellido"];
+    $usuario_telefono = $registro["usuario_telefono"];
+    $usuario_cedula = $registro["usuario_cedula"];
+    $usuario_email = $registro["usuario_email"];
+    $usuario_link = $registro["link"];
+}
+
+    // $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
+    // $datos_usuario = $conexion->prepare("SELECT usuario.*, nomina.nomina_prestamo
+    // FROM usuario
+    // LEFT JOIN nomina ON usuario.usuario_id = nomina.nomina_usuario_id
+    // WHERE usuario.usuario_id = :usuario_id AND nomina.nomina_estado = 2;");
+    
+    // //LLamando datos del usuario
+    // $datos_usuario->bindParam(":usuario_id", $txtID);
+    // $datos_usuario->execute();
+    // $registro = $datos_usuario->fetch(PDO::FETCH_ASSOC);
+    // $usuario_nombre = $registro["usuario_nombre"];
+    // $usuario_apellido = $registro["usuario_apellido"];
+    // $usuario_telefono = $registro["usuario_telefono"];
+    // $usuario_cedula = $registro["usuario_cedula"];
+    // $usuario_email = $registro["usuario_email"];
+    // $usuario_link = $registro["link"];
+    // $nomina_prestamo = $registro["nomina_prestamo"];
 
     //lista de Cajas de la empresa
     $sentencia = $conexion->prepare("SELECT c.*, e.* FROM caja AS c INNER JOIN empresa AS e ON c.link = e.link WHERE c.link = :link");
@@ -200,9 +245,19 @@ if ($_POST) {
                 <div class="col-sm-3">
                         <div class="form-group">
                             <label class="textLabel">Cedula</label>
-                            <input type="email" class="form-control camposTabla" name="usuario_email" value="<?= $usuario_cedula ?>" readonly>
+                            <input type="num" class="form-control camposTabla" name="usuario_email" value="<?= $usuario_cedula ?>" readonly>
                         </div>
                  </div>
+                 <?php                
+                     // Inicializar $nomina_prestamo
+                    $nomina_prestamo = isset($registro["nomina_prestamo"]) ? $registro["nomina_prestamo"] : null; 
+                 ?>
+                <div class="col-sm-2" <?php if (isset($nomina_prestamo) && $nomina_prestamo !== null) echo ''; else echo 'style="display: none;"'; ?>>
+                    <div class="form-group">
+                        <label class="textLabel">Tiene un Adelanto de:</label>
+                        <input type="text" class="form-control camposTabla" name="usuario_email" value="<?= ($nomina_prestamo !== null) ? '$' . number_format($nomina_prestamo, 0, '.', ',') : '' ?>" readonly>
+                    </div>
+                </div>
                  
                     <div class="col-sm-3">
                         <label class="textLabel">Escoger Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
@@ -280,3 +335,22 @@ if ($_POST) {
     }
 </style>
 <?php include("../templates/footer.php") ?>
+
+            
+<style>
+    #metodo_transferencia_nomina{
+        display: none;
+    }
+    span.select2-selection.select2-selection--single{
+        height: 38px;
+    }
+    /* Ocultar las flechas de incremento/decremento en campos numéricos */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        -moz-appearance: textfield; /* Firefox */
+    }
+</style>
