@@ -2,9 +2,11 @@
 <?php
 if ($_SESSION['valSudoAdmin']) {
   $crear_cliente_link  = "crear_cliente.php";
+  $editar_clientes  = "editar_clientes.php";
 
 }else{
   $crear_cliente_link  = "crear_cliente.php?link=".$link;
+  $editar_clientes  = "editar_clientes.php?link=".$link;
 }
 
 if(isset($_GET['link'])){
@@ -19,8 +21,11 @@ if(isset($_GET['txtID'])){
   }
   if($responsable == 1){
     $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM cliente c LEFT JOIN empresa e ON c.link = e.link WHERE c.cliente_id > 0");
-  }else{
+  }else if ($link != "sudo_bodega" && $link != "sudo_admin") {
     $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM cliente c JOIN empresa e ON c.link = e.link WHERE c.cliente_id > 0 AND c.link = :link");
+    $sentencia->bindParam(":link", $link);
+  }else {
+    $sentencia=$conexion->prepare("SELECT c.*, b.bodega_nombre as empresa_nombre FROM cliente c JOIN empresa_bodega b ON c.link = b.link WHERE c.cliente_id > 0 AND c.link = :link");
     $sentencia->bindParam(":link", $link);
   }
   $sentencia->execute();
@@ -60,10 +65,10 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['cliente_email']; ?></td>
                   <td><?php if ($registro['link'] == "sudo_admin" ) {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <td>
-                    <a class="btn btn-info" href="editar_clientes.php?txtID=<?php echo $registro['cliente_id']; ?>"role="button" title="Editar">
+                    <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_clientes;?>&txtID=<?php echo $registro['cliente_id']; ?>"role="button" title="Editar">
                         <i class="fas fa-edit"></i>Editar
                     </a>
-                    <a class="btn btn-danger"href="index_clientes.php?txtID=<?php echo $registro['cliente_id']; ?>" role="button" title="Eliminar">
+                    <a class="btn btn-danger" href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>&txtID=<?php echo $registro['cliente_id']; ?>" role="button" title="Eliminar">
                         <i class="fas fa-trash-alt"></i>Eliminar
                     </a>
                   </td>

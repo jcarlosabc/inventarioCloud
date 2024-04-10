@@ -22,9 +22,6 @@ if ($_POST) {
     }
     // Eliminar el signo "$" y el separador de miles "." del valor del campo de entrada
     $caja_efectivo = str_replace(array('$','.',','), '', $caja_efectivo); 
-    
-
-
         $sentencia = $conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link AND metodo_pago = 0");
         $sentencia->bindParam(":link", $link);
         $sentencia->execute();
@@ -33,12 +30,12 @@ if ($_POST) {
        $metodo_pago = 0;
        $transferencia_metodo = '';
        date_default_timezone_set('America/Bogota'); 
-    //    $fechaDia = date("d");
-    //    $fechaMes = date("m");
-    //    $fechaYear = date("Y");
-       $fechaDia = 1;
-       $fechaMes = 04;
+       $fechaDia = date("d");
+       $fechaMes = date("m");
        $fechaYear = date("Y");
+    //    $fechaDia = 1;
+    //    $fechaMes = 04;
+    //    $fechaYear = date("Y");
         if (empty($lista_efectivo)) {
             
             echo "=============";
@@ -114,16 +111,15 @@ if ($_POST) {
     
     if ($resultado) {
         echo '<script>
-        // Código JavaScript para mostrar SweetAlert
         Swal.fire({
             title: "¡Caja Creada Exitosamente!",
             icon: "success",
-            confirmButtonText: "¡Entendido!"
+            timer: 1000 
         }).then((result) => {
-            if(result.isConfirmed){
+            if (result.dismiss === Swal.DismissReason.timer) {
                 window.location.href = "'.$url_base.'secciones/'.$index_cajas_link.'";
             }
-        })
+        });
         </script>';
     }else {
         echo '<script>
@@ -170,7 +166,7 @@ if ($_POST) {
             <!-- /.card-body -->
             <div class="card-footer" style="text-align:center">
                 <button type="submit"  class="btn btn-primary btn-lg">Guardar</button>
-                <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $crear_caja_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
+                <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
             </div>
         </form>
     </div>

@@ -102,6 +102,8 @@ if(isset($_GET['txtID'])){
                 <h4>
                   <i class="fa fa-shopping-basket"></i> Detalles de la Venta
                   <small class="float-right"><?php echo $venta_fecha;?></small>
+                  <br>
+                  <img src="../dist/img/logos/logofernando.jpg" style="width: 88px;" alt="AdminLTE Logo" class="float-right brand-image img-circle elevation-3">
                 </h4>
               </div>
             </div>
@@ -112,7 +114,8 @@ if(isset($_GET['txtID'])){
                 <address>
                   <strong>Fecha de la Venta: </strong> <?php echo $venta_fecha;?><br>                    
                   <strong>Nro. de Factura: </strong><?php echo $venta_id;?><br>
-                  <strong>Codigo de Venta: </strong><?php echo $venta_codigo;?><br>
+                  <strong>Código de Venta: </strong><?php echo $venta_codigo;?><br>
+                  <strong>Dirección:</strong> Cartagena de Indias<br>
                   <?php if ($venta_metodo_pago == "Credito") { ?>
                     <strong>Plazo del Pago: </strong><?php echo $plazo . " " . $tiempo;?><br>
                   <?php } ?>

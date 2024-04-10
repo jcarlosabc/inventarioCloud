@@ -2,8 +2,11 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
   $crear_caja_link = 'crear_caja.php';
+  $editar_cajas = 'editar_cajas.php';       
+  $editar_cajas = 'editar_cajas.php';       
 }else{
   $crear_caja_link = 'crear_caja.php?link='.$link;       
+  $editar_cajas = 'editar_cajas.php?link='.$link;       
 }
 if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
@@ -16,15 +19,17 @@ $responsable = $_SESSION['usuario_id'];
     $sentencia->execute();    
   }
 
-  if($responsable == 1){
-    $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM caja c LEFT JOIN empresa e ON c.link = e.link");
-  }else{
-    $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM caja c JOIN empresa e ON c.link = e.link WHERE c.link = :link");
-    $sentencia->bindParam(":link", $link);
-  }
+if ($responsable == 1) {
+  $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM caja c LEFT JOIN empresa e ON c.link = e.link");
+}else if($link != "sudo_bodega" && $link != "sudo_admin"  ){
+  $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM caja c JOIN empresa e ON c.link = e.link WHERE c.link = :link");
+  $sentencia->bindParam(":link", $link);
+}else {
+  $sentencia=$conexion->prepare("SELECT c.*, b.bodega_nombre as empresa_nombre FROM caja c JOIN empresa_bodega b ON c.link = b.link WHERE c.link = :link");
+  $sentencia->bindParam(":link", $link);
+}
   $sentencia->execute();
   $lista_caja=$sentencia->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 <br>
 <div class="card card-primary">
@@ -54,10 +59,10 @@ $responsable = $_SESSION['usuario_id'];
                 <td><?php if ($registro['link'] == "sudo_admin" ) {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                 <td class="tdColor"><?php echo '$' . number_format($registro['caja_efectivo'], 0, '.', ','); ?></td>
                 <td class="text-center">
-                  <a class="btn btn-info" href="editar_cajas.php?txtID=<?php echo $registro['caja_id']; ?>"role="button"title="Editar">
+                  <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_cajas;?>&txtID=<?php echo $registro['caja_id']; ?>"role="button"title="Editar">
                     <i class="fas fa-edit"></i>Editar
                   </a>
-                  <a class="btn btn-danger"href="index_cajas.php?txtID=<?php echo $registro['caja_id']; ?>" role="button"title="Eliminar">
+                  <a class="btn btn-danger"href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>&txtID=<?php echo $registro['caja_id']; ?>" role="button"title="Eliminar">
                       <i class="fas fa-trash-alt"></i>Eliminar
                   </a>
                 </td>

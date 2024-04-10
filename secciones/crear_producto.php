@@ -4,11 +4,12 @@ if ($_SESSION['valSudoAdmin']) {
     $lista_producto_link  = "index_productos.php";
     $crear_categoria_link  = "crear_categoria.php";
     $crear_proveedor_link  = "crear_proveedor.php";
-  
+    $producto_bodega_link = "producto_bodega.php";
  }else{
     $lista_producto_link  = "index_productos.php?link=".$link;
     $crear_categoria_link  = "crear_categoria.php?link=".$link;
     $crear_proveedor_link  = "crear_proveedor.php?link=".$link;
+    $producto_bodega_link = "producto_bodega.php?link=".$link;
  }
 
  if(isset($_GET['link'])){
@@ -35,11 +36,10 @@ if ($_POST) {
 
     date_default_timezone_set('America/Bogota'); 
     $fechaActual = date("d-m-Y");
-
-    if ($idResponsable == 1) {
+    if ($idResponsable == 1 || $link == "sudo_bodega") {
         $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion, producto_fecha_ingreso,
         producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo,
-    categoria_id,proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        categoria_id,proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $sentencia = $conexion->prepare($sql);
     $params = array(
@@ -62,25 +62,24 @@ if ($_POST) {
     $resultado_bodega = $sentencia->execute($params);
 
         if ($resultado_bodega) {
-            echo "¡La devolución se insertó correctamente en la base de datos!";
+            echo "¡El producto se ha creado perfectamente!";
         } else {
-            echo "¡Error al insertar la devolución!";
+            echo "¡Error al insertar producto!";
         }
     } catch (PDOException $e) {
         echo "Error de la base de datos: " . $e->getMessage();
     }
     if ($resultado_bodega) {
         echo '<script>
-        // Código JavaScript para mostrar SweetAlert
         Swal.fire({
-            title: "¡Producto creado Exitosamente!!",
+            title: "¡Producto creado Exitosamente!",
             icon: "success",
-            confirmButtonText: "¡Entendido!"
+            timer: 1000 
         }).then((result) => {
-            if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/producto_bodega.php";
+            if (result.dismiss === Swal.DismissReason.timer) {
+                window.location.href = "'.$url_base.'secciones/'.$producto_bodega_link.'";
             }
-        })
+        });
         </script>';
     }else {
         echo '<script>
@@ -116,16 +115,15 @@ if ($_POST) {
         $resultado = $sentencia->execute($params);
         if ($resultado) {
             echo '<script>
-            // Código JavaScript para mostrar SweetAlert
             Swal.fire({
-                title: "¡Producto creado Exitosamente!!",
+                title: "¡Producto creado Exitosamente!",
                 icon: "success",
-                confirmButtonText: "¡Entendido!"
+                timer: 1000 
             }).then((result) => {
-                if(result.isConfirmed){
+                if (result.dismiss === Swal.DismissReason.timer) {
                     window.location.href = "'.$url_base.'secciones/'.$lista_producto_link.'";
                 }
-            })
+            });
             </script>';
         }else {
             echo '<script>
@@ -176,7 +174,7 @@ if ($user_id == 1) {
         </div>
         <div class="card card-primary" style="margin-top:3%">
             <div class="card-header">
-                <h2 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO &nbsp;<a style="color:black" class="btn btn-warning" href="<?php echo $url_base;?>secciones/<?php echo $lista_producto_link;?>">Lista de Productos</a></h2>
+                <h2 class="card-title textTabla" >REGISTRE EL NUEVO PRODUCTO &nbsp;<a style="color:black" class="btn btn-warning" href="<?php echo $url_base;?>secciones/<?php echo $link != "sudo_bodega" ? $lista_producto_link : $producto_bodega_link ;?>">Lista de Productos</a></h2>
             </div>
             <br>
               <!-- form start --> 

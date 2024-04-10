@@ -7,8 +7,6 @@ $sentencia->execute();
 $solo_buscarCaja=$sentencia->fetch(PDO::FETCH_LAZY);
 $caja_id = $solo_buscarCaja['caja_id'];
 
-echo "CAJA =================== >" . $caja_id;
-
 if(isset($_GET['link'])){
     $link=(isset($_GET['link']))?$_GET['link']:"";
  }
@@ -39,12 +37,12 @@ if ($_POST) {
     //Restar el Gasto en la quincena
 
     date_default_timezone_set('America/Bogota'); 
-    //    $fechaDia = date("d");
-    //    $fechaMes = date("m");
-    //    $fechaYear = date("Y");
-       $fechaDia = 1;
-       $fechaMes = 07;
+       $fechaDia = date("d");
+       $fechaMes = date("m");
        $fechaYear = date("Y");
+    //    $fechaDia = 1;
+    //    $fechaMes = 07;
+    //    $fechaYear = date("Y");
 
     $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link");
     $sentencia->bindParam(":link", $link);

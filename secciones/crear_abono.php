@@ -6,6 +6,15 @@
  }else{
     $crear_abono_link  = "index_pendientes.php?link=".$link;
  }
+ $buscando_usuarioId = $_SESSION['usuario_id'];
+ $buscando_usuario = $conexion->prepare("SELECT * FROM usuario WHERE usuario_id=:usuario_id");
+ $buscando_usuario->bindParam(":usuario_id",$buscando_usuarioId);
+ $buscando_usuario->execute();
+ $encontrado_usuario = $buscando_usuario->fetch(PDO::FETCH_LAZY);
+
+if ($encontrado_usuario) {
+    $caja_asignada = $encontrado_usuario['caja_id'];
+}
 
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
@@ -161,32 +170,35 @@ if ($_POST) {
                 </script>';
             }
         }  
-
+      
          // Buscando caja del vendedor actual
         $sentencia=$conexion->prepare("SELECT * FROM caja WHERE caja_id = :caja_id ");
-        $sentencia->bindParam(":caja_id",$responsable);
+        $sentencia->bindParam(":caja_id",$caja_asignada);
         $sentencia->execute();
         $result_caja=$sentencia->fetch(PDO::FETCH_LAZY);
-        $result_cajaId = $result_caja['caja_id'];
-        // efectivo
-        $caja_efectivo = $result_caja['caja_efectivo'];
-        $caja_efectivo = $caja_efectivo - $historial_abono;
-        // davivienda
-        $caja_davivienda = $result_caja['davivienda'];
-        $caja_davivienda = $caja_davivienda - $historial_abono;
-        // bancolombia
-        $caja_bancolombia = $result_caja['bancolombia'];
-        $caja_bancolombia = $caja_bancolombia - $historial_abono;
-        // nequi
-        $caja_nequi = $result_caja['nequi'];
-        $caja_nequi = $caja_nequi - $historial_abono;
-        
+        if ($result_caja) {
+          $result_cajaId = $result_caja['caja_id'];
+          // efectivo
+          $caja_efectivo = $result_caja['caja_efectivo'];
+          $caja_efectivo = $caja_efectivo + $historial_abono;
+          // davivienda
+          $caja_davivienda = $result_caja['davivienda'];
+          $caja_davivienda = $caja_davivienda + $historial_abono;
+          // bancolombia
+          $caja_bancolombia = $result_caja['bancolombia'];
+          $caja_bancolombia = $caja_bancolombia + $historial_abono;
+          // nequi
+          $caja_nequi = $result_caja['nequi'];
+          $caja_nequi = $caja_nequi + $historial_abono;
+        }
+     
         if ($metodo_pago_abono == 0) {
          
             // Actualizando el dinero de la caja Efectivo
             $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ? AND link = ? ";
             $sentencia = $conexion->prepare($sql);
             $params = array($caja_efectivo, $result_cajaId, $link );
+            $sentencia->execute($params);
 
         }else if($metodo_pago_abono == 1){
             $banco_transferencia= isset($_POST['banco_transferencia']) ? $_POST['banco_transferencia'] : "";    
@@ -196,20 +208,21 @@ if ($_POST) {
               $sql = "UPDATE caja SET davivienda = ? WHERE caja_id = ? AND link = ? ";
               $sentencia = $conexion->prepare($sql);
               $params = array($caja_davivienda, $result_cajaId, $link );
-
+              $sentencia->execute($params);
             }else if ($banco_transferencia == 01) {
 
               // Actualizando el dinero de la caja Bancolombia
               $sql = "UPDATE caja SET bancolombia = ? WHERE caja_id = ? AND link = ? ";
               $sentencia = $conexion->prepare($sql);
               $params = array($caja_bancolombia, $result_cajaId, $link );
-
+              $sentencia->execute($params);
             }else if ($banco_transferencia == 02) {
 
               // Actualizando el dinero de la caja Nequi
               $sql = "UPDATE caja SET nequi = ? WHERE caja_id = ? AND link = ? ";
               $sentencia = $conexion->prepare($sql);
               $params = array($caja_nequi, $result_cajaId, $link );
+              $sentencia->execute($params);
             }
         }
     }

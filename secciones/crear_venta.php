@@ -130,21 +130,84 @@ if(isset($_POST['productos_vendidos'])) {
     $sentencia->bindParam(":caja_id",$caja_id);
     $sentencia->execute();
     $result_caja=$sentencia->fetch(PDO::FETCH_LAZY);
-    $result_cajaId = $result_caja['caja_id'];
-    $caja_efectivo = $result_caja['caja_efectivo'];
-    $caja_efectivo = $caja_efectivo + $total_dinero;
 
-
-    if ($metodo_pago == 0 || $creditoAbono_efectivo) {
-        // Actualizando el dinero de la caja
-        $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ?";
-            $sentencia = $conexion->prepare($sql);
-            $params = array(
-                $caja_efectivo, 
-                $result_cajaId  
-            );
-        $sentencia->execute($params);
+    if ($result_caja) {
+      $result_cajaId = $result_caja['caja_id'];
+      // efectivo
+      $caja_efectivo = $result_caja['caja_efectivo'];
+      $caja_efectivo = $caja_efectivo + $recibe_dinero;
+      // davivienda
+      $caja_davivienda = $result_caja['davivienda'];
+      $caja_davivienda = $caja_davivienda + $recibe_dinero;
+      // bancolombia
+      $caja_bancolombia = $result_caja['bancolombia'];
+      $caja_bancolombia = $caja_bancolombia + $recibe_dinero;
+      // nequi
+      $caja_nequi = $result_caja['nequi'];
+      $caja_nequi = $caja_nequi + $recibe_dinero;
     }
+
+    // Pagando con efectivo sin Credito
+    if ($metodo_pago == 0) {
+        // Actualizando el dinero de la caja Efectivo
+        $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ? AND link = ? ";
+        $sentencia = $conexion->prepare($sql);
+        $params = array($caja_efectivo, $result_cajaId, $linkeo );
+        $sentencia->execute($params);
+
+    }else // Pagando con transaccion sin Credito
+      if($metodo_pago == 1){
+        $transferenciaMetodo= isset($_POST['transferenciaMetodo']) ? $_POST['transferenciaMetodo'] : "";
+
+        if ($transferenciaMetodo == 00) {
+          // Actualizando el dinero de la caja Davivienda
+          $sql = "UPDATE caja SET davivienda = ? WHERE caja_id = ? AND link = ? ";
+          $sentencia = $conexion->prepare($sql);
+          $params = array($caja_davivienda, $result_cajaId, $linkeo );
+          $sentencia->execute($params);
+        }else if ($transferenciaMetodo == 01) {
+
+          // Actualizando el dinero de la caja Bancolombia
+          $sql = "UPDATE caja SET bancolombia = ? WHERE caja_id = ? AND link = ? ";
+          $sentencia = $conexion->prepare($sql);
+          $params = array($caja_bancolombia, $result_cajaId, $linkeo );
+          $sentencia->execute($params);
+        }else if ($transferenciaMetodo == 02) {
+
+          // Actualizando el dinero de la caja Nequi
+          $sql = "UPDATE caja SET nequi = ? WHERE caja_id = ? AND link = ? ";
+          $sentencia = $conexion->prepare($sql);
+          $params = array($caja_nequi, $result_cajaId, $linkeo );
+          $sentencia->execute($params);
+        }
+    }else if($metodo_pago == 2){
+        $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+        if ($tipoAbono === 2) {
+            $creditoAbono_efectivo = true;
+            if($creditoAbono_efectivo){
+                $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ? AND link = ? ";
+                $sentencia = $conexion->prepare($sql);
+                $params = array($caja_efectivo, $result_cajaId, $linkeo );
+                $resultado = $sentencia->execute($params);
+            }
+        }else if($tipoAbono == 00){
+            $sql = "UPDATE caja SET davivienda = ? WHERE caja_id = ? AND link = ? ";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($caja_davivienda, $result_cajaId, $linkeo );
+            $sentencia->execute($params);
+        }else if($tipoAbono == 01){
+            $sql = "UPDATE caja SET bancolombia = ? WHERE caja_id = ? AND link = ? ";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($caja_bancolombia, $result_cajaId, $linkeo );
+            $sentencia->execute($params);
+        }else if($tipoAbono == 02){
+            $sql = "UPDATE caja SET nequi = ? WHERE caja_id = ? AND link = ? ";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($caja_nequi, $result_cajaId, $linkeo );
+            $sentencia->execute($params);
+        }
+    }
+    
     
     // Guardando la venta
     $sql = "INSERT INTO venta (venta_codigo, venta_fecha, venta_hora, venta_total, venta_pagado, venta_cambio, 
@@ -192,12 +255,12 @@ if(isset($_POST['productos_vendidos'])) {
 }
 
    date_default_timezone_set('America/Bogota'); 
-//    $fechaDia = date("d");
-//    $fechaMes = date("m");
-//    $fechaYear = date("Y");
-   $fechaDia = 20;
-   $fechaMes = 04;
+   $fechaDia = date("d");
+   $fechaMes = date("m");
    $fechaYear = date("Y");
+//    $fechaDia = 13;
+//    $fechaMes = 04;
+//    $fechaYear = date("Y");
    
    // GUARDAR SUMA DE DINERO PARA NÓMINA
     $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link");
@@ -210,11 +273,11 @@ if(isset($_POST['productos_vendidos'])) {
         foreach ($lista_dinero as $fila) {
             if ($fechaDia <= 15 && $fila['mes'] == $fechaMes) {
                 if ($fila['dia'] <= 15 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear && $fila['metodo_pago'] == $metodo_pago && $fila['transferencia_metodo'] == $transferenciaMetodo ) {
-                    echo "=============";                    
-                    echo "<br>";                    
-                    echo "...Haciendo Update de la primera quincena...";
-                    echo "<br>";                    
-                    echo "=============";                    
+                    // echo "=============";                    
+                    // echo "<br>";                    
+                    // echo "...Haciendo Update de la primera quincena...";
+                    // echo "<br>";                    
+                    // echo "=============";                    
 
                     $sql = "UPDATE dinero_por_quincena SET dinero = ?, dia = ?, mes = ?, anio = ? WHERE id = ?";
                     $sentencia = $conexion->prepare($sql);
@@ -235,12 +298,12 @@ if(isset($_POST['productos_vendidos'])) {
         }     
         // Insertando cuando el metodo de pago es diferente a los demas o la negacion de la condicion de arriba
         if (!$existeRegistro && $fechaDia <= 15 && !$valNuevoMes) {
-            echo "==========";
-            echo "<br>";
-            echo "... INSERTANDO NUEVO METODO DE PAGO...";
-            echo "<br>";
-            echo "==========";
-            $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, metodo_credito ) 
+            // echo "==========";
+            // echo "<br>";
+            // echo "... INSERTANDO NUEVO METODO DE PAGO...";
+            // echo "<br>";
+            // echo "==========";
+            $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito ) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
@@ -259,12 +322,12 @@ if(isset($_POST['productos_vendidos'])) {
        
         if ($valNuevoMes == true) {
             if($fechaDia <= 15 && $fila['mes'] != $fechaMes) {
-                echo "==========";
-                echo "<br>";
-                echo "...Nueva venta de un Nuevo mes...";
-                echo "<br>";
-                echo "==========";
-                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo,  metodo_credito ) 
+                // echo "==========";
+                // echo "<br>";
+                // echo "...Nueva venta de un Nuevo mes...";
+                // echo "<br>";
+                // echo "==========";
+                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo,  estado_credito ) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
@@ -280,12 +343,12 @@ if(isset($_POST['productos_vendidos'])) {
                 $sentencia->execute($params); 
             }
         }
-            echo "link venta => " . $linkeo_venta;
-            echo "<br>";
-            echo "metodo_pago => " . $metodo_pago;
-            echo "<br>";
-            echo "transferenciaMetodo => " . $transferenciaMetodo;
-            echo "<br>";
+            // echo "link venta => " . $linkeo_venta;
+            // echo "<br>";
+            // echo "metodo_pago => " . $metodo_pago;
+            // echo "<br>";
+            // echo "transferenciaMetodo => " . $transferenciaMetodo;
+            // echo "<br>";
         
             // $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link AND dia <= '15' AND metodo_pago ORDER BY dia DESC limit 1;");
             $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link AND metodo_pago =:metodo_pago AND transferencia_metodo=:transferenciaMetodo AND mes=:fechaMes ORDER BY id DESC LIMIT 1");
@@ -303,10 +366,10 @@ if(isset($_POST['productos_vendidos'])) {
             }
 
 
-            echo "edia buscado carajo => " .$dia_buscado;
+            // echo "edia buscado carajo => " .$dia_buscado;
 
             if(!$lista_ultimo_update){
-                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, metodo_credito) 
+                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                     $sentencia = $conexion->prepare($sql);
                     $params = array(
@@ -320,17 +383,17 @@ if(isset($_POST['productos_vendidos'])) {
                         $metodo_credito
                     );
                     $sentencia->execute($params); 
-                    echo "<br>"; 
-                    echo "..INSERTANDO NUEVO METODO DE PAGO===============>  pero de la segunda quincena nene...";
-                    echo "<br>";
+                    // echo "<br>"; 
+                    // echo "..INSERTANDO NUEVO METODO DE PAGO===============>  pero de la segunda quincena nene...";
+                    // echo "<br>";
             }
 
             if ($dia_buscado != 16 && $dia_buscado < 16 && $fechaMes == $mes_buscado && $anio_buscado == $fechaYear) {
                 if($fechaDia >= 16 && $fechaMes == $mes_buscado && $anio_buscado == $fechaYear) {
-                    echo "...entrando a la validacion de al segunda quincena";
-                    echo "<br>";
+                    // echo "...entrando a la validacion de al segunda quincena";
+                    // echo "<br>";
                  
-                    $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, metodo_credito) 
+                    $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                     $sentencia = $conexion->prepare($sql);
                     $params = array(
@@ -344,15 +407,15 @@ if(isset($_POST['productos_vendidos'])) {
                         $metodo_credito
                     );
                     $sentencia->execute($params);  
-                    echo "..Guardando la segunda quincena...";
-                    echo "<br>";
+                    // echo "..Guardando la segunda quincena...";
+                    // echo "<br>";
                 }
             }else if($dia_buscado >= 16){
-                echo "============";
-                echo "<br>";
-                echo "...Update a la segunda quincena";
-                echo "<br>";
-                echo "============";
+                // echo "============";
+                // echo "<br>";
+                // echo "...Update a la segunda quincena";
+                // echo "<br>";
+                // echo "============";
                 $sql = "UPDATE dinero_por_quincena SET dinero = ?, dia = ?, mes = ?, anio = ? WHERE id = ?";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
@@ -367,12 +430,12 @@ if(isset($_POST['productos_vendidos'])) {
 
       
     } else {
-        echo "==========";
-        echo "<br>";
-        echo "...Por primera vez haciendo una venta...";
-        echo "<br>";
-        echo "==========";
-        $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, metodo_credito ) 
+        // echo "==========";
+        // echo "<br>";
+        // echo "...Por primera vez haciendo una venta...";
+        // echo "<br>";
+        // echo "==========";
+        $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito ) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $sentencia = $conexion->prepare($sql);
         $params = array(

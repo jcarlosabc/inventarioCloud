@@ -8,17 +8,19 @@
 
     // Mostrando la bodega creada
     $sentencia=$conexion->prepare("SELECT usuario_usuario, usuario_clave, info_clave, empresa_bodega.* FROM usuario 
-    JOIN empresa_bodega ON empresa_bodega.link = empresa_bodega.link");
+    JOIN empresa_bodega ON empresa_bodega.link = usuario.link");
     $sentencia->execute();
     $bodega_creada = $sentencia->fetch(PDO::FETCH_LAZY);
-    $usuario_usuario = $bodega_creada['usuario_usuario'];
-    $usuario_clave = $bodega_creada['usuario_clave'];
-    $info_clave = $bodega_creada['info_clave'];
-    $link = $bodega_creada['link'];
-    $bodega_telefono = $bodega_creada['bodega_telefono'];
-    $bodega_direccion = $bodega_creada['bodega_direccion'];
-    $codigo_seguridad = $bodega_creada['codigo_seguridad'];
-    $bodega_nombre = $bodega_creada['bodega_nombre'];
+    if ($bodega_creada) {
+      $usuario_usuario = $bodega_creada['usuario_usuario'];
+      $usuario_clave = $bodega_creada['usuario_clave'];
+      $info_clave = $bodega_creada['info_clave'];
+      $link = $bodega_creada['link'];
+      $bodega_telefono = $bodega_creada['bodega_telefono'];
+      $bodega_direccion = $bodega_creada['bodega_direccion'];
+      $codigo_seguridad = $bodega_creada['codigo_seguridad'];
+      $bodega_nombre = $bodega_creada['bodega_nombre'];
+    }
     
 ?>
 <style>

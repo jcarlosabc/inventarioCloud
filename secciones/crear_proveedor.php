@@ -1,12 +1,6 @@
 <?php include("../templates/header.php") ?>
 <?php
 
-if ($_SESSION['valSudoAdmin']) {
-    $lista_proveedor_link  = "index_proveedores.php";
-
- }else{
-    $lista_proveedor_link  = "index_proveedores.php?link=".$link;
- }
 if ($_POST) {
     $nit_proveedores = isset($_POST['nit_proveedore']) ? $_POST['nit_proveedore'] : " ";
     $nombre_proveedores = isset($_POST['nombre_proveedore']) ? $_POST['nombre_proveedore'] : " ";
@@ -34,14 +28,14 @@ if ($_POST) {
     if ($resultado) {
         echo '<script>
         Swal.fire({
-            title: "¡Proveedor Creado exitosamente !",
+            title: "Proveedor creada Exitosamente!",
             icon: "success",
-            confirmButtonText: "¡Entendido!"
-        }).then((result)=>{
-            if(result.isConfirmed){
-                window.location.href= "'.$url_base.'secciones/'.$lista_proveedor_link.'"
+            timer: 1000 
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.timer) {
+                window.location.href= "'.$url_base.'secciones/'.$lista_proveedore_link.'"
             }
-        })
+        });
         </script>';
     } else {
         echo '<script>
@@ -105,7 +99,7 @@ if ($_POST) {
                 <input type="hidden" name="link" value="<?php echo $link ?>">
                 <div class="card-footer" style="text-align:center">
                     <button type="submit" class="btn btn-primary btn-lg" name="guardar">Guardar</button>
-                    <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $lista_proveedor_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
+                    <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $lista_proveedore_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
                 </div>
             </div>
         </form>

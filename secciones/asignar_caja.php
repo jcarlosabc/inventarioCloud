@@ -2,8 +2,10 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
   $crear_caja_link = 'crear_caja.php';
+  $asignar_caja = "asignar_caja.php";
 }else{
-  $crear_caja_link = 'crear_caja.php?link='.$link;       
+  $crear_caja_link = 'crear_caja.php?link='.$link;
+  $asignar_caja = "asignar_caja.php?link=".$link;
 }
 if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
@@ -18,8 +20,11 @@ $responsable = $_SESSION['usuario_id'];
 
   if($responsable == 1){
     $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM caja c LEFT JOIN empresa e ON c.link = e.link");
-  }else{
+  }else if($link != "sudo_bodega" && $link != "sudo_admin"){
     $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM caja c JOIN empresa e ON c.link = e.link WHERE c.link = :link");
+    $sentencia->bindParam(":link", $link);
+  }else {
+    $sentencia=$conexion->prepare("SELECT c.*, b.bodega_nombre as empresa_nombre FROM caja c JOIN empresa_bodega b ON c.link = b.link WHERE c.link = :link");
     $sentencia->bindParam(":link", $link);
   }
   $sentencia->execute();
@@ -35,14 +40,14 @@ $responsable = $_SESSION['usuario_id'];
     if ($sentencia_asignar) {
         echo '<script>
         Swal.fire({
-            title: "Se te asignó la caja Correctamente!",
-            icon: "success",
-            confirmButtonText: "¡Entendido!"
-        }).then((result)=>{
-            if(result.isConfirmed){
-                window.location.href= "'.$url_base.'secciones/'.$inicio_link.'"
-            }
-        })
+          title: "Se te asignó la caja Correctamente!",
+          icon: "success",
+          timer: 1000 
+      }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.timer) {
+              window.location.href = "'.$url_base.'secciones/'.$index_cajas_link.'";
+          }
+      });
         </script>';
     } else {
         echo '<script>
@@ -85,7 +90,7 @@ $responsable = $_SESSION['usuario_id'];
                 <td><?php if ($registro['link'] == "sudo_admin" ) {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                 <td class="tdColor"><?php echo '$' . number_format($registro['caja_efectivo'], 0, '.', ','); ?></td>
                 <td class="text-center">
-                  <a class="btn btn-info" href="asignar_caja.php?AsignarID=<?php echo $registro['caja_id']; ?>"role="button"title="Asignar">
+                  <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $asignar_caja;?>&AsignarID=<?php echo $registro['caja_id']; ?>"role="button"title="Asignar">
                     <i class=""></i>Asignar
                 </td>
                 </tr> 

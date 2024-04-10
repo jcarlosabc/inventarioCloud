@@ -52,13 +52,16 @@ if ($_SESSION['valSudoAdmin']) {
                 <td><?php echo $registro['producto_marca']; ?></td>
                 <td><?php echo $registro['producto_modelo']; ?></td>
                 <td class="text-center">
-                  <a class="btn btn-info" href="editar_producto_bodega.php?txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Editar">
+                  <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Añadir Stock">
+                    <i class="fa fa-plus-circle"></i> Añadir Stock
+                  </a>
+                  <a class="btn btn-info" href="editar_producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Editar">
                     <i class="fas fa-edit"></i>Editar
                   </a>
-                  <a class="btn btn-primary" href="trasladar_producto_bodega.php?txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Enviar">
+                  <a class="btn btn-primary" href="trasladar_producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Enviar">
                     <i class="fa fa-share"></i>Enviar
                   </a>
-                  <a class="btn btn-danger"href="producto_bodega.php?txtID=<?php echo $registro['producto_id']; ?>" role="button"title="Eliminar">
+                  <a class="btn btn-danger"href="producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>" role="button"title="Eliminar">
                       <i class="fas fa-trash-alt"></i>Eliminar
                   </a>
                 </td>

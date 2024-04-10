@@ -34,14 +34,14 @@ if ($_POST) {
     if ($resultado_edit) {
         echo '<script>
         Swal.fire({
-            title: "¡Caja Actualizada Correctamente!",
+            title: "¡Caja Actualizada Exitosamente!",
             icon: "success",
-            confirmButtonText: "¡Entendido!"
+            timer: 1000 
         }).then((result) => {
-            if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/index_cajas.php";
+            if (result.dismiss === Swal.DismissReason.timer) {
+                window.location.href = "'.$url_base.'secciones/'.$index_cajas_link.'";
             }
-        })
+        });
         </script>';
     }else {
         echo '<script>
@@ -87,7 +87,7 @@ if ($_POST) {
             </div>
             <div class="card-footer" style="text-align:center">
                 <button type="submit"  class="btn btn-primary btn-lg">Guardar</button>
-                <a role="button" href="index.php" class="btn btn-danger btn-lg">Cancelar</a>
+                <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
             </div>
         </form>
     </div>

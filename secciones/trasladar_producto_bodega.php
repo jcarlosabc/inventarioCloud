@@ -1,10 +1,10 @@
 <?php include("../templates/header.php") ?>
 <?php
 if ($_SESSION['valSudoAdmin']) {
-    $lista_productos_link  = "index_productos.php";
+    $lista_productos_bodega_link  = "producto_bodega.php";
     
 }else{
-    $lista_productos_link  = "index_productos.php?link=".$link;
+    $lista_productos_bodega_link  = "producto_bodega.php?link=".$link;
 }
 
 date_default_timezone_set('America/Bogota'); 
@@ -75,19 +75,15 @@ if ($_POST) {
     $lista_producto_buscado->execute();
     $lista_producto_buscado = $lista_producto_buscado->fetch(PDO::FETCH_LAZY);
 
+    $traslado ="tb";
     if ($lista_producto_buscado) {
         echo " SI hay un producto con ese codigo... ";
         echo "<br>";
-        $traslado ="tb";
         // Actualizando la cantidad en el stock del LOCAL que le pasamos de bodega
         $sql = "UPDATE producto SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ?, traslado = ? WHERE producto_codigo = ? AND link= ?";
         $sentencia_envio = $conexion->prepare($sql);
         $params = array($fechaActual,$cantidad_enviada,$traslado,$producto_codigo, $link_empresa);
         $resultado = $sentencia_envio->execute($params);
-        echo "...| Realizando actualizacion al estock del local |...";
-        echo "<br>";
-
-        echo "...| Actualizando nueva cantidad en el stock de BODEGA |...";
         // Actualizando nueva cantidad en el stock de BODEGA
         $sql = "UPDATE bodega SET producto_stock_total = producto_stock_total - ? WHERE producto_codigo = ?"; 
         $sentencia_bodega = $conexion->prepare($sql);
@@ -100,7 +96,7 @@ if ($_POST) {
         echo "INSERTANDO NUEVO PRODUCTO";
      $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion, producto_fecha_garantia,producto_nombre, producto_stock_total,
         producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo, categoria_id,proveedor_id, link, responsable, traslado )         
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $sentencia = $conexion->prepare($sql);
     $params = array(
@@ -120,8 +116,6 @@ if ($_POST) {
         $traslado
     );
     $resultado = $sentencia->execute($params);
-
-    echo "...| Actualizando nueva cantidad en el stock de BODEGA |...";
     // Actualizando nueva cantidad en el stock de BODEGA
     $sql = "UPDATE bodega SET producto_stock_total = producto_stock_total - ? WHERE producto_codigo = ?"; 
     $sentencia_bodega = $conexion->prepare($sql);
@@ -135,10 +129,19 @@ if ($_POST) {
         Swal.fire({
             title: "¡Se envio el producto Correctamente!",
             icon: "success",
+            timer: 1000 
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.timer) {
+                window.location.href = "'.$url_base.'secciones/'.$lista_productos_bodega_link.'";
+            }
+        });
+        Swal.fire({
+            title: "¡Se envio el producto Correctamente!",
+            icon: "success",
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/'.$producto_bodega_link.'";
+                window.location.href = "'.$url_base.'secciones/'.$lista_productos_bodega_link.'";
             }
         })
         </script>';
@@ -269,7 +272,7 @@ if ($_POST) {
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
                     <button type="submit" class="btn btn-success btn-lg"> Enviar </button>
-                    <a class="btn btn-danger btn-lg" href="<?php echo $url_base;?>secciones/producto_bodega.php" role="button">Cancelar</a>
+                  <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $lista_productos_bodega_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
                 </div>
               </form>
             </div>

@@ -66,14 +66,14 @@ if ($_POST) {
     if ($resultado_edit) {
         echo '<script>
         Swal.fire({
-            title: "¡Cliente Actualizado Correctamente!",
+            title: "¡Cliente Actualizado Exitosamente!",
             icon: "success",
-            confirmButtonText: "¡Entendido!"
+            timer: 1000 
         }).then((result) => {
-            if(result.isConfirmed){
+            if (result.dismiss === Swal.DismissReason.timer) {
                 window.location.href = "'.$url_base.'secciones/'.$lista_cliente_link.'";
             }
-        })
+        });
         </script>';
     }else {
         echo '<script>
@@ -148,7 +148,7 @@ if ($_POST) {
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
                   <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
-                  <a role="button"  href="index_clientes.php" class="btn btn-danger btn-lg">Cancelar</a>
+                  <a role="button" href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>" class="btn btn-danger btn-lg">Cancelar</a>
                 </div>
             </form>
         </div>

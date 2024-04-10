@@ -34,7 +34,19 @@ if($_SESSION['rolSudoAdmin']){
   INNER JOIN usuario ON devolucion.responsable = usuario.usuario_id
   INNER JOIN producto ON devolucion.producto_id = producto.producto_id
   GROUP BY devolucion.id;");
-}else{
+}else if($_SESSION['rolBodega']){
+  $link=(isset($_GET['link']))?$_GET['link']:"";
+  $sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*, 
+  empresa_bodega.bodega_nombre as empresa_nombre, empresa_bodega.codigo_seguridad, devolucion.*, bodega.*
+  FROM venta 
+  INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
+  INNER JOIN empresa_bodega ON venta.link = empresa_bodega.link
+  INNER JOIN devolucion ON venta.link = devolucion.link
+  INNER JOIN usuario ON devolucion.responsable = usuario.usuario_id 
+  INNER JOIN bodega ON devolucion.producto_id = bodega.producto_id
+  WHERE venta.link = :link GROUP BY devolucion.id");
+  $sentencia->bindParam(":link",$link);
+}else {
   $link=(isset($_GET['link']))?$_GET['link']:"";
   $sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*, 
   empresa.empresa_nombre, empresa.codigo_seguridad, devolucion.*, producto.*
@@ -52,7 +64,7 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 ?>
       <div class="card card-success">
         <div class="card-header">
-          <h2 class="card-title textTabla">HISTORIAL DEVOLUCIONES &nbsp;<a class="btn btn-warning" style="color:black" href="<?php echo $url_base;?>secciones/<?php echo $index_ventas_link;?>" class="btn btn-warning">Crear Devolución</a></h2>
+          <h2 class="card-title textTabla">HISTORIAL DEVOLUCIONES </h2>
         </div>
         <!-- /.card-header -->
         <div class="card-body">

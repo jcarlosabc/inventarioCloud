@@ -3,10 +3,17 @@
 
   if ($_SESSION['rolSudoAdmin']) {
     $sentencia=$conexion->prepare("SELECT * FROM venta WHERE venta_metodo_pago = 2 ");
+    $crear_abono_links = "crear_abono.php";
+  }else if($_SESSION['rolBodega']) {
+    if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
+    $sentencia=$conexion->prepare("SELECT * FROM venta WHERE venta_metodo_pago = 2 AND link=:link");
+    $sentencia->bindParam(":link",$linkeo);
+    $crear_abono_links = "crear_abono.php?link=sudo_bodega&txtID";
   }else {
     if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
     $sentencia=$conexion->prepare("SELECT * FROM venta WHERE venta_metodo_pago = 2 AND link=:link");
     $sentencia->bindParam(":link",$linkeo);
+    $crear_abono_links = "crear_abono.php?txtID";
   }
   $sentencia->execute();
   $lista_ventas_credito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -121,13 +128,13 @@
                   </td>
                   <?php if ($registro['estado_venta'] == 1) { ?>                    
                     <td>  
-                      <a class="btn btn-success btn-sm" href="<?php echo $url_base ?>secciones/crear_abono.php?txtID=<?php echo $registro['venta_codigo']; ?>" role="button" title="Pagado">
+                      <a class="btn btn-success btn-sm" href="<?php echo $url_base ?>secciones/<?php echo $crear_abono_links ?>=<?php echo $registro['venta_codigo']; ?>" role="button" title="Pagado">
                         <i class="fa fa-check" aria-hidden="true"></i> Pagado
                       </a>
                     </td>
                     <?php } else { ?> 
                     <td>
-                        <a class="btn btn-warning btn-sm" href="<?php echo $url_base ?>secciones/crear_abono.php?txtID=<?php echo $registro['venta_codigo']; ?>" role="button" title="Abonar">
+                        <a class="btn btn-warning btn-sm" href="<?php echo $url_base ?>secciones/<?php echo $crear_abono_links ?>=<?php echo $registro['venta_codigo']; ?>" role="button" title="Abonar">
                           <i class="fa fa-credit-card" aria-hidden="true"></i> Abonar
                         </a>
                     </td>

@@ -70,7 +70,7 @@ if ($usuario_sesion == 1) {
 
   $sentencia_dinero=$conexion->prepare("SELECT * FROM caja;");
 
-} else if($_SESSION['roladminlocal']) {
+} else if($_SESSION['roladminlocal'] || $_SESSION['rolBodega']) {
 
   $sentencia_dinero=$conexion->prepare("SELECT * FROM caja WHERE link = :link;");
   $sentencia_dinero->bindParam(":link", $linkeo);

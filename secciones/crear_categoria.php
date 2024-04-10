@@ -29,7 +29,7 @@ if ($_POST) {
         Swal.fire({
             title: "¡Categoría creada Exitosamente!",
             icon: "success",
-            timer: 1000 // Tiempo en milisegundos (5 segundos = 5000 milisegundos)
+            timer: 1000 
         }).then((result) => {
             if (result.dismiss === Swal.DismissReason.timer) {
                 window.location.href = "'.$url_base.'secciones/'.$lista_categoria_link.'";

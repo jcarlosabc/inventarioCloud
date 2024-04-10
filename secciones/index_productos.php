@@ -21,9 +21,13 @@ if ($responsable == 1) {
       INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id LEFT JOIN ( SELECT p.*, e.empresa_nombre FROM producto p 
       LEFT JOIN empresa e ON p.link = e.link) AS e ON producto.link = e.link GROUP BY producto_id");
 
-}else { 
+}else if($link != "sudo_bodega"  || $link != "sudo_admin" ) { 
   $sentencia=$conexion->prepare("SELECT p.*, c.*, e.empresa_nombre
   FROM producto p LEFT JOIN categoria c ON p.categoria_id = c.categoria_id LEFT JOIN empresa e ON p.link = e.link WHERE p.link = :link");
+  $sentencia->bindParam(":link",$link);
+}else {
+  $sentencia=$conexion->prepare("SELECT p.*, c.*, b.bodega_nombre as empresa_nombre
+  FROM producto p LEFT JOIN categoria c ON p.categoria_id = c.categoria_id LEFT JOIN empresa_bodega b ON p.link = b.link WHERE p.link = :link");
   $sentencia->bindParam(":link",$link);
 }
 
@@ -51,8 +55,6 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Cantidad en Stock</th>
               <th>Garantía</th>
               <th>Empresa</th>
-                          
-
               <?php if (!$_SESSION['rolUserEmpleado']) { ?> <th>Opciones</th> <?php } ?>
             </tr>
             </thead>

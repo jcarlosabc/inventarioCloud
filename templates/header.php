@@ -3,16 +3,21 @@
     session_start();
     include("../db.php");
     $url_base = "http://localhost/inventariocloud/";
-
     
     $link = (isset($_GET['link']))?$_GET['link']:"";
     $sentencia=$conexion->prepare("SELECT empresa_nombre FROM empresa WHERE link = :link LIMIT 1 ");
     $sentencia->bindParam(":link",$link);
-    
     $sentencia->execute();    
-    $lista_empresa=$sentencia->fetchAll(PDO::FETCH_ASSOC); 
-    
+    $lista_empresa=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
+    $sentencia=$conexion->prepare("SELECT bodega_nombre FROM empresa_bodega WHERE link = :link LIMIT 1 ");
+    $sentencia->bindParam(":link",$link);
+    $sentencia->execute();    
+    $lista_bodega=$sentencia->fetch(PDO::FETCH_LAZY);
+    if ($lista_bodega) {
+        $nombreBodega = $lista_bodega['bodega_nombre'];
+    }
+    
     //$logo_empresa = isset($lista_empresa[0]['empresa_logo'])? $lista_empresa[0]['empresa_logo']:'';
     $nombre_empresa = isset($lista_empresa[0]['empresa_nombre'])? $lista_empresa[0]['empresa_nombre'] : '';
 
@@ -63,11 +68,14 @@
     //DEVOLUCIONES
       $index_devoluciones_link = 'index_devoluciones.php';
     //BODEGA
-    $producto_bodega_link = 'producto_bodega.php';
+      $producto_bodega_link = 'producto_bodega.php';
     //SECCIÓN CREDITOS
       $index_pendientes_link = 'index_pendientes.php';
-
-
+     // SECCIÓN DE BODEGA
+     $bodega_link ="bodega.php";
+     $crear_venta_bodega ="crear_venta_bodega.php";
+     $venta_bodega ="venta_bodega.php";
+     
     } else {
       $inicio_link = "index_estadisticas.php?link=".$link;
     //SECCIÓN DE VENTAS
@@ -102,6 +110,11 @@
       $index_devoluciones_link = 'index_devoluciones.php?link='.$link;
     //SECCIÓN CREDITOS
       $index_pendientes_link = 'index_pendientes.php?link='.$link;
+    // SECCIÓN DE BODEGA
+      $producto_bodega_link = "producto_bodega.php?link=".$link;
+      $bodega_link ="bodega.php?link=".$link;
+      $crear_venta_bodega ="crear_venta_bodega.php?link=".$link;
+      $venta_bodega ="venta_bodega.php?link=".$link;
   }
 ?>
 <!DOCTYPE html>
@@ -204,12 +217,14 @@
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
        <a href="#" class="brand-link">
-        <img src="../dist/img/logos/logo_empresa.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <img src="../dist/img/logos/logofernando.jpg" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         <?php if ($_SESSION['rolSudoAdmin']) { ?>
-          <span class="brand-text font-weight-light">Bodega</span>
-          <?php } else {?>
-            <span class="brand-text font-weight-light"><?php echo $nombre_empresa;?></span>
-        <?php } ?>
+          <span class="brand-text font-weight-light">Admin</span>
+          <?php } else if($_SESSION['roladminlocal'] || $_SESSION['rolUserEmpleado']){?>
+              <span class="brand-text font-weight-light">Local: <?php echo $nombre_empresa;?></span>
+            <?php } else { ?>
+             <span class="brand-text font-weight-light">Local: <?php echo $nombreBodega;?></span>
+            <?php }?>
         </a> 
     
       <!-- Sidebar -->
@@ -261,6 +276,7 @@
             <!-- SECCIÓN DE VENTAS -->
             <!-- Permisos => sudo admin(historial ventas) | admin local | empleado  -->
             <li class="nav-item">
+            <?php if (!$_SESSION['rolBodega']) { ?>
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-cart-plus fa-lg mr-2"></i>
                 <p>
@@ -268,6 +284,7 @@
                   <i class="fas fa-angle-left right"></i>
                 </p>
               </a>
+            <?php } ?>
               <ul class="nav nav-treeview">
               <?php if (!$_SESSION['rolSudoAdmin']) { ?>
                 <li class="nav-item">
@@ -316,12 +333,22 @@
                     <p>Crear Producto</p>
                   </a>
                 </li>
-                <li class="nav-item">
+                <?php if ($_SESSION['rolSudoAdmin'] || $_SESSION['rolBodega'] ) { ?>
+                  <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $producto_bodega_link?>" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Produc. bodega</p>
+                  </a>
+                </li>    
+                <?php } ?> 
+                <?php if (!$_SESSION['rolBodega']) { ?>
+                  <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/<?php echo $lista_producto_link?>" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Lista de Productos</p>
                   </a>
-                </li>              
+                </li>    
+                <?php } ?> 
               </ul>
             </li>
           <?php } ?> 
@@ -390,7 +417,7 @@
                 </p>
               </a>
               <ul class="nav nav-treeview"> 
-            <?php if ($_SESSION['roladminlocal']) { ?>
+            <?php if ($_SESSION['roladminlocal'] || $_SESSION['rolBodega']) { ?>
               <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/<?php echo $asignar_caja_link;?>" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
@@ -415,29 +442,31 @@
 
           <!-- SECCIÓN DE USUARIO -->
           <!-- Permisos => sudo admin | admin local | -->
-             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fa fa-users fa-lg mr-2"></i>
-                <p>
-                  EMPLEADOS
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">              
-                <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/<?php echo $crear_empleado_link;?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Crear Empleado</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/<?php echo $index_empleados_link;?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Lista de Empleados</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
+          <?php if (!$_SESSION['rolBodega']) { ?>
+            <li class="nav-item">
+             <a href="#" class="nav-link">
+               <i class="nav-icon fa fa-users fa-lg mr-2"></i>
+               <p>
+                 EMPLEADOS
+                 <i class="fas fa-angle-left right"></i>
+               </p>
+             </a>
+             <ul class="nav nav-treeview">              
+               <li class="nav-item">
+                 <a href="<?php echo $url_base;?>secciones/<?php echo $crear_empleado_link;?>" class="nav-link">
+                   <i class="far fa-circle nav-icon"></i>
+                   <p>Crear Empleado</p>
+                 </a>
+               </li>
+               <li class="nav-item">
+                 <a href="<?php echo $url_base;?>secciones/<?php echo $index_empleados_link;?>" class="nav-link">
+                   <i class="far fa-circle nav-icon"></i>
+                   <p>Lista de Empleados</p>
+                 </a>
+               </li>
+             </ul>
+           </li>
+          <?php } ?>
           <?php } ?> 
 
           <!-- SECCIÓN DE PENDIENTES -->
@@ -458,7 +487,7 @@
                   </a>
                 </li>
               </ul>
-              <?php if ($_SESSION['rolSudoAdmin'] || $_SESSION['roladminlocal']) { ?>
+              <?php if ($_SESSION['rolSudoAdmin'] || $_SESSION['roladminlocal'] || $_SESSION['rolBodega']) { ?>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
                   <a href="?php echo $url_base;?>secciones/index_pendientes.php" class="nav-link">
@@ -491,18 +520,20 @@
           
           <!-- BODEGA -->
           <!-- Permisos => sudo admin | -->
-            <?php if ($_SESSION['rolSudoAdmin']){ ?>
-              <li class="nav-item menu-open">
-                <li class="nav-item">
-                  <a href="bodega.php" class="nav-link ">
-                    <i class="fa fa-archive nav-icon"></i>
-                    <p>BODEGA</p>
-                  </a>
-                </li>
-              </li>
         
+          <?php if ($_SESSION['rolSudoAdmin'] || $_SESSION['rolBodega']) { ?>
+            <li class="nav-item menu-open">
+                  <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $bodega_link; ?>" class="nav-link">
+                      <i class="fa fa-archive nav-icon"></i>
+                      <p>BODEGA</p>
+                    </a>
+                  </li>
+                </li>
+            <?php } ?>
           <!-- NÓMINA -->
           <!-- Permisos => sudo admin | -->
+          <?php if ($_SESSION['rolSudoAdmin']){ ?>
             <li class="nav-item">
               <a href="#" class="nav-link">
               <i class="fa fa-list-alt nav-icon"></i>

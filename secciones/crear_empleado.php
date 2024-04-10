@@ -17,10 +17,12 @@ if ($_POST) {
     $responsable = isset($_POST['responsable']) ? $_POST['responsable']  : $responsable ;
     $usuario_rol = 2;
     $usuario_empresa = isset($_POST['usuario_empresa']) ? $_POST['usuario_empresa'] : "";
+    $quincena_empleado = isset($_POST['quincena_empleado']) ? $_POST['quincena_empleado'] : "";
     if (!$usuario_empresa) { $usuario_empresa = $link;  }
     $link =  isset($_POST['link']) ? $_POST['link'] : "";
      if ($responsable == 1) {$link = $usuario_empresa; }
     $usuario_caja = isset($_POST['usuario_caja']) ? $_POST['usuario_caja'] : 0;
+    $usuario_caja = str_replace(array('$','.',','), '', $usuario_caja); 
 
     $sentencia_caja = $conexion->prepare("SELECT * FROM caja WHERE link=:link AND caja_id =:caja_id");
     $sentencia_caja->bindParam(":link", $usuario_empresa);
@@ -39,8 +41,8 @@ if ($_POST) {
     } else {
         $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
                 usuario_nombre, usuario_apellido, usuario_telefono, usuario_cedula, usuario_email, usuario_usuario,
-                usuario_clave, rol, caja_id, link, responsable) 
-            VALUES (NULL, :usuario_nombre , :usuario_apellido, :usuario_telefono, :usuario_cedula, :usuario_email , :usuario_usuario, :usuario_clave, :rol, :caja_id, :link, :responsable)");
+                usuario_clave, quincena_empleado, rol, caja_id, link, responsable) 
+            VALUES (NULL, :usuario_nombre , :usuario_apellido, :usuario_telefono, :usuario_cedula, :usuario_email , :usuario_usuario, :usuario_clave, :quincena_empleado, :rol, :caja_id, :link, :responsable)");
 
         $sentencia->bindParam(":usuario_nombre", $usuario_nombre);
         $sentencia->bindParam(":usuario_apellido", $usuario_apellido);
@@ -49,6 +51,7 @@ if ($_POST) {
         $sentencia->bindParam(":usuario_email", $usuario_email);
         $sentencia->bindParam(":usuario_usuario", $username);
         $sentencia->bindParam(":usuario_clave", $usuario_clave);
+        $sentencia->bindParam(":quincena_empleado", $quincena_empleado);
         $sentencia->bindParam(":rol", $usuario_rol);
         $sentencia->bindParam(":caja_id", $usuario_caja);
         $sentencia->bindParam(":link", $link);
@@ -121,6 +124,8 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                             <input type="text" class="form-control camposTabla" name="usuario_apellido" required>
                         </div>
                     </div>
+                </div>
+                <div class="row" style="justify-content:center">
                     <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Teléfono</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
@@ -143,6 +148,12 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                 <div class="row" style="justify-content:center">
                     <div class="col-sm-2">
                         <div class="form-group">
+                            <label class="textLabel">Quincena del Empleado</label>
+                            <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="quincena_empleado" id="quincenaEmpleado">
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
                             <label class="textLabel">Clave</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="password" class="form-control camposTabla" name="usuario_clave_1" id="usuario_clave_1" required>
                         </div>
@@ -154,6 +165,8 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                             <div id="mensaje" class="text-danger"></div>
                         </div>
                     </div>
+                </div>
+                <div class="row" style="justify-content:center">
                     <?php if ($responsable == 1) { ?>
                         <div class="col-sm-2">
                             <div class="form-group">

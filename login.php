@@ -12,19 +12,21 @@ if(isset($_GET['link'])){
   $sentencia->execute();
   $registro=$sentencia->fetch(PDO::FETCH_LAZY);
   
-  if (!$link == "sudo_bodega") {
     $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link=:link");
     $sentencia_empresa->bindParam(":link",$link);
     $sentencia_empresa->execute();
     $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
-    $empresa_login = $registro_empresa['empresa_nombre'];
-  }else {
-    $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa_bodega WHERE link=:link");
-    $sentencia_empresa->bindParam(":link",$link);
-    $sentencia_empresa->execute();
-    $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
-    $empresa_login = $registro_empresa['bodega_nombre'];
-  }
+    if ($registro_empresa) {
+      $empresa_login = $registro_empresa['empresa_nombre'];
+    }
+
+    $sentencia_bodega=$conexion->prepare("SELECT * FROM empresa_bodega WHERE link=:link");
+    $sentencia_bodega->bindParam(":link",$link);
+    $sentencia_bodega->execute();
+    $registro_bodega=$sentencia_bodega->fetch(PDO::FETCH_LAZY);
+    if ($registro_bodega) {
+      $empresa_login = $registro_bodega['bodega_nombre'];
+    }
 
 
   $link = $registro["link"];
@@ -71,14 +73,22 @@ if ($_POST) {
         $_SESSION['rolSudoAdmin']=true;
         $_SESSION['roladminlocal']= false;
         $_SESSION['rolUserEmpleado']= false;
+        $_SESSION['rolBodega']= false;
       }else if($_SESSION['rol'] == 1) {
         $_SESSION['rolSudoAdmin']=false;
         $_SESSION['roladminlocal']= true;
         $_SESSION['rolUserEmpleado']= false;
-      }else {
+        $_SESSION['rolBodega']= false;
+      }else if($_SESSION['rol'] == 2){
         $_SESSION['rolSudoAdmin']=false;
         $_SESSION['roladminlocal']= false;
         $_SESSION['rolUserEmpleado']= true;
+        $_SESSION['rolBodega']= false;
+      }else {
+        $_SESSION['rolSudoAdmin']=false;
+        $_SESSION['roladminlocal']= false;
+        $_SESSION['rolUserEmpleado']= false;
+        $_SESSION['rolBodega']= true;
       }
         $_SESSION['caja_id']=$lista_usuario["caja_id"];
         $_SESSION['logueado']=true;
@@ -119,7 +129,7 @@ if ($_POST) {
   <div class="login-box">
     <div class="card card-outline card-primary">
       <div class="card-header text-center">
-        <a class="h2"><b>Sistema </b><?php echo $empresa_login; ?></a>
+          <a class="h2"><b>Sistema </b><?php echo $empresa_login; ?></a>
       </div>
       <div class="card-body">
         <?php if (isset($mensaje)) { ?>

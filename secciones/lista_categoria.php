@@ -19,13 +19,15 @@ if(isset($_GET['txtID'])){
 // Buscando link de la empresa actual
 $linkeo = 0;
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
-
 $responsable = $_SESSION['usuario_id'];
 $link = "sudo_admin";
 if ($responsable == 1) {
   $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM categoria c LEFT JOIN empresa e ON c.link = e.link");
-}else {
+}else if($linkeo != "sudo_bodega" && $linkeo != "sudo_admin"  ){
   $sentencia=$conexion->prepare("SELECT c.*, e.empresa_nombre FROM categoria c JOIN empresa e ON c.link = e.link WHERE c.link =:link");
+  $sentencia->bindParam(":link",$linkeo);
+}else {
+  $sentencia=$conexion->prepare("SELECT c.*, b.bodega_nombre as empresa_nombre FROM categoria c JOIN empresa_bodega b ON c.link = b.link WHERE c.link =:link");
   $sentencia->bindParam(":link",$linkeo);
 }
 $sentencia->execute();
@@ -47,7 +49,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Nombre</th>
               <th>Fecha de creación</th> 
               <th>Negocio</th> 
-              <?php if ($_SESSION['rolSudoAdmin']) { ?>             
+              <?php if ($_SESSION['rolSudoAdmin'] || $_SESSION['rolBodega']) { ?>             
               <th>Editar</th>
               <?php } ?>  
             </tr>
@@ -61,9 +63,9 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['categoria_nombre']; ?></td>                               
                   <td><?php echo $registro['categoria_fecha_creacion']; ?></td>                  
                   <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
-                  <?php if ($_SESSION['rolSudoAdmin']) { ?>
+                  <?php if ($_SESSION['rolSudoAdmin'] || $_SESSION['rolBodega']) { ?>
                   <td>
-                    <a class="btn btn-danger"href="lista_categoria.php?txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
+                    <a class="btn btn-danger"href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>&txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
                         <i class="fas fa-trash-alt"></i> Eliminar
                     </a>
                   </td>

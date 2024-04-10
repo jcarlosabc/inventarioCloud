@@ -1,22 +1,21 @@
 <?php include("../templates/header.php") ?>
 <?php 
 if ($_SESSION['valSudoAdmin']) {
-    $lista_productos_link  = "index_productos.php";
+    $lista_productos_link  = "producto_bodega.php";
     
 }else{
-    $lista_productos_link  = "index_productos.php?link=".$link;
+    $lista_productos_link  = "producto_bodega.php?link=".$link;
 }
 $responsable = $_SESSION['usuario_id'];
 
-if(isset($_GET['link']) || $responsable == 1){
-    if ($responsable == 1) {
-       $txtID_productos=(isset($_GET['txtID']))?$_GET['txtID']:"";
-       $sentencia=$conexion->prepare("SELECT * FROM bodega WHERE producto_id=:producto_id");
-       $sentencia->bindParam(":producto_id",$txtID_productos);
-    }
+if(isset($_GET['link'])){
 
+    $txtID_productos=(isset($_GET['txtID']))?$_GET['txtID']:"";
+    $sentencia=$conexion->prepare("SELECT * FROM bodega WHERE producto_id=:producto_id");
+    $sentencia->bindParam(":producto_id",$txtID_productos);
     $sentencia->execute();
     $registro=$sentencia->fetch(PDO::FETCH_LAZY);
+   
     $producto_id=$registro["producto_id"];
     $producto_codigo=$registro["producto_codigo"];
     $producto_nombre=$registro["producto_nombre"];
@@ -35,32 +34,38 @@ if(isset($_GET['link']) || $responsable == 1){
         WHERE p.producto_id=:producto_id");
     $sentencia_categoria->bindParam(":producto_id", $producto_id);
     $sentencia_categoria->execute();
-    $categoria_actual = $sentencia_categoria->fetch(PDO::FETCH_ASSOC);
+    $categoria_actual = $sentencia_categoria->fetch(PDO::FETCH_LAZY);
+    if ($categoria_actual) {
+        $categoria_id = $categoria_actual["categoria_id"];
+        $categoria_nombre = $categoria_actual["categoria_nombre"];
+    }
 
-
-if(isset($_GET['link']) || $responsable == 1){
     // Obtener todas las categorías disponibles
-    if(isset($_GET['data-value'])){ $linkeo=(isset($_GET['data-value']))?$_GET['data-value']:"";}
+    $linkeo=(isset($_GET['txtID']))?$_GET['txtID']:"";
+    $link_bodega ="sudo_bodega";
     $sentencia_todas = $conexion->prepare("SELECT categoria_id, categoria_nombre FROM categoria WHERE link=:linkeo");
-    $sentencia_todas->bindParam(":linkeo", $linkeo);
+    $sentencia_todas->bindParam(":linkeo", $link_bodega);
     $sentencia_todas->execute();
     $categorias_disponibles = $sentencia_todas->fetchAll(PDO::FETCH_ASSOC);
-}
+
    // Consulta para obtener el proveedor actual del producto
-    $sentencia_proveedor = $conexion->prepare("SELECT p.proveedor_id, pro.nombre_proveedores
+    $sentencia_proveedor = $conexion->prepare("SELECT p.proveedor_id, pro.id_proveedores
     FROM bodega p
     JOIN proveedores pro ON p.proveedor_id = pro.id_proveedores
     WHERE p.producto_id = :producto_id");
     $sentencia_proveedor->bindParam(":producto_id", $producto_id);
     $sentencia_proveedor->execute();
-    $proveedor_actual = $sentencia_proveedor->fetch(PDO::FETCH_ASSOC);
+    $proveedor_actual = $sentencia_proveedor->fetch(PDO::FETCH_LAZY);
+    if ($proveedor_actual) {
+        $proveedor_id = $proveedor_actual["proveedor_id"];
+        $proveedor_id_proveedor = $proveedor_actual["id_proveedores"];
+    }
 
     // Consulta para obtener todos los proveedores disponibles
     $sentencia_todas = $conexion->prepare("SELECT id_proveedores, nombre_proveedores FROM proveedores WHERE link=:linkeo");
-    $sentencia_todas->bindParam(":linkeo", $linkeo);
+    $sentencia_todas->bindParam(":linkeo", $link_bodega);
     $sentencia_todas->execute();
     $proveedores_disponibles = $sentencia_todas->fetchAll(PDO::FETCH_ASSOC);
-
 
 
 if ($_POST) {
@@ -74,7 +79,6 @@ if ($_POST) {
     $producto_modelo= isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
     $categoria_id= isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";
     $nueva_garantia =  isset($_POST['nueva_garantia']) ? $_POST['nueva_garantia'] : $_POST['producto_fecha_garantiaDB'];
-    echo "nueva_garantia = > " . $nueva_garantia;
     if (!$nueva_garantia) {
         $nueva_garantia = $_POST['producto_fecha_garantiaDB'];
     }
@@ -117,12 +121,12 @@ if ($_POST) {
         Swal.fire({
             title: "¡Producto Actualizado Correctamente!",
             icon: "success",
-            confirmButtonText: "¡Entendido!"
+            timer: 1000 
         }).then((result) => {
-            if(result.isConfirmed){
-                window.location.href = "'.$url_base.'secciones/producto_bodega.php";
+            if (result.dismiss === Swal.DismissReason.timer) {
+                window.location.href = "'.$url_base.'secciones/'.$lista_productos_link.'";
             }
-        })
+        });
         </script>';
     }else {
         echo '<script>
@@ -163,13 +167,15 @@ if ($_POST) {
                                 <input type="text"class="form-control camposTabla" name="producto_nombre" value="<?php echo $producto_nombre;?>">
                             </div>
                         </div>
-                        <div class="col-sm-2">
+                    </div>
+                    <div class="row" style="justify-content:center">       
+                        <div class="col-sm-3">
                             <div class="form-group">
                                 <label class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla" name="producto_marca" value="<?php echo $producto_marca;?>" >
                             </div>
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <div class="form-group">
                                 <label class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla" name="producto_modelo" value="<?php echo $producto_modelo;?>">
@@ -184,7 +190,7 @@ if ($_POST) {
                                     <select class="form-control select2 camposTabla" name="categoria_id" style="width: 100%">
                                     <?php
                                         foreach ($categorias_disponibles as $categoria) {
-                                            $selected = ($categoria["categoria_id"] == $categoria_actual["categoria_id"]) ? "selected" : "";
+                                            $selected = ($categoria["categoria_id"] == $categoria_id) ? "selected" : "";
                                             echo '<option value="' . $categoria["categoria_id"] . '" ' . $selected . '>' . $categoria["categoria_nombre"] . '</option>';
                                         }
                                     ?>
@@ -198,13 +204,15 @@ if ($_POST) {
                                 <div class="form-group">
                                 <select class="form-control select2 camposTabla" name="proveedor_id" style="width: 100%">
                                     <?php foreach ($proveedores_disponibles as $proveedor) {
-                                        $selected = ($proveedor["id_proveedores"] == $proveedor_actual["proveedor_id"]) ? "selected" : "";
+                                        $selected = ($proveedor["id_proveedores"] == $proveedor_id) ? "selected" : "";
                                         echo '<option value="' . $proveedor["id_proveedores"] . '" ' . $selected . '>' . $proveedor["nombre_proveedores"] . '</option>';
                                     } ?>
                                 </select>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="row" style="justify-content:center">       
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Actual Garantía</label>
@@ -222,8 +230,6 @@ if ($_POST) {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row" style="justify-content:center">       
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
@@ -231,6 +237,8 @@ if ($_POST) {
                                     value="<?php echo $producto_stock_total;?>"  pattern="[0-9]*">
                             </div>
                         </div>
+                    </div>
+                    <div class="row" style="justify-content:center">       
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="producto_precio_compra_edit" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
@@ -250,7 +258,7 @@ if ($_POST) {
                 <!-- /.card-body -->
                 <div class="card-footer" style="text-align:center">
                     <button type="submit" class="btn btn-success btn-lg"> Actualizar </button>
-                    <a class="btn btn-danger btn-lg" href="<?php echo $url_base;?>secciones/<?php echo $lista_productos_link;?>" role="button">Cancelar</a>
+                    <a class="btn btn-danger btn-lg" href="<?php echo $url_base;?>secciones/<?php echo $producto_bodega_link;?>" role="button">Cancelar</a>
                 </div>
             </form>
             </div>
