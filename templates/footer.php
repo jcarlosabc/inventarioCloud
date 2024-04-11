@@ -420,7 +420,7 @@ function mostrarMetodosNomina() {
   function validarFormulario(id) {
     if (id == 1) {
       var categoriaSeleccionada = document.forms["formProducto"]["categoria_id"].value;
-      var proveedorSeleccionado = document.forms["formProducto"]["proveedor_id"].value;
+     // var proveedorSeleccionado = document.forms["formProducto"]["proveedor_id"].value;
       if (categoriaSeleccionada == "") {
           Swal.fire({
               icon: 'error',
@@ -429,14 +429,14 @@ function mostrarMetodosNomina() {
           });
           return false;
       }
-      if (proveedorSeleccionado == "") {
-          Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Por favor, seleccione un proveedor.',
-          });
-          return false;
-      }
+      // if (proveedorSeleccionado == "") {
+      //     Swal.fire({
+      //         icon: 'error',
+      //         title: 'Oops...',
+      //         text: 'Por favor, seleccione un proveedor.',
+      //     });
+      //     return false;
+      // }
     }else if(id == 2){
       var rolSeleccionado = document.forms["formEmpleado"]["usuario_empresa"].value;
       var cajaSeleccionado = document.forms["formEmpleado"]["usuario_caja"].value;
