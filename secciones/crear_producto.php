@@ -74,12 +74,12 @@ if ($_POST) {
         Swal.fire({
             title: "¡Producto creado Exitosamente!",
             icon: "success",
-            timer: 1000 
-        }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.timer) {
+            confirmButtonText: "¡Entendido!"
+        }).then((result)=>{
+            if(result.isConfirmed){
                 window.location.href = "'.$url_base.'secciones/'.$producto_bodega_link.'";
             }
-        });
+        })
         </script>';
     }else {
         echo '<script>
@@ -118,12 +118,12 @@ if ($_POST) {
             Swal.fire({
                 title: "¡Producto creado Exitosamente!",
                 icon: "success",
-                timer: 1000 
-            }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
+                confirmButtonText: "¡Entendido!"
+            }).then((result)=>{
+                if(result.isConfirmed){
                     window.location.href = "'.$url_base.'secciones/'.$lista_producto_link.'";
                 }
-            });
+            })
             </script>';
         }else {
             echo '<script>

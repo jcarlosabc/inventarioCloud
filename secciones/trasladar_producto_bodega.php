@@ -129,15 +129,6 @@ if ($_POST) {
         Swal.fire({
             title: "¡Se envio el producto Correctamente!",
             icon: "success",
-            timer: 1000 
-        }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.timer) {
-                window.location.href = "'.$url_base.'secciones/'.$lista_productos_bodega_link.'";
-            }
-        });
-        Swal.fire({
-            title: "¡Se envio el producto Correctamente!",
-            icon: "success",
             confirmButtonText: "¡Entendido!"
         }).then((result) => {
             if(result.isConfirmed){

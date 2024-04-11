@@ -70,12 +70,12 @@ if ($_POST) {
         Swal.fire({
             title: "Empresa Creada Correctamente!",
             icon: "success",
-            timer: 1000 // Tiempo en milisegundos (5 segundos = 5000 milisegundos)
-        }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.timer) {
+            confirmButtonText: "¡Entendido!"
+        }).then((result)=>{
+            if(result.isConfirmed){
                 window.location.href="'.$url_base.'secciones/"
             }
-        });
+        })
         </script>';
     } else {
         echo '<script>

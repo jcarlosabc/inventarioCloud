@@ -74,15 +74,15 @@
       $resultado = $sentencia_usuario->execute($params);
       if ($resultado) {
           echo '<script>
-          Swal.fire({
-              title: "Bodega Creada Exitosamente!",
-              icon: "success",
-              timer: 1000 // Tiempo en milisegundos (5 segundos = 5000 milisegundos)
-          }).then((result) => {
-              if (result.dismiss === Swal.DismissReason.timer) {
-                  window.location.href="'.$url_base.'secciones/bodega.php"
-              }
-          });
+           Swal.fire({
+            title: "Bodega Creada Exitosamente!",
+            icon: "success",
+            confirmButtonText: "¡Entendido!"
+        }).then((result)=>{
+            if(result.isConfirmed){
+                window.location.href="'.$url_base.'secciones/bodega.php"
+            }
+        })
           </script>';
       } else {
           echo '<script>
@@ -178,6 +178,9 @@
             <div class="col-2 ">
              <a href="<?php echo $url_base;?>secciones/<?php echo $producto_bodega_link?>"> <button type="button" class="btn btn-block btn-outline-warning btn-lg" > <i class="nav-icon fa fa-tasks fa-lg mr-2"></i>Trasladar Producto</button></a>
             </div>
+            <!-- <div class="col-2">
+             <a href="<?php echo $url_base;?>secciones/<?php echo $crear_venta_bodega?>"> <button type="button" class="btn btn-block btn-outline-success btn-lg" ><i class="nav-icon fas fa-cart-plus fa-lg mr-2"></i> Comprar</button></a>
+            </div> -->
             <div class="col-2">
              <a href="<?php echo $url_base;?>secciones/<?php echo $crear_venta_bodega?>"> <button type="button" class="btn btn-block btn-outline-success btn-lg" ><i class="nav-icon fas fa-cart-plus fa-lg mr-2"></i> Vender</button></a>
             </div>

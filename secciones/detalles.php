@@ -4,7 +4,7 @@
 if(isset($_GET['txtID'])){
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
   $link=(isset($_GET['link']))?$_GET['link']:"";
-  
+
   if($_SESSION['rolSudoAdmin']){
     $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
     FROM venta 
@@ -12,6 +12,13 @@ if(isset($_GET['txtID'])){
     INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id");
     $sentencia->bindParam(":venta_id",$txtID);
 
+  }else if($_SESSION['rolBodega']){
+      $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
+    FROM venta 
+    INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
+    INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id AND venta.link = :link");
+    $sentencia->bindParam(":venta_id",$txtID);
+    $sentencia->bindParam(":link",$link);
   }else{
     $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
     FROM venta 
@@ -37,7 +44,7 @@ if(isset($_GET['txtID'])){
   $tiempo=$registro["tiempo"];
   $cliente_telefono=$registro["cliente_telefono"];
   
-  $tiempo == 0 ? $tiempo = "Días" : $tiempo = "Meses";
+  $tiempo == 0 ? $tiempo = "D铆as" : $tiempo = "Meses";
 
   if ($venta_metodo_pago == 0) {
     $venta_metodo_pago = "Efectivo";
@@ -75,7 +82,16 @@ if(isset($_GET['txtID'])){
     WHERE venta_detalle.venta_codigo = :venta_codigo");
     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
 
-  }else{
+  }else if($_SESSION['rolBodega']){
+      $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo
+    FROM venta
+    INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
+    INNER JOIN bodega ON venta_detalle.producto_id = bodega.producto_id
+    WHERE venta_detalle.venta_codigo = :venta_codigo AND venta_detalle.link = :link");
+    $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
+    $sentencia_venta->bindParam(":link", $link);
+  }else {
+      
     $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
@@ -114,8 +130,8 @@ if(isset($_GET['txtID'])){
                 <address>
                   <strong>Fecha de la Venta: </strong> <?php echo $venta_fecha;?><br>                    
                   <strong>Nro. de Factura: </strong><?php echo $venta_id;?><br>
-                  <strong>Código de Venta: </strong><?php echo $venta_codigo;?><br>
-                  <strong>Dirección:</strong> Cartagena de Indias<br>
+                  <strong>C贸digo de Venta: </strong><?php echo $venta_codigo;?><br>
+                  <strong>Direcci贸n:</strong> Cartagena de Indias<br>
                   <?php if ($venta_metodo_pago == "Credito") { ?>
                     <strong>Plazo del Pago: </strong><?php echo $plazo . " " . $tiempo;?><br>
                   <?php } ?>

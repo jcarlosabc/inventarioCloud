@@ -44,149 +44,45 @@ if ($_POST) {
     //    $fechaMes = 07;
     //    $fechaYear = date("Y");
 
-    $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link");
-    $sentencia->bindParam(":link", $link);
+    // Buscando caja del vendedor actual
+    $sentencia=$conexion->prepare("SELECT * FROM caja WHERE caja_id = :caja_id ");
+    $sentencia->bindParam(":caja_id",$caja_id);
     $sentencia->execute();
-    $lista_efectivo=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+    $result_caja=$sentencia->fetch(PDO::FETCH_LAZY);
+    $result_cajaId = $result_caja['caja_id'];
+    $caja_efectivo = $result_caja['caja_efectivo'];
+    $caja_efectivo = $caja_efectivo - $gasto_precio;
 
-    $validarGasto = true;
-    if ($lista_efectivo) {
-        foreach ($lista_efectivo as $fila) {
-            if ($fechaDia <= 15 && $fila['mes'] == $fechaMes) {
-                if ($fila['dia'] <= 15 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear && $fila['metodo_pago'] == 0 && $fila['transferencia_metodo'] == '' ) {
-                    echo "=============";                    
-                    echo "<br>";                    
-                    echo "...restando valor de la primera quincena...";
-                    echo "<br>";                    
-                    echo "=============";   
-
-                    $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id = ?";
-                    $sentencia = $conexion->prepare($sql);
-                    $params = array(
-                        $fila['dinero'] -= $gasto_precio,
-                        $fila['id']
-                    );
-                    $sentencia->execute($params);
-                }
-            } else if ($fechaDia > 15 && $fila['dia'] > 15 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear && $fila['metodo_pago'] == 0 && $fila['transferencia_metodo'] == '' ) {
-                echo "=============";                    
-                echo "<br>";                    
-                echo "...restando valor de la segunda quincena...";
-                echo "<br>";                    
-                echo "=============";                    
-
-                $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id = ?";
-                $sentencia = $conexion->prepare($sql);
-                $params = array(
-                    $fila['dinero'] -= $gasto_precio,
-                    $fila['id']
-                );
-                $result = $sentencia->execute($params);
-                if ($result) {
-                    echo "<br>";                    
-                    echo "=============";                    
-                    echo "<br>";                    
-                    echo "...| EL VALOR FUE RESTADO |...";
-                    echo "<br>";                    
-                    echo "============="; 
-                }
-            } else if ($fila['dia'] >= 16 && $fechaDia <= 15 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear) {
-                echo '<script>
-                    Swal.fire({
-                        title: "¡No hay Fondos Suficientes Primera quincena!",
-                        icon: "error",
-                        confirmButtonText: "¡Entendido!"
-                    }).then((result) => {
-                        if(result.isConfirmed){
-                            window.location.href = "'.$url_base.'secciones/'.$index_gastos_link.'";
-                        }
-                    })
-                    </script>';
-                $validarGasto = false;
-                break;
-            } else if ($fila['dia'] <= 15 && $fechaDia >= 16 && $fila['mes'] == $fechaMes && $fila['anio'] == $fechaYear) {
-                echo '<script>
-                Swal.fire({
-                    title: "¡No hay Fondos Suficientes Segunda quincena!",
-                    icon: "error",
-                    confirmButtonText: "¡Entendido!"
-                }).then((result) => {
-                    if(result.isConfirmed){
-                        window.location.href = "'.$url_base.'secciones/'.$index_gastos_link.'";
-                    }
-                })
-                </script>';
-            $validarGasto = false;
-            }
-        }  
-    }else  {
+    // Actualizando el dinero de la caja
+    $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ? AND link = ? ";
+        $sentencia = $conexion->prepare($sql);
+        $params = array($caja_efectivo, $result_cajaId, $link  );
+        $sentencia->execute($params);
+    $sql = "INSERT INTO gastos (gasto_producto, gasto_motivo, gasto_precio, gasto_fecha, gasto_hora, link, responsable) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sentencia = $conexion->prepare($sql);
+        $params = array($gasto_producto, $gasto_motivo, $gasto_precio, $fechaActual, $hora_actual, $link, $responsable );
+    $resultado = $sentencia->execute($params);
+    if ($resultado) {
         echo '<script>
-            Swal.fire({
-                title: "¡No hay Fondos Suficientes en la Caja",
-                icon: "error",
-                confirmButtonText: "¡Entendido!"
-            }).then((result) => {
-                if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/'.$index_gastos_link.'";
-                }
-            })
-            </script>';
-        $validarGasto = false;
-    }
-    if ($validarGasto) {
-            // Buscando caja del vendedor actual
-            $sentencia=$conexion->prepare("SELECT * FROM caja WHERE caja_id = :caja_id ");
-            $sentencia->bindParam(":caja_id",$caja_id);
-            $sentencia->execute();
-            $result_caja=$sentencia->fetch(PDO::FETCH_LAZY);
-            $result_cajaId = $result_caja['caja_id'];
-            $caja_efectivo = $result_caja['caja_efectivo'];
-            $caja_efectivo = $caja_efectivo - $gasto_precio;
-
-            // Actualizando el dinero de la caja
-            $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ? AND link = ? ";
-                $sentencia = $conexion->prepare($sql);
-                $params = array(
-                    $caja_efectivo, 
-                    $result_cajaId,
-                    $link  
-                );
-            $sentencia->execute($params);
-            $sql = "INSERT INTO gastos (gasto_producto, gasto_motivo, gasto_precio, gasto_fecha, gasto_hora, link, responsable) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                $sentencia = $conexion->prepare($sql);
-                $params = array(
-                $gasto_producto, 
-                $gasto_motivo, 
-                $gasto_precio,
-                $fechaActual,
-                $hora_actual,
-                $link,
-                $responsable 
-                );
-        $resultado = $sentencia->execute($params);
-        if ($resultado) {
-            echo '<script>
-            // Código JavaScript para mostrar SweetAlert
-            Swal.fire({
-                title: "¡Gasto creado Exitosamente!",
-                icon: "success",
-                confirmButtonText: "¡Entendido!"
-            }).then((result) => {
-                if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/'.$index_gastos_link.'";
-                }
-            })
-            </script>';
-        }else {
-            echo '<script>
-            Swal.fire({
-                title: "Error al Crear Gasto",
-                icon: "error",
-                confirmButtonText: "¡Entendido!"
-            });
-            </script>';
-        }
-        
+        // Código JavaScript para mostrar SweetAlert
+        Swal.fire({
+            title: "¡Gasto creado Exitosamente!",
+            icon: "success",
+            confirmButtonText: "¡Entendido!"
+        }).then((result) => {
+            if(result.isConfirmed){
+                window.location.href = "'.$url_base.'secciones/'.$index_gastos_link.'";
+            }
+        })
+        </script>';
+    }else {
+        echo '<script>
+        Swal.fire({
+            title: "Error al Crear Gasto",
+            icon: "error",
+            confirmButtonText: "¡Entendido!"
+        });
+        </script>';
     }
 }
 

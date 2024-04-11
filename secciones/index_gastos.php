@@ -19,7 +19,12 @@ $responsable = $_SESSION['usuario_id'];
 if ($responsable == 1) {
   $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre, u.usuario_nombre, u.usuario_apellido FROM gastos g JOIN empresa e ON e.link = g.link LEFT JOIN usuario u ON u.usuario_id = g.responsable");
 
-}else { 
+}else if($_SESSION['rolBodega']){ 
+  $sentencia = $conexion->prepare("SELECT g.*, b.bodega_nombre as empresa_nombre, u.usuario_nombre, u.usuario_apellido 
+  FROM gastos g JOIN empresa_bodega b ON b.link = g.link 
+  LEFT JOIN usuario u ON u.usuario_id = g.responsable WHERE g.link =:link");
+  $sentencia->bindParam(":link",$link);
+}else {
   $sentencia = $conexion->prepare("SELECT g.*, e.empresa_nombre, u.usuario_nombre, u.usuario_apellido 
   FROM gastos g JOIN empresa e ON e.link = g.link 
   LEFT JOIN usuario u ON u.usuario_id = g.responsable WHERE g.link =:link");

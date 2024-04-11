@@ -112,14 +112,14 @@ if ($_POST) {
     if ($resultado) {
         echo '<script>
         Swal.fire({
-            title: "¡Caja Creada Exitosamente!",
+            title: "Bodega Creada Exitosamente!",
             icon: "success",
-            timer: 1000 
-        }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.timer) {
+            confirmButtonText: "¡Entendido!"
+        }).then((result)=>{
+            if(result.isConfirmed){
                 window.location.href = "'.$url_base.'secciones/'.$index_cajas_link.'";
             }
-        });
+        })
         </script>';
     }else {
         echo '<script>

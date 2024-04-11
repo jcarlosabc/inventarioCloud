@@ -10,7 +10,16 @@ if ($_SESSION['valSudoAdmin']) {
   $lista_categorias_link  = "lista_categorias.php";
   $index_pendientes_link ="index_pendientes.php";
 
-}else{
+}else if($_SESSION['rolBodega']){
+  $lista_cliente_link  = "index_clientes.php?link=".$link;
+  $crear_productos_link  = "crear_productos.php?link=".$link;
+  $lista_productos_link  = "producto_bodega.php?link=".$link;
+  $index_cajas_link  = "index_cajas.php?link=".$link;
+  $crear_ventas_link  = "crear_venta_bodega.php?link=".$link;
+  $index_ventas_link  = "venta_bodega.php?link=".$link;
+  $lista_categorias_link  = "lista_categorias.php?link=".$link;
+  $index_pendientes_link = "index_pendientes.php?link=".$link;
+}else {
   $lista_cliente_link  = "index_clientes.php?link=".$link;
   $crear_productos_link  = "crear_productos.php?link=".$link;
   $lista_productos_link  = "index_productos.php?link=".$link;

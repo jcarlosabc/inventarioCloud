@@ -230,7 +230,20 @@ if(isset($_POST['productos_vendidos'])) {
             $user_id,
             $estado_ventas
     );
-    $sentencia->execute($params);
+    //$resulta = $sentencia->execute($params);
+    try {
+                $resultado = $sentencia->execute($params);
+                if ($resultado) {
+                    echo "¡La devolución se insertó correctamente en la base de datos!";
+                } else {
+                    echo "¡Error al insertar la devolución!";
+                }
+            } catch (PDOException $e) {
+                echo "Error de la base de datos: " . $e->getMessage();
+            }
+    
+    
+    
     // Obtener el ID de la última fila afectada
    $ultimo_id_insertado = $conexion->lastInsertId();
 
