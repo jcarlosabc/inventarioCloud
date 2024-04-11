@@ -68,10 +68,15 @@ if(isset($_GET['txtID'])){
   $sentencia_empresa->execute();
   $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
 
-  $empresa_nombre=$registro_empresa["empresa_nombre"];  
-  $empresa_telefono=$registro_empresa["empresa_telefono"];  
-  $empresa_direccion=$registro_empresa["empresa_direccion"];  
-  $empresa_nit=$registro_empresa["empresa_nit"];  
+  $usuario_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
+  $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+  $empresa_direccion = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
+  $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
+
+  // $empresa_nombre=$registro_empresa["empresa_nombre"];  
+  // $empresa_telefono=$registro_empresa["empresa_telefono"];  
+  // $empresa_direccion=$registro_empresa["empresa_direccion"];  
+  // $empresa_nit=$registro_empresa["empresa_nit"];  
  
   // Mostrar lista comprados
   if($_SESSION['rolSudoAdmin']){

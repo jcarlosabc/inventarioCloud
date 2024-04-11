@@ -52,7 +52,7 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Fecha / Hora </th>
               <th>Total</th>
               <th>Pagado</th>
-              <th>Cambio</th>
+              <th>Cambio/Deuda</th>
               <th>Cliente</th>
               <th>responsable</th>
               <th>Opciones</th>

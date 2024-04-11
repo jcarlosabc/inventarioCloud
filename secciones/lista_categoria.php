@@ -48,10 +48,8 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Código</th>
               <th>Nombre</th>
               <th>Fecha de creación</th> 
-              <th>Negocio</th> 
-              <?php if ($_SESSION['rolSudoAdmin'] || $_SESSION['rolBodega']) { ?>             
+              <th>Negocio</th>         
               <th>Editar</th>
-              <?php } ?>  
             </tr>
             </thead>
             <tbody>
@@ -65,11 +63,16 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <?php if ($_SESSION['rolSudoAdmin'] || $_SESSION['rolBodega']) { ?>
                   <td>
-                    <a class="btn btn-danger"href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>&txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
+                    <a class="btn btn-danger" href="lista_categoria.php?txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
                         <i class="fas fa-trash-alt"></i> Eliminar
                     </a>
                   </td>
                   <?php } ?>
+                  <td>
+                  <a class="btn btn-danger" href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>&txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i> Eliminar
+                    </a>
+                  </td>
                 </tr>  
               <?php } ?>
             </tbody>                  
