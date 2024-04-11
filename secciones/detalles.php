@@ -135,8 +135,8 @@ if(isset($_GET['txtID'])){
                 <address>
                   <strong>Fecha de la Venta: </strong> <?php echo $venta_fecha;?><br>                    
                   <strong>Nro. de Factura: </strong><?php echo $venta_id;?><br>
-                  <strong>C贸digo de Venta: </strong><?php echo $venta_codigo;?><br>
-                  <strong>Direcci贸n:</strong> Cartagena de Indias<br>
+                  <strong>Código de Venta: </strong><?php echo $venta_codigo;?><br>
+                  <strong>Dirección:</strong> Cartagena de Indias<br>
                   <?php if ($venta_metodo_pago == "Credito") { ?>
                     <strong>Plazo del Pago: </strong><?php echo $plazo . " " . $tiempo;?><br>
                   <?php } ?>

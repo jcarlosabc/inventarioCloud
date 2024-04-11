@@ -203,7 +203,7 @@ if ($_POST) {
                                 <label for="" class="textLabel">Proveedor</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
                                 <select class="form-control select2 camposTabla" name="proveedor_id" style="width: 100%">
-                                    <?php foreach ($proveedores_disponibles as $proveedor) {
+                                <?php foreach ($proveedores_disponibles as $proveedor) {
                                         $selected = ($proveedor["id_proveedores"] == $proveedor_id) ? "selected" : "";
                                         echo '<option value="' . $proveedor["id_proveedores"] . '" ' . $selected . '>' . $proveedor["nombre_proveedores"] . '</option>';
                                     } ?>
