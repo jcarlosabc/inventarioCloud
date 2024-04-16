@@ -426,14 +426,6 @@
                 </p>
               </a>
               <ul class="nav nav-treeview"> 
-            <?php if ($_SESSION['roladminlocal'] || $_SESSION['rolBodega']) { ?>
-              <li class="nav-item">
-                  <a href="<?php echo $url_base;?>secciones/<?php echo $asignar_caja_link;?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Asignar Caja</p>
-                  </a>
-                </li>  
-              <?php } ?>
               <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/<?php echo $crear_caja_link;?>" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>

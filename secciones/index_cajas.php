@@ -30,6 +30,36 @@ if ($responsable == 1) {
 }
   $sentencia->execute();
   $lista_caja=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+  if(isset($_GET['AsignarID'])){
+    $AsignarID=(isset($_GET['AsignarID']))?$_GET['AsignarID']:"";
+    $sentencia_asignar=$conexion->prepare("UPDATE usuario SET caja_id = :AsignarID WHERE usuario_id = :usuario_id");    
+    $sentencia_asignar->bindParam(":AsignarID",$AsignarID);
+    $sentencia_asignar->bindParam(":usuario_id",$_SESSION['usuario_id']);
+    $sentencia_asignar->execute();
+
+    if ($sentencia_asignar) {
+      echo '<script>
+      Swal.fire({
+        title: "Se te asignó la caja Correctamente!",
+        icon: "success",
+        timer: 1000 
+    }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.timer) {
+            window.location.href = "'.$url_base.'secciones/'.$index_cajas_link.'";
+        }
+    });
+      </script>';
+  } else {
+      echo '<script>
+      Swal.fire({
+          title: "Error al asignar caja",
+          icon: "error",
+          confirmButtonText: "¡Entendido!"
+      });
+      </script>';
+  }
+  }
 ?>
 <br>
 <div class="card card-primary">
@@ -62,6 +92,10 @@ if ($responsable == 1) {
                   <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_cajas;?>&txtID=<?php echo $registro['caja_id']; ?>"role="button"title="Editar">
                     <i class="fas fa-edit"></i>Editar
                   </a>
+                 <?php if ($_SESSION['roladminlocal'] || $_SESSION['rolBodega']) { ?>
+                  <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>&AsignarID=<?php echo $registro['caja_id']; ?>"role="button"title="Asignar">
+                    <i class="fas fa-edit"></i>Asignar
+                <?php } ?>
                   <a class="btn btn-danger"href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>&txtID=<?php echo $registro['caja_id']; ?>" role="button"title="Eliminar">
                       <i class="fas fa-trash-alt"></i>Eliminar
                   </a>

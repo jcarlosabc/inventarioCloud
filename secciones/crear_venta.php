@@ -606,7 +606,7 @@ if(isset($_POST['productos_vendidos'])) {
         <div class="card-body ">
             <div class="card card-info">
                 <div class="card-body">
-                    <table id="vBuscar" class="table table-bordered table-striped" style="text-align:center">
+                    <table id="vBuscar" class="table table-bordered table-striped example" style="text-align:center">
                         <thead>
                             <tr>
                                 <th>Código</th>
@@ -662,18 +662,30 @@ if(isset($_POST['productos_vendidos'])) {
                             <div class="card-header">
                                 <h3 class="card-title textTabla">PRODUCTOS ESCOGIDOS</h3>
                             </div>
+                            <style>
+                                 /* limitar productos en crear venta */ 
+                                .table-container {
+                                    max-height: 287px; /* Altura máxima del contenedor de la tabla */
+                                    overflow-y: auto; /* Agrega un scroll vertical cuando el contenido exceda la altura máxima */
+                                }
+
+                                .table {
+                                    width: 100%; /* Ancho completo de la tabla */
+                                }
+                            </style>
                             <div class="card-body" style="overflow-x: auto;">
-                                <table class="table table-bordered table-striped" style="text-align:center; max-width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Código</th>
-                                            <th>Producto</th>
-                                            <th>Marca</th>
-                                            <th>Modelo</th>
-                                            <th>Cantidad</th>
-                                            <th>X</th>
-                                            <th>Precio</th>
-                                            <th>=</th>
+                                <div class="table-container">
+                                    <table class="table table-bordered table-striped" style="text-align:center; max-width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>Código</th>
+                                                <th>Producto</th>
+                                                <th>Marca</th>
+                                                <th>Modelo</th>
+                                                <th>Cantidad</th>
+                                                <th>X</th>
+                                                <th>Precio</th>
+                                                <th>=</th>
                                             <th>Total</th>
                                             <th>Remover</th>
                                         </tr>
@@ -692,14 +704,15 @@ if(isset($_POST['productos_vendidos'])) {
                                                 <td>=</td>
                                                 <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
                                                 <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
-                                                    <div class="btn-group">
-                                                        <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link . '&txtID=' . $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
-                                                    </div>  
-                                                </td>
-                                            </tr>  
+                                                <div class="btn-group">
+                                                    <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link . '&txtID=' . $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
+                                                </div>  
+                                            </td>
+                                        </tr>  
                                         <?php } ?>
                                     </tbody>
                                 </table>
+                            </div>
                                 <br>    
                             </div>
                         </div>
