@@ -1040,7 +1040,19 @@ if(isset($_POST['productos_vendidos'])) {
                             <div class="card-header" style="background: #493a3be0">
                                 <h3 class="card-title textTabla">PRODUCTOS ESCOGIDOS</h3>
                             </div>
+                            <style>
+                                 /* limitar productos en crear venta */ 
+                                .table-container {
+                                    max-height: 287px; /* Altura máxima del contenedor de la tabla */
+                                    overflow-y: auto; /* Agrega un scroll vertical cuando el contenido exceda la altura máxima */
+                                }
+
+                                .table {
+                                    width: 100%; /* Ancho completo de la tabla */
+                                }
+                            </style>
                             <div class="card-body" style="overflow-x: auto;">
+                            <div class="table-container">
                                 <table class="table table-bordered table-striped" style="text-align:center; max-width: 100%;">
                                     <thead>
                                         <tr>
@@ -1080,6 +1092,7 @@ if(isset($_POST['productos_vendidos'])) {
                                         <?php } ?>
                                     </tbody>
                                 </table>
+                                </div>
                                 <br>    
                             </div>
                         </div>

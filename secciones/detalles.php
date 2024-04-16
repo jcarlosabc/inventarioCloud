@@ -1,92 +1,100 @@
 <?php include("../templates/header.php") ?>
 <?php 
 
-if(isset($_GET['txtID'])){
-  $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-  $link=(isset($_GET['link']))?$_GET['link']:"";
-
-  if($_SESSION['rolSudoAdmin']){
-    $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
-    FROM venta 
-    INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
-    INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id");
-    $sentencia->bindParam(":venta_id",$txtID);
-
-  }else if($_SESSION['rolBodega']){
+  if(isset($_GET['txtID'])){
+    $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
+    $link=(isset($_GET['link']))?$_GET['link']:"";
+    
+    if($_SESSION['rolSudoAdmin']){
       $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
-    FROM venta 
-    INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
-    INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id AND venta.link = :link");
-    $sentencia->bindParam(":venta_id",$txtID);
-    $sentencia->bindParam(":link",$link);
+      FROM venta 
+      INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
+      INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id");
+      $sentencia->bindParam(":venta_id",$txtID);
+
+    }else  {
+      $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
+      FROM venta 
+      INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
+      INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id AND venta.link = :link");
+      $sentencia->bindParam(":venta_id",$txtID);
+      $sentencia->bindParam(":link",$link);
+    }
+
+    $sentencia->execute();
+    $registro=$sentencia->fetch(PDO::FETCH_LAZY);
+
+    $venta_id=$registro["venta_id"];
+    $venta_fecha=$registro["venta_fecha"];
+    $venta_hora=$registro["venta_hora"];  
+    $venta_codigo=$registro["venta_codigo"];
+    $venta_total=$registro["venta_total"];
+    $venta_pagado=$registro["venta_pagado"];  
+    $venta_cambio=$registro["venta_cambio"];
+    $venta_cambio = abs($venta_cambio);  
+    $venta_metodo_pago=$registro["venta_metodo_pago"];  
+    $plazo=$registro["plazo"];  
+    $tiempo=$registro["tiempo"];
+    $cliente_telefono=$registro["cliente_telefono"];
+    
+    $tiempo == 0 ? $tiempo = "Días" : $tiempo = "Meses";
+
+    if ($venta_metodo_pago == 0) {
+      $venta_metodo_pago = "Efectivo";
+    }else if($venta_metodo_pago == 1){
+      $venta_metodo_pago = "Transferencia";
+    }else if($venta_metodo_pago == 2){
+      $venta_metodo_pago = "Credito";
+    }else {
+      $venta_metodo_pago = "Datafono";
+    }
+
+    $caja_id=$registro["caja_id"];  
+    $usuario_nombre=$registro["usuario_nombre"];  
+    $cliente_numero_documento=$registro["cliente_numero_documento"];  
+    $cliente_nombre=$registro["cliente_nombre"];  
+    $cliente_apellido=$registro["cliente_apellido"];  
+    $cliente_telefono=$registro["cliente_telefono"];  
+
+    // Datos de empresa para la factura
+    if ($_SESSION['rolBodega']) {   
+      $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa_bodega WHERE link = :link");
+      $sentencia_empresa->bindParam(":link", $link);
+      $sentencia_empresa->execute();
+      $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+      $empresa_nombre = isset($registro_empresa["bodega_nombre"]) ? $registro_empresa["bodega_nombre"] : "";
+      $empresa_telefono = isset($registro_empresa["bodega_telefono"]) ? $registro_empresa["bodega_telefono"] : "";
+      $empresa_direccion = isset($registro_empresa["bodega_direccion"]) ? $registro_empresa["bodega_direccion"] : "";
+      $empresa_nit = isset($registro_empresa["bodega_nit"]) ? $registro_empresa["bodega_nit"] : "";
+
+    }if ($_SESSION['rolSudoAdmin']){
+      $sentencia_empresa = $conexion->prepare("SELECT empresa.* FROM empresa INNER JOIN venta ON empresa.link = venta.link
+        WHERE venta.venta_id = :venta_id");
+        $sentencia_empresa->bindParam(":venta_id", $txtID);
+        $sentencia_empresa->execute();
+
+    $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+    $usuario_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
+    $empresa_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
+    $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+    $empresa_direccion = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
+    $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+    $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
+
   }else{
-    $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
-    FROM venta 
-    INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
-    INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id WHERE venta.venta_id=:venta_id AND venta.link = :link");
-    $sentencia->bindParam(":venta_id",$txtID);
-    $sentencia->bindParam(":link",$link);
+    $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link = :link");
+    $sentencia_empresa->bindParam(":link", $link);
+    $sentencia_empresa->execute();
+    $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+    $usuario_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
+    $empresa_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
+    $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+    $empresa_direccion = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
+    $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+    $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
+
   }
-
-  $sentencia->execute();
-  $registro=$sentencia->fetch(PDO::FETCH_LAZY);
-
-  $venta_id=$registro["venta_id"];
-  $venta_fecha=$registro["venta_fecha"];
-  $venta_hora=$registro["venta_hora"];  
-  $venta_codigo=$registro["venta_codigo"];
-  $venta_total=$registro["venta_total"];
-  $venta_pagado=$registro["venta_pagado"];  
-  $venta_cambio=$registro["venta_cambio"];
-  $venta_metodo_pago=$registro["venta_metodo_pago"];  
-  $venta_metodo_pago == 2 ?  $venta_pagado=$registro["venta_pagado"] : $venta_pagado = $venta_pagado + $venta_cambio;
-  $venta_cambio = abs($venta_cambio);  
-  $plazo=$registro["plazo"];  
-  $tiempo=$registro["tiempo"];
-  $cliente_telefono=$registro["cliente_telefono"];
   
-  $tiempo == 0 ? $tiempo = "Días" : $tiempo = "Meses";
-
-  if ($venta_metodo_pago == 0) {
-    $venta_metodo_pago = "Efectivo";
-  }else if($venta_metodo_pago == 1){
-    $venta_metodo_pago = "Transferencia";
-  }else if($venta_metodo_pago == 2){
-    $venta_metodo_pago = "Credito";
-  }else {
-    $venta_metodo_pago = "Datafono";
-  }
-
-  $caja_id=$registro["caja_id"];  
-  $usuario_nombre=$registro["usuario_nombre"];  
-  $cliente_numero_documento=$registro["cliente_numero_documento"];  
-  $cliente_nombre=$registro["cliente_nombre"];  
-  $cliente_apellido=$registro["cliente_apellido"];  
-  $cliente_telefono=$registro["cliente_telefono"];  
-
-  // Datos de empresa para la factura
-//  if($_SESSION['rolBodega']){
-//    $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa_bodega ");
-//    $sentencia_empresa->execute();
-//    $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
- 
-//    $usuario_nombre = isset($registro_empresa["bodega_nombre"]) ? $registro_empresa["bodega_nombre"] : "";
-//    $empresa_telefono = isset($registro_empresa["bodega_telefono"]) ? $registro_empresa["bodega_telefono"] : "";
-//    $empresa_direccion = isset($registro_empresa["bodega_direccion"]) ? $registro_empresa["bodega_direccion"] : "";
-//    $empresa_nit = isset($registro_empresa["bodega_nit"]) ? $registro_empresa["bodega_nit"] : "";
-
-//  }else {
-  $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa ");
-  $sentencia_empresa->execute();
-  $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
-
-  $empresa_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
-  $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
-  $empresa_direccion = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
-  $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
-
-//  }
-
   // $empresa_nombre=$registro_empresa["empresa_nombre"];  
   // $empresa_telefono=$registro_empresa["empresa_telefono"];  
   // $empresa_direccion=$registro_empresa["empresa_direccion"];  
@@ -94,15 +102,15 @@ if(isset($_GET['txtID'])){
  
   // Mostrar lista comprados
   if($_SESSION['rolSudoAdmin']){
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo, producto_precio_venta_xmayor
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
     WHERE venta_detalle.venta_codigo = :venta_codigo");
     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
 
-  }else if($_SESSION['rolBodega']){
-      $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo, producto_precio_venta_xmayor
+  }else  if ($_SESSION['rolBodega']) {
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN bodega ON venta_detalle.producto_id = bodega.producto_id
@@ -110,8 +118,7 @@ if(isset($_GET['txtID'])){
     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
     $sentencia_venta->bindParam(":link", $link);
   }else {
-      
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo, producto_precio_venta_xmayor
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
@@ -126,80 +133,155 @@ if(isset($_GET['txtID'])){
 }else {
   echo " no existe nada";
 }
+////// Fecha de Vencimiento /////////
+
+// Establecer la zona horaria
+date_default_timezone_set('America/Bogota');
+
+$fechaCompraDB = $venta_fecha; // Obtienes esto de tu base de datos
+
+// Plazo en días obtenido de la base de datos
+$plazoDias = $plazo; // Ejemplo, obtienes esto de tu base de datos
+
+// Convertir la fecha de compra a un objeto de fecha/hora
+$fechaCompra = date_create($fechaCompraDB);
+
+// Sumar el plazo de días a la fecha de compra
+date_add($fechaCompra, date_interval_create_from_date_string($plazoDias . ' days'));
+
+// Obtener la fecha de vencimiento
+$fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
+
 
 ?>
 <br>
 
 <!-- Main content -->
-          <div class="invoice p-3 mb-3">
-            <div class="row">
-              <div class="col-12">
-                <h4>
-                  <i class="fa fa-shopping-basket"></i> Detalles de la Venta
-                  <small class="float-right"><?php echo $venta_fecha;?></small>
-                  <br>
-                  <img src="../dist/img/logos/logofernando.jpg" style="width: 88px;" alt="AdminLTE Logo" class="float-right brand-image img-circle elevation-3">
-                </h4>
-              </div>
-            </div>
+<div class="invoice p-3 mb-3">
+  <div class="row">
+    <div class="col-12 text-center">
+      <h1><br>
+        <?php echo $empresa_nombre;?>
+      </h1>
+    </div>
+  </div>
             <!-- info row -->
-            <div class="row invoice-info">
-              <div class="col-sm-4 invoice-col">
-                <br>                
-                <address>
-                  <strong>Fecha de la Venta: </strong> <?php echo $venta_fecha;?><br>                    
-                  <strong>Nro. de Factura: </strong><?php echo $venta_id;?><br>
-                  <strong>Código de Venta: </strong><?php echo $venta_codigo;?><br>
-                  <strong>Dirección:</strong> Cartagena de Indias<br>
+            <style>
+                .contorno-negro {
+                    border: 1px solid black;
+                    padding: 10px; /* Opcional: ajusta el relleno según sea necesario */
+                    position: relative; /* Establece el contexto de posicionamiento */
+                }
+                
+                .contorno-negro2 {
+                    border: 1px solid black;
+                    padding: 10px; /* Opcional: ajusta el relleno según sea necesario */
+                    position: absolute; /* Posiciona el elemento en relación con el padre (.contorno-negro) */
+                    top: -9%; /* Ajusta la posición en la parte superior del contenedor */
+                    right: -11px; /* Ajusta la posición en la parte derecha del contenedor */
+                    width: calc(100% - 20px); /* Calcula el ancho del div para que ocupe todo el espacio disponible */
+                }
+
+                .row.invoice-info {
+                    display: flex;
+                    justify-content: space-between; /* Distribuye uniformemente los elementos con espacio entre ellos */
+                    align-items: center; /* Centra verticalmente */
+                    position: relative; /* Establece el contexto de posicionamiento */
+                    margin: 1% 1%;
+                    margin-left: 10%;
+                    margin-right: 10%;
+                }
+
+                .invoice-col {
+                    flex: 1;
+                    margin: -15px 0;
+                }
+
+                .invoice-col address {
+                    font-size: 1.2em;
+                }
+                .remision{
+                  margin-top: inherit;
+                  float: right;
+                  font-size: 1.5em;
+                }
+            </style>
+          <div class="row invoice-info contorno-negro">
+            <div class= "invoice-col">
+              <br>                
+              <address>
+                <strong>Código de Venta: </strong><?php echo $venta_codigo;?><br>
+                <strong>Vendedor: </strong><?php echo $usuario_nombre;?><br>
+                <strong>Direccion: </strong><?php echo $empresa_direccion;?><br>
+                <strong>Telefono: </strong><?php echo $empresa_telefono;?><br>
+                <strong>Ciudad: </strong> Cartagena de Indias<br>  
+              </address>
+            </div>
+            <!-- /.col -->
+            <div class=" invoice-col" style="position: relative;">
+              <strong style="font-size: 1.5em;" class="remision">REMISION: <?php echo $venta_id; ?></strong> 
+                <address>      
+                  <strong>Fecha: </strong> <?php echo $venta_fecha;?><br>           
                   <?php if ($venta_metodo_pago == "Credito") { ?>
-                    <strong>Plazo del Pago: </strong><?php echo $plazo . " " . $tiempo;?><br>
-                  <?php } ?>
-                </address>
-              </div>
-              <!-- /.col -->
-              <div class="col-sm-4 invoice-col">
-                <br>
-                <address>
-                  <strong>Caja: </strong><?php echo $caja_id;?><br>
-                    <strong>Vendedor: </strong><?php echo $usuario_nombre;?><br>
+                    <strong>Vence: </strong><?php echo $fechaVencimiento?><br>
+                    <?php } ?>
                     <strong>Cliente: </strong><?php echo $cliente_nombre;?> <?php echo $cliente_apellido;?><br>
-                    <strong>CC: </strong><?php echo $cliente_numero_documento;?>                    
+                    <strong>CC: </strong><?php echo $cliente_numero_documento;?>                                  
                   </address>
                 </div>               
               </div>
               <!-- /.row -->
+              <style>
+                .table-bordered {
+                    border: 1px solid black;
+                    border-collapse: collapse;                     
+                }
 
-            <!-- Table row -->
-            <div class="row">
-              <div class="col-12 table-responsive">
-                <table class="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>PRODUCTO</th>
-                      <th>CANTIDAD</th>
-                      <th>PRECIO</th>
-                      <th>SUBTOTAL</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php $count = 0;
-                    foreach ($detalle_venta as $registro) {?>
-                      <tr class="">
-                        <td scope="row"><?php $count++; echo $count; ?></td>
-                        <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
-                        <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
-                        <td><?php if ($registro['estado_mayor_menor'] == 0) { echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',');}else { echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ',') ;} ?></td> 
-                        <td><?php echo '$' . number_format($registro['venta_detalle_total'], 0, '.', ','); ?></td>                 
-                      </tr>  
-                    <?php } ?>
-                  </tbody>
-                </table>
-              </div>
-              <!-- /.col -->
+                .table-bordered th,
+                .table-bordered td {
+                    border: 1px solid black; 
+                     text-align: center; /* Centra el contenido horizontalmente */
+                 }
+                .tableProductos{
+                margin-left: 10%;
+                margin-right: 10% ;
+                }
+            </style>
+
+            <div class="row tableProductos">
+                <div class="col-12 table-responsive " >
+                    <table class="table table-bordered table-striped  invoice-info">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Codigo de Producto</th>
+                                <th>PRODUCTO</th>
+                                <th>CANTIDAD</th>
+                                <th>PRECIO</th>
+                                <th>SUBTOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $count = 0;
+                            foreach ($detalle_venta as $registro) {?>
+                                <tr class="">
+                                    <td scope="row"><?php $count++; echo $count; ?></td>
+                                    <td><?php echo $registro['producto_codigo']; ?></td>
+                                    <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
+                                    <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
+                                    <td><?php echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ','); ?></td> 
+                                    <td><?php echo '$' . number_format($registro['venta_detalle_total'], 0, '.', ','); ?></td>                 
+                                </tr>  
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.col -->
             </div>
             <!-- /.row -->
-            <div class="row">
+
+
+            <!-- <div class="row">
               <div class="col-6">
                 <div class="table-responsive">
                   <table class="table">
@@ -222,9 +304,8 @@ if(isset($_GET['txtID'])){
                   </table>
                 </div>
               </div>
-              <!-- /.col -->
-            </div>
-            <!-- /.row -->
+               /.col -->
+
             <?php
                 $detalles_venta_array = array();
                 foreach ($detalle_venta as $registro) {
@@ -284,6 +365,9 @@ if(isset($_GET['txtID'])){
               </div>
             </form>
           </div>
+            </div> 
+            <!-- /.row -->
+            
 
           
 <!-- <script>
