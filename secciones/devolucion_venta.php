@@ -36,12 +36,6 @@ if(isset($_GET['txtID'])){
     JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo
     JOIN producto ON venta_detalle.producto_id = producto.producto_id
     WHERE venta_detalle.venta_codigo = :venta_codigo");
-    // PRINCIPAL PARA EL SELECT 
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto.*, producto.producto_codigo
-    FROM venta 
-    JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo
-    JOIN producto ON venta_detalle.producto_id = producto.producto_id
-    WHERE venta_detalle.venta_codigo = :venta_codigo");
 
     $sentencia_venta->bindParam(":venta_codigo",$venta_codigo);
     $sentencia_venta->execute();
@@ -49,7 +43,6 @@ if(isset($_GET['txtID'])){
     $detalle_venta = $sentencia_venta;
 
 }
-
 
 if ($_POST) {
     if(isset($_GET['link'])){
@@ -75,6 +68,32 @@ if ($_POST) {
         $partes = explode('-', $valor_seleccionado);
         $producto_id = $partes[0];
         $producto_codigo = $partes[1];
+
+        // Buscando caja del vendedor actual
+        $sentencia=$conexion->prepare("SELECT * FROM caja WHERE caja_id = :caja_id ");
+        $sentencia->bindParam(":caja_id",$caja_id);
+        $sentencia->execute();
+        $result_caja=$sentencia->fetch(PDO::FETCH_LAZY);
+        $result_cajaId = $result_caja['caja_id'];
+        $caja_efectivo = $result_caja['caja_efectivo'];
+        $caja_efectivo = $caja_efectivo - $monto_devolucion;
+
+        $sentencia=$conexion->prepare("SELECT * FROM dtpmp ");
+        $sentencia->execute();
+        $result_dtpmp = $sentencia->fetch(PDO::FETCH_LAZY);
+        $result_efectivo = $result_dtpmp['efectivo'];
+        $result_efectivo = $result_efectivo - $monto_devolucion;
+
+        // Actualizando el dinero de la caja
+        $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ? AND link = ? ";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($caja_efectivo, $result_cajaId, $link  );
+            $sentencia->execute($params);
+
+        $sql = "UPDATE dtpmp SET efectivo = ?";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($result_efectivo);
+            $sentencia->execute($params);
 
         // $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link ORDER BY id DESC");
         // $sentencia->bindParam(":link", $link);

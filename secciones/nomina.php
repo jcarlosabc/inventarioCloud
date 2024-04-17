@@ -7,12 +7,12 @@ if(isset($_GET['txtID'])){
   $sentencia->bindParam(":usuario_id",$txtID);
   $sentencia->execute();
 }
-$crear_nomina  = "crear_nomina.php";
 
-$sentencia=$conexion->prepare("SELECT n.*, u.*, e.empresa_nombre
+$crear_nomina  = "crear_nomina.php";
+$sentencia=$conexion->prepare("SELECT n.*, u.*, e.empresa_nombre, e.empresa_nit, empresa_direccion, empresa_telefono
 FROM nomina n JOIN usuario u ON n.nomina_usuario_id = u.usuario_id JOIN empresa e ON n.link = e.link");
 $sentencia->execute();
-$lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+$lista_nomina = $sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
       <br>
@@ -34,11 +34,12 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Negocio</th>
               <th>Estado</th>
               <th>Fecha</th>              
+              <th>Generar Comprobante</th>              
             </tr>
             </thead>
             <tbody>
               <?php $count = 0;
-              foreach ($lista_producto as $registro) {?>
+              foreach ($lista_nomina as $registro) {?>
                 <tr>
                   <td scope="row"><?php $count++; echo $count; ?></td>
                   <td><?php echo $registro['usuario_cedula']; ?></td>
@@ -59,6 +60,21 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     ?>
                  </td>
                  <td><?php echo $registro['nomina_fecha'] . "/ " . $registro['nomina_hora']; ?></td>                               
+                 <td>
+                  <form method="POST" action="ticket_nomina.php" target="_blank">
+                      <input type="hidden" name="empresa_nombre" value="<?php echo $registro['empresa_nombre']; ?>">
+                      <input type="hidden" name="empresa_direccion" value="<?php echo $registro['empresa_direccion']; ?>">
+                      <input type="hidden" name="empresa_telefono" value="<?php echo $registro['empresa_telefono']; ?>">
+                      <input type="hidden" name="empresa_nit" value="<?php echo $registro['empresa_nit']; ?>">
+                      <input type="hidden" name="usuario_cedula" value="<?php echo $registro['usuario_cedula']; ?>">
+                      <input type="hidden" name="usuario_nombre" value="<?php echo $registro['usuario_nombre']; ?>">
+                      <input type="hidden" name="usuario_apellido" value="<?php echo $registro['usuario_apellido']; ?>">
+                      <input type="hidden" name="nomina_cantidad" value="<?php echo $registro['nomina_cantidad']; ?>">
+                      <input type="hidden" name="nomina_fecha" value="<?php echo $registro['nomina_fecha']; ?>">
+                      <input type="hidden" name="nomina_hora" value="<?php echo $registro['nomina_hora']; ?>">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-download"></i> Generar Ticket</button>
+                  </form>
+                  </td>                               
                 </tr>  
               <?php } ?>
             </tbody>                  

@@ -40,18 +40,18 @@ $sentencia_categoria = $conexion->prepare("SELECT c.categoria_nombre FROM produc
 $sentencia_categoria->bindParam(":id", $producto_id);
 $sentencia_categoria->execute();
 $registro_categoria = $sentencia_categoria->fetch(PDO::FETCH_LAZY);
-$categoria_actual = $registro_categoria["categoria_nombre"];
+$categoria_actual =  isset($registro_categoria["categoria_nombre"]) ? $registro_categoria["categoria_nombre"] : "";
 
 // Obtener proveedor actual del producto
 $sentencia_proveedor = $conexion->prepare("SELECT p.nombre_proveedores FROM producto pr JOIN proveedores p ON pr.proveedor_id = p.id_proveedores WHERE pr.producto_id=:id");
 $sentencia_proveedor->bindParam(":id", $producto_id);
 $sentencia_proveedor->execute();
 $registro_proveedor = $sentencia_proveedor->fetch(PDO::FETCH_LAZY);
-$proveedor_actual = $registro_proveedor["nombre_proveedores"];
+$proveedor_actual =  isset($registro_proveedor["nombre_proveedores"]) ? $registro_proveedor["nombre_proveedores"] : "";
 
 //Lista de Locales    
-$sentencia_empresas = $conexion->prepare("SELECT empresa_id, empresa_nombre, link FROM empresa");
-$sentencia_empresas->execute();
+$sentencia_empresas = $conexion->prepare("SELECT empresa_id, empresa_nombre, link FROM empresa WHERE link != ?");
+$sentencia_empresas->execute([$link]);
 $lista_empresas = $sentencia_empresas->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_POST) {   

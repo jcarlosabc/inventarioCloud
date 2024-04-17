@@ -38,13 +38,14 @@ if(isset($_GET['txtID'])){
   $venta_total=$registro["venta_total"];
   $venta_pagado=$registro["venta_pagado"];  
   $venta_cambio=$registro["venta_cambio"];
-  $venta_cambio = abs($venta_cambio);  
   $venta_metodo_pago=$registro["venta_metodo_pago"];  
+  $venta_metodo_pago == 2 ?  $venta_pagado=$registro["venta_pagado"] : $venta_pagado = $venta_pagado + $venta_cambio;
+  $venta_cambio = abs($venta_cambio);  
   $plazo=$registro["plazo"];  
   $tiempo=$registro["tiempo"];
   $cliente_telefono=$registro["cliente_telefono"];
   
-  $tiempo == 0 ? $tiempo = "D铆as" : $tiempo = "Meses";
+  $tiempo == 0 ? $tiempo = "Días" : $tiempo = "Meses";
 
   if ($venta_metodo_pago == 0) {
     $venta_metodo_pago = "Efectivo";
@@ -64,14 +65,27 @@ if(isset($_GET['txtID'])){
   $cliente_telefono=$registro["cliente_telefono"];  
 
   // Datos de empresa para la factura
+//  if($_SESSION['rolBodega']){
+//    $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa_bodega ");
+//    $sentencia_empresa->execute();
+//    $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+ 
+//    $usuario_nombre = isset($registro_empresa["bodega_nombre"]) ? $registro_empresa["bodega_nombre"] : "";
+//    $empresa_telefono = isset($registro_empresa["bodega_telefono"]) ? $registro_empresa["bodega_telefono"] : "";
+//    $empresa_direccion = isset($registro_empresa["bodega_direccion"]) ? $registro_empresa["bodega_direccion"] : "";
+//    $empresa_nit = isset($registro_empresa["bodega_nit"]) ? $registro_empresa["bodega_nit"] : "";
+
+//  }else {
   $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa ");
   $sentencia_empresa->execute();
   $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
 
-  $usuario_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
+  $empresa_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
   $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
   $empresa_direccion = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
   $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
+
+//  }
 
   // $empresa_nombre=$registro_empresa["empresa_nombre"];  
   // $empresa_telefono=$registro_empresa["empresa_telefono"];  
@@ -80,7 +94,7 @@ if(isset($_GET['txtID'])){
  
   // Mostrar lista comprados
   if($_SESSION['rolSudoAdmin']){
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo, producto_precio_venta_xmayor
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
@@ -88,7 +102,7 @@ if(isset($_GET['txtID'])){
     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
 
   }else if($_SESSION['rolBodega']){
-      $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo
+      $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo, producto_precio_venta_xmayor
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN bodega ON venta_detalle.producto_id = bodega.producto_id
@@ -97,7 +111,7 @@ if(isset($_GET['txtID'])){
     $sentencia_venta->bindParam(":link", $link);
   }else {
       
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*, producto_fecha_garantia,producto_marca, producto_modelo, producto_precio_venta_xmayor
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
@@ -175,7 +189,7 @@ if(isset($_GET['txtID'])){
                         <td scope="row"><?php $count++; echo $count; ?></td>
                         <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
                         <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
-                        <td><?php echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ','); ?></td> 
+                        <td><?php if ($registro['estado_mayor_menor'] == 0) { echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',');}else { echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ',') ;} ?></td> 
                         <td><?php echo '$' . number_format($registro['venta_detalle_total'], 0, '.', ','); ?></td>                 
                       </tr>  
                     <?php } ?>

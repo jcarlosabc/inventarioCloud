@@ -3,7 +3,7 @@
 
   if ($_SESSION['rolSudoAdmin']) {
     $sentencia=$conexion->prepare("SELECT * FROM venta WHERE venta_metodo_pago = 2 ");
-    $crear_abono_links = "crear_abono.php";
+    $crear_abono_links = "crear_abono.php?txtID";
   }else if($_SESSION['rolBodega']) {
     if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
     $sentencia=$conexion->prepare("SELECT * FROM venta WHERE venta_metodo_pago = 2 AND link=:link");

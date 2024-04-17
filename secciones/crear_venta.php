@@ -8,7 +8,6 @@ if ($_SESSION['valSudoAdmin']) {
     $ventas_detalles_link = "detalles.php?link=".$link;
  }
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
-
 //No Caja Asignada
 $sentencia_caja = $conexion->prepare("SELECT caja_id FROM usuario WHERE usuario_id = :usuario_id");
 $sentencia_caja->bindParam(":usuario_id", $_SESSION['usuario_id']);
@@ -27,7 +26,7 @@ if(isset($_GET['link'])){
   $sentencia->execute();
 
   // Mostrar el carrito
-  $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, marca, modelo FROM carrito WHERE estado = 0 AND link = :link");
+  $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, precio_venta_mayor, marca, modelo FROM carrito WHERE estado = 0 AND link = :link");
   $sentencia->bindParam(":link",$link);
   $sentencia->execute();
   $lista_carrito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -55,18 +54,20 @@ if(isset($_POST['producto_seleccionado'])) {
     $producto_codigo = $producto_seleccionado['producto_codigo'];
     $producto_nombre = $producto_seleccionado['producto_nombre'];
     $producto_precio_venta = $producto_seleccionado['producto_precio_venta'];
+    $precio_venta_mayor = $producto_seleccionado['producto_precio_venta_xmayor'];
     $producto_marca = $producto_seleccionado['producto_marca'];
     $producto_modelo = $producto_seleccionado['producto_modelo'];
     
     // Guardando en carrito los productos escogidos
-    $sql = "INSERT INTO carrito (producto_codigo, producto_id, producto, precio, marca, modelo, link) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO carrito (producto_codigo, producto_id, producto, precio, precio_venta_mayor, marca, modelo, link) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $sentencia = $conexion->prepare($sql);
         $params = array(
         $producto_codigo, 
         $producto_id, 
         $producto_nombre, 
         $producto_precio_venta,
+        $precio_venta_mayor,
         $producto_marca, 
         $producto_modelo,
         $linkeo
@@ -80,9 +81,12 @@ if(isset($_POST['producto_seleccionado'])) {
     $lista_carrito=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
     $total = 0; 
+    $total_precio_venta_mayor = 0; 
     foreach ($lista_carrito as $item) {
         $precio = $item['precio'];
         $total += $precio;
+        $precio_venta_mayor = $item['precio_venta_mayor'];
+        $total_precio_venta_mayor += $precio_venta_mayor;
     }
 }
 
@@ -101,6 +105,7 @@ if(isset($_POST['productos_vendidos'])) {
     $cliente_id = isset($_POST['cliente_id']) ? $_POST['cliente_id'] : $_POST['cliente_id'];
     $metodo_pago = isset($_POST['metodo_pago']) ? $_POST['metodo_pago'] : $_POST['metodo_pago'];
     $linkeo_venta = isset($_POST['link_venta']) ? $_POST['link_venta'] : $_POST['link_venta'];
+    $tipo_precio = isset($_POST['tipo-precio']) ? $_POST['tipo-precio'] : $_POST['tipo-precio'];
     
     $estado_ventas = 0;
     if ($metodo_pago == 0 || $metodo_pago == 1 || $metodo_pago == 3) {
@@ -134,8 +139,11 @@ if(isset($_POST['productos_vendidos'])) {
     if ($result_caja) {
       $result_cajaId = $result_caja['caja_id'];
       // efectivo
-      $caja_efectivo = $result_caja['caja_efectivo'];
-      $caja_efectivo = $caja_efectivo + $recibe_dinero;
+      if ($result_caja['caja_efectivo']) {
+          $caja_efectivo = $result_caja['caja_efectivo'];
+          $recibe_dinero_result = $recibe_dinero - $cambio_dinero;
+          $caja_efectivo = $caja_efectivo + $recibe_dinero_result;
+      }
       // davivienda
       $caja_davivienda = $result_caja['davivienda'];
       $caja_davivienda = $caja_davivienda + $recibe_dinero;
@@ -146,7 +154,6 @@ if(isset($_POST['productos_vendidos'])) {
       $caja_nequi = $result_caja['nequi'];
       $caja_nequi = $caja_nequi + $recibe_dinero;
     }
-
     // Pagando con efectivo sin Credito
     if ($metodo_pago == 0) {
         // Actualizando el dinero de la caja Efectivo
@@ -155,64 +162,114 @@ if(isset($_POST['productos_vendidos'])) {
         $params = array($caja_efectivo, $result_cajaId, $linkeo );
         $sentencia->execute($params);
 
+        // Sumando dinero en total de todos los emprendimientos
+        $sql = "UPDATE dtpmp SET efectivo = ?";
+        $sentencia_dinero = $conexion->prepare($sql);
+        $params = array($caja_efectivo);
+        $sentencia_dinero->execute($params);
+
     }else // Pagando con transaccion sin Credito
       if($metodo_pago == 1){
         $transferenciaMetodo= isset($_POST['transferenciaMetodo']) ? $_POST['transferenciaMetodo'] : "";
 
         if ($transferenciaMetodo == 00) {
-          // Actualizando el dinero de la caja Davivienda
-          $sql = "UPDATE caja SET davivienda = ? WHERE caja_id = ? AND link = ? ";
-          $sentencia = $conexion->prepare($sql);
-          $params = array($caja_davivienda, $result_cajaId, $linkeo );
-          $sentencia->execute($params);
-        }else if ($transferenciaMetodo == 01) {
-
-          // Actualizando el dinero de la caja Bancolombia
-          $sql = "UPDATE caja SET bancolombia = ? WHERE caja_id = ? AND link = ? ";
-          $sentencia = $conexion->prepare($sql);
-          $params = array($caja_bancolombia, $result_cajaId, $linkeo );
-          $sentencia->execute($params);
-        }else if ($transferenciaMetodo == 02) {
-
-          // Actualizando el dinero de la caja Nequi
-          $sql = "UPDATE caja SET nequi = ? WHERE caja_id = ? AND link = ? ";
-          $sentencia = $conexion->prepare($sql);
-          $params = array($caja_nequi, $result_cajaId, $linkeo );
-          $sentencia->execute($params);
-        }
-    }else if($metodo_pago == 2){
-        $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
-        if ($tipoAbono === 2) {
-            $creditoAbono_efectivo = true;
-            if($creditoAbono_efectivo){
-                $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ? AND link = ? ";
-                $sentencia = $conexion->prepare($sql);
-                $params = array($caja_efectivo, $result_cajaId, $linkeo );
-                $resultado = $sentencia->execute($params);
-            }
-        }else if($tipoAbono == 00){
+            // Actualizando el dinero de la caja Davivienda
             $sql = "UPDATE caja SET davivienda = ? WHERE caja_id = ? AND link = ? ";
             $sentencia = $conexion->prepare($sql);
             $params = array($caja_davivienda, $result_cajaId, $linkeo );
             $sentencia->execute($params);
-        }else if($tipoAbono == 01){
+
+           // Sumando dinero en total de todos los emprendimientos
+            $sql = "UPDATE dtpmp SET davivienda = ?";
+            $sentencia_dinero = $conexion->prepare($sql);
+            $params = array($caja_davivienda);
+            $sentencia_dinero->execute($params);
+        }else if ($transferenciaMetodo == 01) {
+
+            // Actualizando el dinero de la caja Bancolombia
             $sql = "UPDATE caja SET bancolombia = ? WHERE caja_id = ? AND link = ? ";
             $sentencia = $conexion->prepare($sql);
             $params = array($caja_bancolombia, $result_cajaId, $linkeo );
             $sentencia->execute($params);
-        }else if($tipoAbono == 02){
+
+            $sql = "UPDATE dtpmp SET bancolombia = ?";
+            $sentencia_dinero = $conexion->prepare($sql);
+            $params = array($caja_bancolombia);
+            $sentencia_dinero->execute($params);
+        }else if ($transferenciaMetodo == 02) {
+
+            // Actualizando el dinero de la caja Nequi
             $sql = "UPDATE caja SET nequi = ? WHERE caja_id = ? AND link = ? ";
             $sentencia = $conexion->prepare($sql);
             $params = array($caja_nequi, $result_cajaId, $linkeo );
             $sentencia->execute($params);
+
+            $sql = "UPDATE dtpmp SET nequi = ?";
+            $sentencia_dinero = $conexion->prepare($sql);
+            $params = array($caja_nequi);
+            $sentencia_dinero->execute($params);
+        }
+    }else if($metodo_pago == 2){
+        $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+        if ($tipoAbono === "1") {
+        }else if ($tipoAbono === "2") {
+            $creditoAbono_efectivo = true;
+            if($creditoAbono_efectivo){
+                $caja_efectivo = $result_caja['caja_efectivo'];
+                $cambio_dineroCredito = abs($cambio_dinero);
+                $recibe_dinero_result = $recibe_dinero;
+                $caja_efectivoCredito = $caja_efectivo + abs($recibe_dinero_result);
+                $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ? AND link = ? ";
+                $sentencia = $conexion->prepare($sql);
+                $params = array($caja_efectivoCredito, $result_cajaId, $linkeo );
+                $sentencia->execute($params);
+
+                $sql = "UPDATE dtpmp SET efectivo = ?";
+                $sentencia_dinero = $conexion->prepare($sql);
+                $params = array($caja_efectivoCredito);
+                $sentencia_dinero->execute($params);
+            }
+        }else if($tipoAbono == "00"){
+            $sql = "UPDATE caja SET davivienda = ? WHERE caja_id = ? AND link = ? ";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($caja_davivienda, $result_cajaId, $linkeo );
+            $sentencia->execute($params);
+
+            $sql = "UPDATE dtpmp SET davivienda = ?";
+            $sentencia_dinero = $conexion->prepare($sql);
+            $params = array($caja_davivienda);
+            $sentencia_dinero->execute($params);
+
+        }else if($tipoAbono == "01"){
+            $sql = "UPDATE caja SET bancolombia = ? WHERE caja_id = ? AND link = ? ";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($caja_bancolombia, $result_cajaId, $linkeo );
+            $sentencia->execute($params);
+
+            $sql = "UPDATE dtpmp SET bancolombia = ?";
+            $sentencia_dinero = $conexion->prepare($sql);
+            $params = array($caja_bancolombia);
+            $sentencia_dinero->execute($params);
+
+        }else if($tipoAbono == "02"){
+            $sql = "UPDATE caja SET nequi = ? WHERE caja_id = ? AND link = ? ";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($caja_nequi, $result_cajaId, $linkeo );
+            $sentencia->execute($params);
+
+            $sql = "UPDATE dtpmp SET nequi = ?";
+            $sentencia_dinero = $conexion->prepare($sql);
+            $params = array($caja_nequi);
+            $sentencia_dinero->execute($params);
         }
     }
     
+    $tipo_precio === 'porMenor' ? $tipo_precio = 0 : $tipo_precio = 1 ;
     
     // Guardando la venta
     $sql = "INSERT INTO venta (venta_codigo, venta_fecha, venta_hora, venta_total, venta_pagado, venta_cambio, 
-                        venta_metodo_pago, transferencia_metodo,  plazo, tiempo, cliente_id, caja_id, link, responsable, estado_venta) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        venta_metodo_pago, transferencia_metodo,  plazo, tiempo, cliente_id, caja_id, link, responsable, estado_venta, estado_mayor_menor) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $sentencia = $conexion->prepare($sql);
             $params = array(
             $codigo_factura, 
@@ -229,30 +286,12 @@ if(isset($_POST['productos_vendidos'])) {
             $caja_id,
             $linkeo_venta,
             $user_id,
-            $estado_ventas
+            $estado_ventas,
+            $tipo_precio
     );
     $sentencia->execute($params);
     // Obtener el ID de la última fila afectada
    $ultimo_id_insertado = $conexion->lastInsertId();
-
-   // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
-   if ($metodo_pago == 2) {
-    $sql = "INSERT INTO historial_credito (historial_venta_id, historial_venta_codigo, 
-            historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        $sentencia = $conexion->prepare($sql);
-        $params = array(
-        $ultimo_id_insertado, 
-        $codigo_factura, 
-        $cliente_id, 
-        $recibe_dinero,
-        $cambio_dinero, 
-        $fechaActual, 
-        $horaActual,
-        $user_id
-      );
-    $sentencia->execute($params);
-}
 
    date_default_timezone_set('America/Bogota'); 
    $fechaDia = date("d");
@@ -277,8 +316,26 @@ if(isset($_POST['productos_vendidos'])) {
                     // echo "<br>";                    
                     // echo "...Haciendo Update de la primera quincena...";
                     // echo "<br>";                    
-                    // echo "=============";                    
-
+                    // echo "=============";
+                    // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                    if ($metodo_pago == 2) {
+                        // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                        $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+                        if ($tipoAbono === "1") {
+                            $total_dinero = 0;
+                        }else if($tipoAbono === "2"){
+                            $total_dinero = $recibe_dinero;
+                        }else if($tipoAbono === "00"){
+                            $total_dinero = $recibe_dinero;
+                        }else if($tipoAbono === "01"){
+                            $total_dinero = $recibe_dinero;
+                        }else if($tipoAbono === "02"){
+                            $total_dinero = $recibe_dinero;
+                        }
+                    }                    
+                    // echo "total dinero => " .$total_dinero;
+                    // echo "<br>";
+                    // echo "fila['dinero'] => " .$fila['dinero'];
                     $sql = "UPDATE dinero_por_quincena SET dinero = ?, dia = ?, mes = ?, anio = ? WHERE id = ?";
                     $sentencia = $conexion->prepare($sql);
                     $params = array(
@@ -289,6 +346,28 @@ if(isset($_POST['productos_vendidos'])) {
                         $fila['id']
                     );
                     $sentencia->execute($params);
+                    // Obtener el último ID actualizado
+                    $ultimo_id_insertadoDPQ = $fila['id'];
+                
+                    // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
+                    if ($metodo_pago == 2) {
+                        $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
+                                historial_cliente_id, historial_abono, historial_dinero_pendiente, 
+                                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            $sentencia = $conexion->prepare($sql);
+                            $params = array(
+                            $ultimo_id_insertadoDPQ,
+                            $ultimo_id_insertado, 
+                            $codigo_factura, 
+                            $cliente_id, 
+                            $recibe_dinero,
+                            $cambio_dinero, 
+                            $fechaActual, 
+                            $horaActual,
+                            $user_id
+                        );
+                        $sentencia->execute($params);
+                }
                     $existeRegistro = true;
                     break; 
                 }
@@ -298,11 +377,26 @@ if(isset($_POST['productos_vendidos'])) {
         }     
         // Insertando cuando el metodo de pago es diferente a los demas o la negacion de la condicion de arriba
         if (!$existeRegistro && $fechaDia <= 15 && !$valNuevoMes) {
-            // echo "==========";
-            // echo "<br>";
-            // echo "... INSERTANDO NUEVO METODO DE PAGO...";
-            // echo "<br>";
-            // echo "==========";
+            // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+            if ($metodo_pago == 2) {
+                  // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+                if ($tipoAbono === "1") {
+                    $total_dinero = 0;
+                }else if($tipoAbono === "2"){
+                    $total_dinero = $recibe_dinero;
+                    $transferenciaMetodo = $tipoAbono;
+                }else if($tipoAbono === "00"){
+                    $total_dinero = $recibe_dinero;
+                    $transferenciaMetodo = $tipoAbono;
+                }else if($tipoAbono === "01"){
+                    $total_dinero = $recibe_dinero;
+                    $transferenciaMetodo = $tipoAbono;
+                }else if($tipoAbono === "02"){
+                    $total_dinero = $recibe_dinero;
+                    $transferenciaMetodo = $tipoAbono;
+                }
+            }
             $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito ) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $sentencia = $conexion->prepare($sql);
@@ -317,7 +411,29 @@ if(isset($_POST['productos_vendidos'])) {
                     $metodo_credito
                     
                 );
-                $sentencia->execute($params);  
+                $sentencia->execute($params);
+                // Ultima insercion en Dinero Por Quincea
+                $ultimo_id_insertadoDPQ = $conexion->lastInsertId();
+                
+                // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
+                if ($metodo_pago == 2) {
+                    $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
+                            historial_cliente_id, historial_abono, historial_dinero_pendiente, 
+                            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        $sentencia = $conexion->prepare($sql);
+                        $params = array(
+                        $ultimo_id_insertadoDPQ,
+                        $ultimo_id_insertado, 
+                        $codigo_factura, 
+                        $cliente_id, 
+                        $recibe_dinero,
+                        $cambio_dinero, 
+                        $fechaActual, 
+                        $horaActual,
+                        $user_id
+                    );
+                    $sentencia->execute($params);
+                }
         }
        
         if ($valNuevoMes == true) {
@@ -327,7 +443,29 @@ if(isset($_POST['productos_vendidos'])) {
                 // echo "...Nueva venta de un Nuevo mes...";
                 // echo "<br>";
                 // echo "==========";
-                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo,  estado_credito ) 
+
+                // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                if ($metodo_pago == 2) {
+                    // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                    $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+                    if ($tipoAbono === "1") {
+                        $total_dinero = 0;
+                    }else if($tipoAbono === "2"){
+                        $total_dinero = $recibe_dinero;
+                    $transferenciaMetodo = $tipoAbono;
+                    }else if($tipoAbono === "00"){
+                        $total_dinero = $recibe_dinero;
+                    $transferenciaMetodo = $tipoAbono;
+                    }else if($tipoAbono === "01"){
+                        $total_dinero = $recibe_dinero;
+                    $transferenciaMetodo = $tipoAbono;
+                    }else if($tipoAbono === "02"){
+                        $total_dinero = $recibe_dinero;
+                    $transferenciaMetodo = $tipoAbono;
+                    }
+                }
+
+                $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito ) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
@@ -341,6 +479,28 @@ if(isset($_POST['productos_vendidos'])) {
                     $metodo_credito
                 );
                 $sentencia->execute($params); 
+                // Ultima insercion en Dinero Por Quincea
+                $ultimo_id_insertadoDPQ = $conexion->lastInsertId();
+        
+                // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
+                if ($metodo_pago == 2) {
+                    $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
+                            historial_cliente_id, historial_abono, historial_dinero_pendiente, 
+                            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        $sentencia = $conexion->prepare($sql);
+                        $params = array(
+                        $ultimo_id_insertadoDPQ,
+                        $ultimo_id_insertado, 
+                        $codigo_factura, 
+                        $cliente_id, 
+                        $recibe_dinero,
+                        $cambio_dinero, 
+                        $fechaActual, 
+                        $horaActual,
+                        $user_id
+                    );
+                    $sentencia->execute($params);
+                }
             }
         }
             // echo "link venta => " . $linkeo_venta;
@@ -349,7 +509,21 @@ if(isset($_POST['productos_vendidos'])) {
             // echo "<br>";
             // echo "transferenciaMetodo => " . $transferenciaMetodo;
             // echo "<br>";
-        
+
+            if ($metodo_pago == 2) {
+                // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+                if ($tipoAbono === "1") {
+                }else if($tipoAbono === "2"){
+                    $transferenciaMetodo = $tipoAbono;
+                }else if($tipoAbono === "00"){
+                    $transferenciaMetodo = $tipoAbono;
+                }else if($tipoAbono === "01"){
+                    $transferenciaMetodo = $tipoAbono;
+                }else if($tipoAbono === "02"){
+                    $transferenciaMetodo = $tipoAbono;
+                }
+            }
             // $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link AND dia <= '15' AND metodo_pago ORDER BY dia DESC limit 1;");
             $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE link = :link AND metodo_pago =:metodo_pago AND transferencia_metodo=:transferenciaMetodo AND mes=:fechaMes ORDER BY id DESC LIMIT 1");
             $sentencia->bindParam(":link", $linkeo_venta);
@@ -364,11 +538,30 @@ if(isset($_POST['productos_vendidos'])) {
                 $mes_buscado = $lista_ultimo_update['mes'];
                 $anio_buscado = $lista_ultimo_update['anio'];
             }
-
-
             // echo "edia buscado carajo => " .$dia_buscado;
-
             if(!$lista_ultimo_update){
+                
+                // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                if ($metodo_pago == 2) {
+                    // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                    $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+                    if ($tipoAbono === "1") {
+                        $total_dinero = 0;
+                    }else if($tipoAbono === "2"){
+                        $total_dinero = $recibe_dinero;
+                        $transferenciaMetodo = $tipoAbono;
+                    }else if($tipoAbono === "00"){
+                        $total_dinero = $recibe_dinero;
+                        $transferenciaMetodo = $tipoAbono;
+                    }else if($tipoAbono === "01"){
+                        $total_dinero = $recibe_dinero;
+                        $transferenciaMetodo = $tipoAbono;
+                    }else if($tipoAbono === "02"){
+                        $total_dinero = $recibe_dinero;
+                        $transferenciaMetodo = $tipoAbono;
+                    }
+                }
+
                 $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                     $sentencia = $conexion->prepare($sql);
@@ -383,6 +576,28 @@ if(isset($_POST['productos_vendidos'])) {
                         $metodo_credito
                     );
                     $sentencia->execute($params); 
+                    // Ultima insercion en Dinero Por Quincea
+                    $ultimo_id_insertadoDPQ = $conexion->lastInsertId();
+                    
+                    // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
+                    if ($metodo_pago == 2) {
+                        $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
+                                historial_cliente_id, historial_abono, historial_dinero_pendiente, 
+                                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            $sentencia = $conexion->prepare($sql);
+                            $params = array(
+                            $ultimo_id_insertadoDPQ,
+                            $ultimo_id_insertado, 
+                            $codigo_factura, 
+                            $cliente_id, 
+                            $recibe_dinero,
+                            $cambio_dinero, 
+                            $fechaActual, 
+                            $horaActual,
+                            $user_id
+                        );
+                        $sentencia->execute($params);
+                    }
                     // echo "<br>"; 
                     // echo "..INSERTANDO NUEVO METODO DE PAGO===============>  pero de la segunda quincena nene...";
                     // echo "<br>";
@@ -392,6 +607,27 @@ if(isset($_POST['productos_vendidos'])) {
                 if($fechaDia >= 16 && $fechaMes == $mes_buscado && $anio_buscado == $fechaYear) {
                     // echo "...entrando a la validacion de al segunda quincena";
                     // echo "<br>";
+
+                    // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                    if ($metodo_pago == 2) {
+                        // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                        $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+                        if ($tipoAbono === "1") {
+                            $total_dinero = 0;
+                        }else if($tipoAbono === "2"){
+                            $total_dinero = $recibe_dinero; 
+                            $transferenciaMetodo = $tipoAbono;
+                        }else if($tipoAbono === "00"){
+                            $total_dinero = $recibe_dinero; 
+                            $transferenciaMetodo = $tipoAbono;
+                        }else if($tipoAbono === "01"){
+                            $total_dinero = $recibe_dinero; 
+                            $transferenciaMetodo = $tipoAbono;
+                        }else if($tipoAbono === "02"){
+                            $total_dinero = $recibe_dinero; 
+                            $transferenciaMetodo = $tipoAbono;
+                        }
+                    }
                  
                     $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -406,7 +642,29 @@ if(isset($_POST['productos_vendidos'])) {
                         $transferenciaMetodo,
                         $metodo_credito
                     );
-                    $sentencia->execute($params);  
+                    $sentencia->execute($params);
+                    // Ultima insercion en Dinero Por Quincea
+                    $ultimo_id_insertadoDPQ = $conexion->lastInsertId();
+                    
+                    // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
+                    if ($metodo_pago == 2) {
+                        $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
+                                historial_cliente_id, historial_abono, historial_dinero_pendiente, 
+                                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            $sentencia = $conexion->prepare($sql);
+                            $params = array(
+                            $ultimo_id_insertadoDPQ,
+                            $ultimo_id_insertado, 
+                            $codigo_factura, 
+                            $cliente_id, 
+                            $recibe_dinero,
+                            $cambio_dinero, 
+                            $fechaActual, 
+                            $horaActual,
+                            $user_id
+                        );
+                        $sentencia->execute($params);
+                    }  
                     // echo "..Guardando la segunda quincena...";
                     // echo "<br>";
                 }
@@ -416,16 +674,75 @@ if(isset($_POST['productos_vendidos'])) {
                 // echo "...Update a la segunda quincena";
                 // echo "<br>";
                 // echo "============";
+                // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                if ($metodo_pago == 2) {
+                    // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+                    $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+                    if ($tipoAbono === "1") {
+                        $total_dinero = 0;
+                    }else if($tipoAbono === "2"){
+                        $total_dinero = $recibe_dinero;
+                    }else if($tipoAbono === "00"){
+                        $total_dinero = $recibe_dinero;
+                    }else if($tipoAbono === "01"){
+                        $total_dinero = $recibe_dinero;
+                    }else if($tipoAbono === "02"){
+                        $total_dinero = $recibe_dinero;
+                    }
+                }
+
+                $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE id=:id ");
+                $sentencia->bindParam(":id", $id);
+                $sentencia->execute();
+                $buscando_metodo_pago = $sentencia->fetch(PDO::FETCH_LAZY);
+                if ($buscando_metodo_pago) {
+                    $metodo_pago_encontrado = $buscando_metodo_pago['dinero'];
+                }
+
                 $sql = "UPDATE dinero_por_quincena SET dinero = ?, dia = ?, mes = ?, anio = ? WHERE id = ?";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
-                    $fila['dinero'] += $total_dinero,
+                    $metodo_pago_encontrado += $total_dinero,
                     $fechaDia,
                     $fechaMes,
                     $fechaYear,
                     $id
                 );
                 $sentencia->execute($params);
+                // Ultima update en Dinero Por Quincena
+                // Verificar si se realizó la actualización correctamente
+                if ($sentencia->rowCount() > 0) {
+                    // La actualización se realizó con éxito
+                    $ultimo_id_actualizadoDPQ = $id; // El ID que acabas de actualizar
+                    // echo "Último ID actualizado: " . $ultimo_id_actualizadoDPQ;
+                } else {
+                    // No se realizó ninguna actualización
+                    // echo "No se realizó ninguna actualización.";
+                    $ultimo_id_actualizadoDPQ = $id; // El ID que acabas de actualizar
+                    // echo "Último ID actualizado: " . $ultimo_id_actualizadoDPQ;
+                }
+                // $ultimo_id_insertadoDPQ = $conexion->lastInsertId();
+                // echo " utimo id insertado => " .$ultimo_id_insertadoDPQ;
+            
+                // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
+                if ($metodo_pago == 2) {
+                    $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
+                            historial_cliente_id, historial_abono, historial_dinero_pendiente, 
+                            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        $sentencia = $conexion->prepare($sql);
+                        $params = array(
+                        $ultimo_id_actualizadoDPQ,
+                        $ultimo_id_insertado, 
+                        $codigo_factura, 
+                        $cliente_id, 
+                        $recibe_dinero,
+                        $cambio_dinero, 
+                        $fechaActual, 
+                        $horaActual,
+                        $user_id
+                    );
+                    $sentencia->execute($params);
+                }
             }
 
       
@@ -435,6 +752,42 @@ if(isset($_POST['productos_vendidos'])) {
         // echo "...Por primera vez haciendo una venta...";
         // echo "<br>";
         // echo "==========";
+        // echo "<br>";
+        // echo "...| imprimiendo metodo_pago |... = >" . $metodo_pago;
+        // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+        if ($metodo_pago == 2) {
+            // echo "...| Luego entro al metodo 2 |..";
+            // echo "<br>";
+            // Guardando lo que abonen justo en la misma compra en: dinero por quincena cuando es por credito
+            $tipoAbono = isset($_POST['tipoAbono']) ? $_POST['tipoAbono'] : $_POST['tipoAbono'];
+            // echo "...| Imprimo el tipo abono |.. => " . $tipoAbono;
+            // echo "<br>";
+            if ($tipoAbono === "1") {
+                // echo "...| Entrando al 1 tipo abono |.. => " . $tipoAbono;
+                // echo "<br>";
+                $total_dinero = 0;
+            }else if($tipoAbono === "2"){
+                // echo "...| Entrando al 2 tipo abono |.. => " . $tipoAbono;
+                // echo "<br>";
+                // echo "...| imprimiendo recibe dinero |.. => " . $recibe_dinero;
+                // echo "<br>";
+                $total_dinero = $recibe_dinero;
+                $transferenciaMetodo = $tipoAbono;
+            }else if($tipoAbono === "00"){
+                // echo "...| Entrando al 00 tipo abono |.. => " . $tipoAbono;
+                $total_dinero = $recibe_dinero;
+                $transferenciaMetodo = $tipoAbono;
+            }else if($tipoAbono === "01"){
+                // echo "...| Entrando al 01 tipo abono |.. => " . $tipoAbono;
+                $total_dinero = $recibe_dinero;
+                $transferenciaMetodo = $tipoAbono;
+            }else if($tipoAbono === "02"){
+                // echo "...| Entrando al 02 tipo abono |.. => " . $tipoAbono;
+                $total_dinero = $recibe_dinero;
+                $transferenciaMetodo = $tipoAbono;
+            }
+        }
+
         $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito ) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $sentencia = $conexion->prepare($sql);
@@ -448,7 +801,29 @@ if(isset($_POST['productos_vendidos'])) {
             $transferenciaMetodo,
             $metodo_credito
         );
-        $sentencia->execute($params);  
+        $sentencia->execute($params);
+        // Ultima insercion en Dinero Por Quincea
+        $ultimo_id_insertadoDPQ = $conexion->lastInsertId();
+        
+        // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
+        if ($metodo_pago == 2) {
+            $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
+                    historial_cliente_id, historial_abono, historial_dinero_pendiente, 
+                    historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $sentencia = $conexion->prepare($sql);
+                $params = array(
+                $ultimo_id_insertadoDPQ,
+                $ultimo_id_insertado, 
+                $codigo_factura, 
+                $cliente_id, 
+                $recibe_dinero,
+                $cambio_dinero, 
+                $fechaActual, 
+                $horaActual,
+                $user_id
+            );
+            $sentencia->execute($params);
+        }
     }
 
     // ================================
@@ -514,8 +889,8 @@ if(isset($_POST['productos_vendidos'])) {
         // Guardando el detalle de la venta
        $sql = "INSERT INTO venta_detalle (venta_detalle_cantidad,
                 venta_detalle_precio_compra, venta_detalle_precio_venta, venta_detalle_total, venta_detalle_metodo_pago,
-                venta_detalle_descripcion, venta_codigo, producto_id, link, responsable) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                venta_detalle_descripcion, venta_codigo, producto_id, link, responsable, estado_mayor_menor) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $sentencia = $conexion->prepare($sql);
             $params = array(
             $cantidad_vendida, 
@@ -527,7 +902,8 @@ if(isset($_POST['productos_vendidos'])) {
             $codigo_factura,
             $producto_id,
             $linkeo_venta,
-            $user_id
+            $user_id,
+            $tipo_precio
             );
             $sentencia->execute($params);
 
@@ -543,7 +919,6 @@ if(isset($_POST['productos_vendidos'])) {
    
     // Validando que todo el proceso fue exitoso
     $venta_realizada = true;
-
     $tiempo == 0 ? $tiempo = "Dias" : $tiempo = "Meses";
 
     // Redireccionar a la vista de detalle de ventas para generar factura
@@ -612,7 +987,8 @@ if(isset($_POST['productos_vendidos'])) {
                                 <th>Código</th>
                                 <th>Nombre</th>
                                 <th>Existencias</th>
-                                <th>Precio</th>
+                                <th>Precio al por Menor</th>
+                                <th>Precio al por Mayor</th>
                                 <th>Marca</th>
                                 <th>Modelo</th>
                                 <th>Escoger</th>
@@ -633,6 +1009,7 @@ if(isset($_POST['productos_vendidos'])) {
                                         <?php } ?>
                                         <?php  echo $registro['producto_stock_total']; ?></td>
                                     <td class="tdColor"><?php echo '$ ' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
+                                    <td class="tdColor"><?php echo '$ ' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ','); ?></td>
                                     <td><?php echo $registro['producto_marca']; ?></td>
                                     <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td>
@@ -657,7 +1034,7 @@ if(isset($_POST['productos_vendidos'])) {
             <!-- formulario -->
             <form method="post" action="">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-7">
                         <div class="card card-success">
                             <div class="card-header">
                                 <h3 class="card-title textTabla">PRODUCTOS ESCOGIDOS</h3>
@@ -672,7 +1049,8 @@ if(isset($_POST['productos_vendidos'])) {
                                             <th>Modelo</th>
                                             <th>Cantidad</th>
                                             <th>X</th>
-                                            <th>Precio</th>
+                                            <th><input type="radio" name="tipo-precio" value="porMenor" id="porMenor" checked> <label for="porMenor"> Al por Menor</label></th>
+                                            <th><input type="radio" name="tipo-precio" value="porMayor" id="porMayor"> <label for="porMayor"> Al por Mayor</label></th>
                                             <th>=</th>
                                             <th>Total</th>
                                             <th>Remover</th>
@@ -689,6 +1067,7 @@ if(isset($_POST['productos_vendidos'])) {
                                                 <td><input style="width: 63px" type="number" class="cantidad-input" name="cantidad[<?php echo $registro['id']; ?>]" value="<?php echo $registro['cantidad']; ?>"></td>
                                                 <td>X</td>
                                                 <td style="font-weight: 800;"><?php echo number_format($registro['precio'], 0, '.', ','); ?></td>
+                                                <td style="font-weight: 800;"><?php echo number_format($registro['precio_venta_mayor'], 0, '.', ','); ?></td>
                                                 <td>=</td>
                                                 <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
                                                 <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
@@ -704,7 +1083,7 @@ if(isset($_POST['productos_vendidos'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-5">
                         <div class="card card-success">
                             <div class="card-header">
                                 <h3 class="card-title textTabla">DETALLES</h3>
@@ -745,6 +1124,9 @@ if(isset($_POST['productos_vendidos'])) {
                                         input[type=number] {
                                             -moz-appearance: textfield; /* Firefox */
                                         }
+                                        .custom-radio {
+                                            transform: scale(1.2);
+                                        }
                                         </style>
 
                                     <div class="col-5">
@@ -761,15 +1143,15 @@ if(isset($_POST['productos_vendidos'])) {
                                                 <br>
                                                 <table style="width: 100%">
                                                     <tr>     
-                                                        <td ><input checked type="radio" name="tipoAbono" value="1"> No hay abono</td>
-                                                        <td><input type="radio" value="2" name="tipoAbono"> Efectivo</td>
+                                                        <td ><input checked type="radio" class="custom-radio" name="tipoAbono" value="1"> No hay abono</td>
+                                                        <td><input type="radio" value="2" class="custom-radio" name="tipoAbono"> Efectivo</td>
                                                     </tr>
                                                     <tr>
-                                                        <td><input type="radio" value="02" name="tipoAbono"> Nequi</td>
-                                                        <td><input type="radio" value="00" name="tipoAbono"> Davivienda</td>
+                                                        <td><input type="radio" value="02" class="custom-radio" name="tipoAbono"> Nequi</td>
+                                                        <td><input type="radio" value="00" class="custom-radio" name="tipoAbono"> Davivienda</td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2"><input type="radio" value="01" name="tipoAbono"> Bancolombia</td>
+                                                        <td colspan="2"><input type="radio" class="custom-radio" value="01" name="tipoAbono"> Bancolombia</td>
                                                     </tr>
                                                 </table>
                                                 <br>

@@ -53,11 +53,23 @@ if ($_POST) {
     $caja_efectivo = $result_caja['caja_efectivo'];
     $caja_efectivo = $caja_efectivo - $gasto_precio;
 
+    $sentencia=$conexion->prepare("SELECT * FROM dtpmp ");
+    $sentencia->execute();
+    $result_dtpmp = $sentencia->fetch(PDO::FETCH_LAZY);
+    $result_efectivo = $result_dtpmp['efectivo'];
+    $result_efectivo = $result_efectivo - $gasto_precio;
+
     // Actualizando el dinero de la caja
     $sql = "UPDATE caja SET caja_efectivo = ? WHERE caja_id = ? AND link = ? ";
         $sentencia = $conexion->prepare($sql);
         $params = array($caja_efectivo, $result_cajaId, $link  );
         $sentencia->execute($params);
+
+    $sql = "UPDATE dtpmp SET efectivo = ?";
+        $sentencia = $conexion->prepare($sql);
+        $params = array($result_efectivo);
+        $sentencia->execute($params);
+
     $sql = "INSERT INTO gastos (gasto_producto, gasto_motivo, gasto_precio, gasto_fecha, gasto_hora, link, responsable) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $sentencia = $conexion->prepare($sql);
         $params = array($gasto_producto, $gasto_motivo, $gasto_precio, $fechaActual, $hora_actual, $link, $responsable );

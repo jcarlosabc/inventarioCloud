@@ -19,8 +19,8 @@ if ($encontrado_usuario) {
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
 
-    $sentencia=$conexion->prepare("SELECT hc.historial_abono, hc.historial_fecha, hc.historial_hora, hc.historial_dinero_pendiente,
-    v.venta_id, v.venta_total,v.venta_cambio , v.venta_fecha, v.venta_hora, v.estado_venta, 
+    $sentencia=$conexion->prepare("SELECT hc.historial_abono, hc.historial_fecha, hc.historial_hora, hc.historial_dinero_pendiente, hc.historial_id_dnp,
+    v.venta_id, v.venta_total,v.venta_cambio, v.venta_fecha, v.venta_hora, v.estado_venta, 
     c.cliente_id,c.cliente_nombre,c.cliente_apellido, c.cliente_telefono, c.cliente_numero_documento FROM historial_credito hc JOIN venta v ON hc.historial_venta_id = v.venta_id JOIN cliente c ON v.cliente_id = c.cliente_id WHERE hc.historial_venta_codigo = :venta_codigo;");
     $sentencia->bindParam(":venta_codigo",$txtID);
     $sentencia->execute();
@@ -31,6 +31,7 @@ if(isset($_GET['txtID'])){
       $clienteId= $listaAbonos[0]['cliente_id'];
       $venta_id = $listaAbonos[0]['venta_id'];
       $venta_cambio = $listaAbonos[0]['venta_cambio'];
+      $historial_id_dnp = $listaAbonos[0]['historial_id_dnp'];
   } 
 }
 
@@ -51,16 +52,18 @@ if ($_POST) {
     $venta_cambio= isset($_POST['venta_cambio']) ? $_POST['venta_cambio'] : "";    
     $responsable = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
     $metodo_pago_abono= isset($_POST['metodo_pago_abono']) ? $_POST['metodo_pago_abono'] : "";    
+    $historial_id_dnp= isset($_POST['historial_id_dnp']) ? $_POST['historial_id_dnp'] : "";    
     $fecha_abono=$fechaActual;
     $hora_abono=$horaActual;
 
     if ($lista_historial) {
             $historial_dinero_pendiente = $venta_cambio + $historial_abono;
-            $sql = "INSERT INTO historial_credito (historial_venta_id, historial_venta_codigo, 
+            $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
                     historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                    historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
+                $historial_id_dnp,
                 $venta_id, 
                 $venta_codigo, 
                 $cliente_id, 
@@ -114,11 +117,12 @@ if ($_POST) {
           }
 } else {
           $historial_dinero_pendiente = $venta_cambio + $historial_abono;
-            $sql = "INSERT INTO historial_credito (historial_venta_id, historial_venta_codigo, 
+            $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
                     historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                    historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
+                $historial_id_dnp,
                 $venta_id, 
                 $venta_codigo, 
                 $cliente_id, 
@@ -191,7 +195,22 @@ if ($_POST) {
           $caja_nequi = $result_caja['nequi'];
           $caja_nequi = $caja_nequi + $historial_abono;
         }
-     
+
+        $sentencia=$conexion->prepare("SELECT * FROM dinero_por_quincena WHERE id =:historial_id_dnp ");
+        $sentencia->bindParam(":historial_id_dnp",$historial_id_dnp);
+        $sentencia->execute();
+        $result_idDnp = $sentencia->fetch(PDO::FETCH_LAZY);
+        if ($result_idDnp) {
+          $encontrando_id_dnp = $result_idDnp['id'];
+          $encontrando_dinero = $result_idDnp['dinero'];
+        }
+
+        $resultadoSuma = $encontrando_dinero += $historial_abono;
+        $sql = "UPDATE dinero_por_quincena SET dinero = ? WHERE id= ?";
+        $sentencia = $conexion->prepare($sql);
+        $params = array($resultadoSuma, $encontrando_id_dnp);
+        $sentencia->execute($params);
+
         if ($metodo_pago_abono == 0) {
          
             // Actualizando el dinero de la caja Efectivo
@@ -199,6 +218,12 @@ if ($_POST) {
             $sentencia = $conexion->prepare($sql);
             $params = array($caja_efectivo, $result_cajaId, $link );
             $sentencia->execute($params);
+
+            $sql = "UPDATE dtpmp SET efectivo = ?";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($caja_efectivo);
+            $sentencia->execute($params);
+
 
         }else if($metodo_pago_abono == 1){
             $banco_transferencia= isset($_POST['banco_transferencia']) ? $_POST['banco_transferencia'] : "";    
@@ -209,6 +234,12 @@ if ($_POST) {
               $sentencia = $conexion->prepare($sql);
               $params = array($caja_davivienda, $result_cajaId, $link );
               $sentencia->execute($params);
+
+              $sql = "UPDATE dtpmp SET davivienda = ?";
+              $sentencia = $conexion->prepare($sql);
+              $params = array($caja_davivienda);
+              $sentencia->execute($params);
+
             }else if ($banco_transferencia == 01) {
 
               // Actualizando el dinero de la caja Bancolombia
@@ -216,12 +247,24 @@ if ($_POST) {
               $sentencia = $conexion->prepare($sql);
               $params = array($caja_bancolombia, $result_cajaId, $link );
               $sentencia->execute($params);
+
+              
+              $sql = "UPDATE dtpmp SET bancolombia = ?";
+              $sentencia = $conexion->prepare($sql);
+              $params = array($caja_bancolombia);
+              $sentencia->execute($params);
+
             }else if ($banco_transferencia == 02) {
 
               // Actualizando el dinero de la caja Nequi
               $sql = "UPDATE caja SET nequi = ? WHERE caja_id = ? AND link = ? ";
               $sentencia = $conexion->prepare($sql);
               $params = array($caja_nequi, $result_cajaId, $link );
+              $sentencia->execute($params);
+
+              $sql = "UPDATE dtpmp SET nequi = ?";
+              $sentencia = $conexion->prepare($sql);
+              $params = array($caja_nequi);
               $sentencia->execute($params);
             }
         }
@@ -393,6 +436,7 @@ if ($_POST) {
           <input type="hidden" name="venta_id" value="<?php echo $venta_id?>">
           <input type="hidden" name="venta_codigo" value="<?php echo $venta_codigo?>">
           <input type="hidden" name="venta_cambio" value="<?php echo $venta_cambio?>">
+          <input type="hidden" name="historial_id_dnp" value="<?php echo $historial_id_dnp?>">
       </form>
   </div>
   <!-- /.card -->

@@ -156,87 +156,106 @@
 }
   $("#linkEmpresa").val("negocio_" + generarRandom(6))  
     
-    $(document).ready(function () {
-        // Función para calcular el total
-        function actualizarTotal(fila) {
-            var cantidad = fila.find('.cantidad-input').val();
-            var precio_fila = fila.find('td:eq(6)').text();
+  $(document).ready(function () {
+    // Función para calcular el total
+    function actualizarTotal(fila, tipoPrecio) {
+        var cantidad = fila.find('.cantidad-input').val();
+        var precio_fila;
 
-            let precio_formateado = precio_fila.replace(/[$,]/g, "");
-            var total = cantidad * precio_formateado;
-            var total_formateado = total.toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0});
-            
-            fila.find('.total-column').text(total_formateado);
-            fila.find('.total-input').val(total_formateado);
-            actualizarCampoTotalGlobal();
+        // Obtener el precio según el tipo seleccionado
+        if (tipoPrecio === 'porMenor') {
+            precio_fila = fila.find('td:eq(6)').text(); // al por menor
+        } else {
+            precio_fila = fila.find('td:eq(7)').text(); // al por mayor
         }
 
-        // Función para actualizar el campo total global
-        function actualizarCampoTotalGlobal() {
-            var totalGlobal = 0;
+        let precio_formateado = precio_fila.replace(/[$,]/g, "");
+        var total = cantidad * precio_formateado;
+        var total_formateado = total.toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0});
+        
+        fila.find('.total-column').text(total_formateado);
+        fila.find('.total-input').val(total_formateado);
+        actualizarCampoTotalGlobal();
+    }
 
-            // Suma todos los totales de las filas
-            $('.total-column').each(function () {
-                // Obtén el texto sin el formato de dinero y luego conviértelo a punto flotante
-                var totalSinFormato = $(this).text().replace(/[$,]/g, "");
-                totalGlobal += parseFloat(totalSinFormato) || 0;
-            });
-
-            // Asigna el total global al campo de texto
-            let total_factura = totalGlobal.toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0});
-            $('.campo-total-global').val(total_factura);
-
-            // Actualiza el campo de cambio
-            actualizarCampoCambio();
-        }
-
-        // Escucha los cambios en los campos de cantidad
-        $('.cantidad-input').on('input', function () {
-            var fila = $(this).closest('tr');
-            actualizarTotal(fila);
-        });
-
-        // Llama a la función al cargar la página para inicializar los totales
+    // Escucha los cambios en los radio buttons
+    $('input[name="tipo-precio"]').on('change', function() {
+        var tipoPrecio = $(this).val();
         $('.cantidad-input').each(function () {
             var fila = $(this).closest('tr');
-            actualizarTotal(fila);
+            actualizarTotal(fila, tipoPrecio);
+        });
+    });
+
+    // Llama a la función al cargar la página para inicializar los totales
+    $('.cantidad-input').each(function () {
+        var fila = $(this).closest('tr');
+        var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); // Obtener el tipo de precio seleccionado
+        actualizarTotal(fila, tipoPrecio); // Pasar el tipo de precio al llamar a actualizarTotal
+    });
+
+    // Función para actualizar el campo total global
+    function actualizarCampoTotalGlobal() {
+        var totalGlobal = 0;
+
+        // Suma todos los totales de las filas
+        $('.total-column').each(function () {
+            // Obtén el texto sin el formato de dinero y luego conviértelo a punto flotante
+            var totalSinFormato = $(this).text().replace(/[$,]/g, "");
+            totalGlobal += parseFloat(totalSinFormato) || 0;
         });
 
-        // Escucha los cambios en el campo "Recibido"
-        $('.recibido').on('input', function () {
-            actualizarCampoCambio();
-        });
+        // Asigna el total global al campo de texto
+        let total_factura = totalGlobal.toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0});
+        $('.campo-total-global').val(total_factura);
 
-        // Llama a la función al cargar la página para inicializar el campo de cambio
+        // Actualiza el campo de cambio
+        actualizarCampoCambio();
+    }
+
+    // Escucha los cambios en los campos de cantidad
+    $('.cantidad-input').on('input', function () {
+        var fila = $(this).closest('tr');
+        var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); // Obtener el tipo de precio seleccionado
+        actualizarTotal(fila, tipoPrecio); // Pasar el tipo de precio al llamar a actualizarTotal
+    });
+
+    // Escucha los cambios en el campo "Recibido"
+    $('.recibido').on('input', function () {
         actualizarCampoCambio();
     });
-    // Mascara para el campo recibido
-      document.addEventListener('DOMContentLoaded', function () {
-        var campoRecibido = document.getElementById("recibido");
-        campoRecibido.addEventListener("input", function(event) {
-            var valor = event.target.value;
-            valor = valor.replace(/[^\d]/g, '');
-            valor = "$" + valor;
-            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            event.target.value = valor;
-            actualizarCampoCambio();
-        });
-      });
 
-    // Función para actualizar el campo de cambio
-    function actualizarCampoCambio() {
-        let total_factura = $(".campo-total-global").val();
-        total_factura = total_factura.replace(/[$,]/g, "");
-        let recibido = $("#recibido").val();
-        recibido = recibido.replace(/[$,.]/g, "");
+    // Llama a la función al cargar la página para inicializar el campo de cambio
+    actualizarCampoCambio();
+});
 
-        // Calcula el cambio
-        let cambio = recibido - total_factura;
-        // Actualiza el campo "Se devuelve"
-        let cambioFormateado = cambio.toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0});
-        // Actualiza el campo "Se devuelve"
-        $('.se_devuelve').val(cambioFormateado);
-    }
+// Mascara para el campo recibido
+document.addEventListener('DOMContentLoaded', function () {
+    var campoRecibido = document.getElementById("recibido");
+    campoRecibido.addEventListener("input", function(event) {
+        var valor = event.target.value;
+        valor = valor.replace(/[^\d]/g, '');
+        valor = "$" + valor;
+        valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        event.target.value = valor;
+        actualizarCampoCambio();
+    });
+});
+
+// Función para actualizar el campo de cambio
+function actualizarCampoCambio() {
+    let total_factura = $(".campo-total-global").val();
+    total_factura = total_factura.replace(/[$,]/g, "");
+    let recibido = $("#recibido").val();
+    recibido = recibido.replace(/[$,.]/g, "");
+
+    // Calcula el cambio
+    let cambio = recibido - total_factura;
+    // Actualiza el campo "Se devuelve"
+    let cambioFormateado = cambio.toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0});
+    // Actualiza el campo "Se devuelve"
+    $('.se_devuelve').val(cambioFormateado);
+}
  
     //  CONFIGURANDO TABLAS
     $(document).ready(function () {
