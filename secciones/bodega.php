@@ -35,11 +35,12 @@
       }
   
       //  GUARDANDO LA EMPRSA CREADA
-      $sql = "INSERT INTO empresa_bodega (bodega_nombre, bodega_telefono, bodega_email,
+      $sql = "INSERT INTO empresa_bodega (bodega_id,bodega_nombre, bodega_telefono, bodega_email,
       bodega_direccion, bodega_nit, bodega_logo, link, codigo_seguridad , responsable) 
-      VALUES (?,?,?,?,?,?,?,?,?)";
+      VALUES (?,?,?,?,?,?,?,?,?,?)";
       $sentencia = $conexion->prepare($sql);
       $params = array(
+        '9000',
           $bodega_nombre,
           $bodega_telefono,
           $bodega_email,

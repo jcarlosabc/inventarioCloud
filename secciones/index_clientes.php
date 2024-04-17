@@ -42,6 +42,10 @@ if(isset($_GET['txtID'])){
             <thead>
             <tr>
               <th>#</th>
+              <?php if ($_SESSION['rolBodega']) { ?>
+              <th>Nit</th>
+              <th>Empresa</th>
+             <?php } ?>
               <th>Cedula</th>
               <th>Nombres / Apellidos</th>
               <th>Ciudad</th>
@@ -57,6 +61,10 @@ if(isset($_GET['txtID'])){
               foreach ($lista_cliente as $registro) {?>
                 <tr>
                   <td scope="row"><?php $count++;  echo $count; ?></td>
+                  <?php if ($_SESSION['rolBodega']) { ?>
+                    <td><?php echo $registro['cliente_nit']; ?></td>
+                    <td><?php echo $registro['cliente_empresa']; ?></td>
+                  <?php } ?>
                   <td><?php echo $registro['cliente_numero_documento']; ?></td>
                   <td><?php echo $registro['cliente_nombre']; ?> <?php echo $registro['cliente_apellido']; ?></td>
                   <td><?php echo $registro['cliente_ciudad']; ?></td>                

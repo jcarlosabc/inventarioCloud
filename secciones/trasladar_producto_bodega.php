@@ -37,14 +37,14 @@ $sentencia_categoria = $conexion->prepare("SELECT c.categoria_nombre FROM bodega
 $sentencia_categoria->bindParam(":id", $producto_id);
 $sentencia_categoria->execute();
 $registro_categoria = $sentencia_categoria->fetch(PDO::FETCH_LAZY);
-$categoria_actual = $registro_categoria["categoria_nombre"];
+$categoria_actual =  isset($registro_categoria["categoria_nombre"]) ? $registro_categoria["categoria_nombre"] : ""; 
 
 // Obtener proveedor actual del producto
 $sentencia_proveedor = $conexion->prepare("SELECT p.nombre_proveedores FROM bodega b JOIN proveedores p ON b.proveedor_id = p.id_proveedores WHERE b.producto_id=:id");
 $sentencia_proveedor->bindParam(":id", $producto_id);
 $sentencia_proveedor->execute();
 $registro_proveedor = $sentencia_proveedor->fetch(PDO::FETCH_LAZY);
-$proveedor_actual = $registro_proveedor["nombre_proveedores"];
+$proveedor_actual =  isset($registro_proveedor["nombre_proveedores"]) ? $registro_proveedor["nombre_proveedores"] : ""; 
 
 //Lista de Locales    
 $sentencia_empresas = $conexion->prepare("SELECT empresa_id, empresa_nombre, link FROM empresa");

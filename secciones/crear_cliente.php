@@ -21,35 +21,67 @@ if ($_POST) {
     $cliente_direccion = isset($_POST['cliente_direccion']) ? $_POST['cliente_direccion'] : "";
     $cliente_telefono = isset($_POST['cliente_telefono']) ? $_POST['cliente_telefono'] : "";
     $cliente_email = isset($_POST['cliente_email']) ? $_POST['cliente_email'] : "";
+    $cliente_empresa = isset($_POST['cliente_empresa']) ? $_POST['cliente_empresa'] : "";
+    $cliente_nit = isset($_POST['cliente_nit']) ? $_POST['cliente_nit'] : "";
     $responsable = $_SESSION['usuario_id'];
     $link =  isset($_POST['link']) ? $_POST['link'] : "";
     if ($responsable == 1) {
         $link = "sudo_admin";
     }
 
-    
-    $sentencia = $conexion->prepare("INSERT INTO cliente(
-        cliente_id,
-        cliente_numero_documento, 
-        cliente_nombre,
-        cliente_apellido,
-        cliente_ciudad,
-        cliente_direccion,
-        cliente_telefono,
-        cliente_email,
-        link,
-        responsable) 
-        VALUES (NULL,:cliente_numero_documento, :cliente_nombre,:cliente_apellido,:cliente_ciudad, :cliente_direccion,:cliente_telefono,:cliente_email, :link,:responsable)");
-    
-    $sentencia->bindParam(":cliente_numero_documento", $cliente_numero_documento);
-    $sentencia->bindParam(":cliente_nombre", $cliente_nombre);
-    $sentencia->bindParam(":cliente_apellido", $cliente_apellido);
-    $sentencia->bindParam(":cliente_ciudad", $cliente_ciudad);
-    $sentencia->bindParam(":cliente_direccion", $cliente_direccion);
-    $sentencia->bindParam(":cliente_telefono", $cliente_telefono);
-    $sentencia->bindParam(":cliente_email", $cliente_email);
-    $sentencia->bindParam(":link", $link);
-    $sentencia->bindParam(":responsable",$responsable);
+    if ($_SESSION['rolBodega']) {
+        $sentencia = $conexion->prepare("INSERT INTO cliente(
+            cliente_id,
+            cliente_numero_documento, 
+            cliente_nombre,
+            cliente_apellido,
+            cliente_ciudad,
+            cliente_direccion,
+            cliente_telefono,
+            cliente_email,
+            cliente_empresa,
+            cliente_nit,
+            link,
+            responsable) 
+            VALUES (NULL,:cliente_numero_documento, :cliente_nombre,:cliente_apellido,:cliente_ciudad, :cliente_direccion,:cliente_telefono,:cliente_email,:cliente_empresa,:cliente_nit, :link,:responsable)");
+        
+        $sentencia->bindParam(":cliente_numero_documento", $cliente_numero_documento);
+        $sentencia->bindParam(":cliente_nombre", $cliente_nombre);
+        $sentencia->bindParam(":cliente_apellido", $cliente_apellido);
+        $sentencia->bindParam(":cliente_ciudad", $cliente_ciudad);
+        $sentencia->bindParam(":cliente_direccion", $cliente_direccion);
+        $sentencia->bindParam(":cliente_telefono", $cliente_telefono);
+        $sentencia->bindParam(":cliente_email", $cliente_email);
+        $sentencia->bindParam(":cliente_empresa", $cliente_empresa);
+        $sentencia->bindParam(":cliente_nit", $cliente_nit);
+        $sentencia->bindParam(":link", $link);
+        $sentencia->bindParam(":responsable",$responsable);
+        
+    }else{
+        $sentencia = $conexion->prepare("INSERT INTO cliente(
+            cliente_id,
+            cliente_numero_documento, 
+            cliente_nombre,
+            cliente_apellido,
+            cliente_ciudad,
+            cliente_direccion,
+            cliente_telefono,
+            cliente_email,
+            link,
+            responsable) 
+            VALUES (NULL,:cliente_numero_documento, :cliente_nombre,:cliente_apellido,:cliente_ciudad, :cliente_direccion,:cliente_telefono,:cliente_email, :link,:responsable)");
+        
+        $sentencia->bindParam(":cliente_numero_documento", $cliente_numero_documento);
+        $sentencia->bindParam(":cliente_nombre", $cliente_nombre);
+        $sentencia->bindParam(":cliente_apellido", $cliente_apellido);
+        $sentencia->bindParam(":cliente_ciudad", $cliente_ciudad);
+        $sentencia->bindParam(":cliente_direccion", $cliente_direccion);
+        $sentencia->bindParam(":cliente_telefono", $cliente_telefono);
+        $sentencia->bindParam(":cliente_email", $cliente_email);
+        $sentencia->bindParam(":link", $link);
+        $sentencia->bindParam(":responsable",$responsable);
+
+    }
         
     $resultado = $sentencia->execute();
     if ($resultado) {
@@ -111,6 +143,14 @@ if ($_POST) {
                                 <input type="num" class="form-control camposTabla" name="cliente_telefono" id="cliente_telefono">
                             </div>
                         </div>
+                        <?php if ($_SESSION['rolBodega']) { ?>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label for="cliente_empresa" class="textLabel">Empresa</label>
+                                    <input type="text" class="form-control camposTabla"  name="cliente_empresa" id="cliente_empresa">
+                                </div>
+                            </div>                          
+                       <?php } ?>
                     </div>                        
                     
                     <div class="row" style="justify-content:center">
@@ -125,14 +165,21 @@ if ($_POST) {
                                 <label for="cliente_direccion" class="textLabel">Dirección</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla" name="cliente_direccion" id="cliente_direccion">
                             </div>
-                        </div>
-                        
+                        </div>                        
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="cliente_email" class="textLabel">Correo</label>
                                 <input type="text" class="form-control camposTabla"  name="cliente_email" id="cliente_email">
                             </div>
                         </div>
+                        <?php if ($_SESSION['rolBodega']) { ?>                            
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label for="cliente_nit" class="textLabel">Nit</label>
+                                    <input type="text" class="form-control camposTabla"  name="cliente_nit" id="cliente_nit">
+                                </div>
+                            </div>                            
+                       <?php } ?>
                     </div>
                 </div>
                 <br>

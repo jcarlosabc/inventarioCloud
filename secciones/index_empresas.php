@@ -4,16 +4,19 @@
 $responsable = $_SESSION['usuario_id'];
   if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
-    $sentencia=$conexion->prepare("DELETE FROM empresa WHERE empresa_id=:empresa_id");
+    if ($txtID == 9000) {
+      $sentencia = $conexion->prepare("DELETE FROM empresa_bodega WHERE bodega_id=:empresa_id");
+    }else{
+      $sentencia = $conexion->prepare("DELETE FROM empresa WHERE empresa_id=:empresa_id");
+
+    }
     $sentencia->bindParam(":empresa_id",$txtID);
     $sentencia->execute();    
   }
+  $sentencia = $conexion->prepare("SELECT * FROM empresa UNION SELECT * FROM empresa_bodega");
 
- 
-  $sentencia=$conexion->prepare("SELECT * FROM empresa");
-  
   $sentencia->execute();
-  $lista_caja=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+  $lista_empresa = $sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 <br>
@@ -37,7 +40,7 @@ $responsable = $_SESSION['usuario_id'];
             </thead>
             <tbody>
               <?php $count = 0;
-              foreach ($lista_caja as $registro) {?>
+              foreach ($lista_empresa as $registro) {?>
                 <tr>
                 <td scope="row"><?php $count++; echo $count; ?></td>
                 <td><?php echo $registro['empresa_nombre']; ?></td>
