@@ -23,6 +23,7 @@ if ($_POST) {
     $producto_stock_total = isset($_POST['producto_stock_total']) ? $_POST['producto_stock_total'] : "";
     $producto_precio_compra = isset($_POST['producto_precio_compra']) ? $_POST['producto_precio_compra'] : "";
     $producto_precio_venta = isset($_POST['producto_precio_venta']) ? $_POST['producto_precio_venta'] : "";
+    $producto_precio_venta_xmayor = isset($_POST['producto_precio_venta_xmayor']) ? $_POST['producto_precio_venta_xmayor'] : "";
     $producto_marca = isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
     $producto_modelo = isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
     $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";  
@@ -33,13 +34,14 @@ if ($_POST) {
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
     $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
     $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
+    $producto_precio_venta_xmayor = str_replace(array('$','.', ','), '', $producto_precio_venta_xmayor);
 
     date_default_timezone_set('America/Bogota'); 
     $fechaActual = date("d-m-Y");
     if ($idResponsable == 1 || $link == "sudo_bodega") {
         $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion, producto_fecha_ingreso,
-        producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo,
-        categoria_id,proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_precio_venta_xmayor,producto_marca,producto_modelo,
+        categoria_id,proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $sentencia = $conexion->prepare($sql);
     $params = array(
@@ -50,7 +52,8 @@ if ($_POST) {
         $producto_nombre,
         $producto_stock_total, 
         $producto_precio_compra,
-        $producto_precio_venta, 
+        $producto_precio_venta,
+        $producto_precio_venta_xmayor, 
         $producto_marca, 
         $producto_modelo,
         $categoria_id,
@@ -93,8 +96,8 @@ if ($_POST) {
     } else { 
 
         $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion,
-            producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo,
-        categoria_id,proveedor_id,link,responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_precio_venta_xmayor,producto_marca,producto_modelo,
+        categoria_id,proveedor_id,link,responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 
         $sentencia = $conexion->prepare($sql);
         $params = array(
@@ -104,7 +107,8 @@ if ($_POST) {
             $producto_nombre,
             $producto_stock_total, 
             $producto_precio_compra,
-            $producto_precio_venta, 
+            $producto_precio_venta,
+            $producto_precio_venta_xmayor, 
             $producto_marca, 
             $producto_modelo,
             $categoria_id,
@@ -283,14 +287,20 @@ if ($user_id == 1) {
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group">
-                            <label for="producto_precio_compra" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                            <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_compra" id="producto_precio_compra" required>
+                            <label for="producto_precio_compra" class="textLabel">Precio de Compra</label>
+                            <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_compra" id="producto_precio_compra">
                         </div>
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group">
-                            <label for="producto_precio_venta" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                            <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta" id="producto_precio_venta" required>
+                            <label for="producto_precio_venta" class="textLabel">Precio de Venta al por menor</label>
+                            <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta" id="producto_precio_venta">
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="producto_precio_venta_xmayor" class="textLabel">Precio de Venta al por mayor</label> 
+                            <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta_xmayor" id="producto_precio_venta_xmayor">
                         </div>
                     </div>
                 </div>

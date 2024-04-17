@@ -2,11 +2,11 @@
 <?php 
 
 if ($_SESSION['valSudoAdmin']) {
-  $editar_empleados_link = "editar_empleados.php";
-  $index_empleados_link = "index_empleados.php";
+  $editar_empleados_link = "editar_empleados.php?txtID";
+  $index_empleados_link = "index_empleados.php?txtID";
 }else{
-  $editar_empleados_link = "editar_empleados.php?link=".$link;
-  $index_empleados_link = "index_empleados.php?link=".$link;
+  $editar_empleados_link = "editar_empleados.php?link=".$link."&txtID";
+  $index_empleados_link = "index_empleados.php?link=".$link."&txtID";
 }
 
 if(isset($_GET['link'])){
@@ -74,10 +74,10 @@ if(isset($_GET['txtID'])){
                       <i class="fa fa-list-alt nav-icon"></i> Nómina
                       </a>
                   <?php } ?> 
-                    <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_empleados_link . '&txtID=' . $registro['usuario_id']; ?>"role="button" title="Editar">
+                    <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_empleados_link . '=' . $registro['usuario_id']; ?>"role="button" title="Editar">
                         <i class="fas fa-edit"></i> Editar
                     </a>
-                    <a class="btn btn-danger" href="<?php echo $url_base;?>secciones/<?php echo $index_empleados_link . '&txtID=' . $registro['usuario_id']; ?>" role="button" title="Eliminar">
+                    <a class="btn btn-danger" href="<?php echo $url_base;?>secciones/<?php echo $index_empleados_link . '=' . $registro['usuario_id']; ?>" role="button" title="Eliminar">
                         <i class="fas fa-trash-alt"></i> Eliminar
                     </a>
                   </td>
