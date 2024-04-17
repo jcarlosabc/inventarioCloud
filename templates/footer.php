@@ -400,8 +400,8 @@ function mostrarMetodosNomina() {
       function formatDineroSinDecimales(valor) {
           return "$" + parseFloat(valor).toFixed(0).replace(/\d(?=(\d{3})+$)/g, "$&,");
       }
-      $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta, " + 
-        "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad, " +
+      $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta,#producto_precio_venta_xmayor, " + 
+        "#producto_precio_compra_edit, #producto_precio_venta_edit,#producto_precio_venta_xmayor_edit #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad, " +
         "#historialAbono, #quincenaEmpleado").on("input", function() {
           var valor = $(this).val().replace(/[^0-9]/g, '');
           $(this).val(formatDineroSinDecimales(valor));
@@ -409,8 +409,8 @@ function mostrarMetodosNomina() {
 
       // Evento al enviar el formulario
       $("form").submit(function() {
-          var valor = $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta," +
-          "#producto_precio_compra_edit, #producto_precio_venta_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio," + 
+          var valor = $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta,producto_precio_venta_xmayor," +
+          "#producto_precio_compra_edit, #producto_precio_venta_edit,producto_precio_venta_xmayor_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio," + 
           "#historialAbono, #montoDevolucion, #nominaCantidad, #quincenaEmpleado").val().replace(/[^0-9]/g, ''); 
           $("#cajaEfectivo").val(valor);
       });

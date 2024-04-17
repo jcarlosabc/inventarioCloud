@@ -2,11 +2,11 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
   $crear_proveedor_link  = "crear_proveedor.php";
-  $editar_proveedores  = "editar_proveedores.php";
+  $editar_proveedores  = "editar_proveedores.php&txtID";
 
 }else{
   $crear_proveedor_link  = "crear_proveedor.php?link=".$link;
-  $editar_proveedores  = "editar_proveedores.php?link=".$link;
+  $editar_proveedores  = "editar_proveedores.php?link=".$link."&txtID";
 }
 //Eliminar Elementos
 if(isset($_GET['txtID'])){
@@ -66,10 +66,10 @@ if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
                   <td><?php echo $registro['direccion_proveedores']; ?></td> 
                   <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <td>
-                    <a class="btn btn-info btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $editar_proveedores;?>&txtID=<?php echo $registro['id_proveedores']; ?>"role="button" title="Editar">
+                    <a class="btn btn-info btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $editar_proveedores;?>=<?php echo $registro['id_proveedores']; ?>"role="button" title="Editar">
                       <i class="fas fa-edit"></i>Editar
                     </a>
-                    <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $lista_proveedore_link;?>&txtID=<?php echo $registro['id_proveedores']; ?>" role="button" title="Eliminar">
+                    <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $lista_proveedore_link;?>=<?php echo $registro['id_proveedores']; ?>" role="button" title="Eliminar">
                       <i class="fas fa-trash"></i>Eliminar 
                     </a>
                   </td>
