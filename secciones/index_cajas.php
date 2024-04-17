@@ -2,11 +2,12 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
   $crear_caja_link = 'crear_caja.php';
-  $editar_cajas = 'editar_cajas.php';       
-  $editar_cajas = 'editar_cajas.php';       
+  $editar_cajas = 'editar_cajas.php?txtID';       
+  $index_cajas_link = 'index_cajas.php?txtID';       
 }else{
   $crear_caja_link = 'crear_caja.php?link='.$link;       
-  $editar_cajas = 'editar_cajas.php?link='.$link;       
+  $editar_cajas = 'editar_cajas.php?link='.$link."&txtID";       
+  $index_cajas_link = 'index_cajas.php?link='.$link."&txtID";       
 }
 if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
@@ -89,14 +90,14 @@ if ($responsable == 1) {
                 <td><?php if ($registro['link'] == "sudo_admin" ) {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                 <td class="tdColor"><?php echo '$' . number_format($registro['caja_efectivo'], 0, '.', ','); ?></td>
                 <td class="text-center">
-                  <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_cajas;?>&txtID=<?php echo $registro['caja_id']; ?>"role="button"title="Editar">
+                  <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_cajas;?>=<?php echo $registro['caja_id']; ?>"role="button"title="Editar">
                     <i class="fas fa-edit"></i>Editar
                   </a>
                  <?php if ($_SESSION['roladminlocal'] || $_SESSION['rolBodega']) { ?>
                   <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>&AsignarID=<?php echo $registro['caja_id']; ?>"role="button"title="Asignar">
                     <i class="fas fa-edit"></i>Asignar
                 <?php } ?>
-                  <a class="btn btn-danger"href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>&txtID=<?php echo $registro['caja_id']; ?>" role="button"title="Eliminar">
+                  <a class="btn btn-danger"href="<?php echo $url_base;?>secciones/<?php echo $index_cajas_link;?>=<?php echo $registro['caja_id']; ?>" role="button"title="Eliminar">
                       <i class="fas fa-trash-alt"></i>Eliminar
                   </a>
                 </td>

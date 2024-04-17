@@ -17,9 +17,12 @@ if(isset($_GET['txtID'])){
 }
 $responsable = $_SESSION['usuario_id'];
 if ($responsable == 1) {
-  $sentencia = $conexion->prepare("SELECT producto.*, categoria.*, e.empresa_nombre FROM producto
-      INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id LEFT JOIN ( SELECT p.*, e.empresa_nombre FROM producto p 
-      LEFT JOIN empresa e ON p.link = e.link) AS e ON producto.link = e.link GROUP BY producto_id");
+  // $sentencia = $conexion->prepare("SELECT producto.*, categoria.*, e.empresa_nombre FROM producto
+  //     INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id LEFT JOIN ( SELECT p.*, e.empresa_nombre FROM producto p 
+  //     LEFT JOIN empresa e ON p.link = e.link) AS e ON producto.link = e.link GROUP BY producto_id");
+  $sentencia=$conexion->prepare("SELECT p.*, c.*, e.empresa_nombre
+  FROM producto p LEFT JOIN categoria c ON p.categoria_id = c.categoria_id LEFT JOIN empresa e ON p.link = e.link");
+  // $sentencia->bindParam(":link",$link);
 
 }else if($link != "sudo_bodega"  || $link != "sudo_admin" ) { 
   $sentencia=$conexion->prepare("SELECT p.*, c.*, e.empresa_nombre

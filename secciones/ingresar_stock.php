@@ -33,7 +33,8 @@ if(isset($_GET['txtID'])){
     $sentencia_categoria->bindParam(":producto_id", $producto_id);
     $sentencia_categoria->execute();
     $registro_categoria = $sentencia_categoria->fetch(PDO::FETCH_LAZY);
-    $categoria_actual = $registro_categoria["categoria_nombre"];
+    $categoria_actual =  isset($registro_categoria["categoria_nombre"]) ? $registro_categoria["categoria_nombre"] : "";
+
 
 if ($_POST) {
    
@@ -111,6 +112,8 @@ if ($_POST) {
                                 <input type="text"class="form-control camposTabla" readonly value="<?php echo $producto_nombre;?>">
                             </div>
                         </div>
+                    </div>
+                    <div class="row" style="justify-content:center">
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Marca</label>
@@ -123,6 +126,9 @@ if ($_POST) {
                                 <input type="text" class="form-control camposTabla" readonly value="<?php echo $producto_modelo;?>">
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="row" style="justify-content:center">
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Categoría</label>
@@ -131,22 +137,21 @@ if ($_POST) {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="row" style="justify-content:center">
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" id="producto_stock_total" required >
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                    </div>
+                    <div class="row" style="justify-content:center">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="texto" class="form-control camposTabla_dinero" placeholder="$000.00" value="<?php echo $producto_precio_compra; ?>" id="precio_compra_stock" name="producto_precio_compra">
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="texto" class="form-control camposTabla_dinero "placeholder="$000.00" value="<?php echo $producto_precio_venta; ?>" id="precio_venta_stock" name="producto_precio_venta">                                 

@@ -32,7 +32,8 @@ if(isset($_GET['txtID'])){
     $sentencia_categoria->bindParam(":producto_id", $producto_id);
     $sentencia_categoria->execute();
     $registro_categoria = $sentencia_categoria->fetch(PDO::FETCH_LAZY);
-    $categoria_actual = $registro_categoria["categoria_nombre"];
+    $categoria_actual =  isset($registro_categoria["categoria_nombre"]) ? $registro_categoria["categoria_nombre"] : "";
+
 
 if ($_POST) {
    

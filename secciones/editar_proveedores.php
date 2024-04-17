@@ -4,7 +4,7 @@
 if (isset($_GET['txtID'])) {
 
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
-    echo $txtID; 
+    echo "asasasasa => " . $txtID; 
     // Obtener la categoría actual del producto
     $datos_proveedores = $conexion->prepare("SELECT * FROM proveedores WHERE id_proveedores = :id_proveedores");
 

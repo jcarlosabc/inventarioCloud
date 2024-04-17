@@ -67,13 +67,14 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                         <i class="fas fa-trash-alt"></i> Eliminar
                     </a>
                   </td>
-                  <?php } ?>
+                  <?php } else {?>
                   <td>
                   <a class="btn btn-danger" href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>&txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
                         <i class="fas fa-trash-alt"></i> Eliminar
                     </a>
                   </td>
                 </tr>  
+              <?php } ?>
               <?php } ?>
             </tbody>                  
           </table>

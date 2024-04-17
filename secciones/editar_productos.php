@@ -168,18 +168,20 @@ if ($_POST) {
                     <div class="row" style="justify-content:center">       
                         <input type="hidden" class="form-control" name="txtID" value="<?php echo $producto_id;?>" >
                         <input type="hidden" class="form-control" name="categoria_id" value="<?php echo $categoria_id;?>" >
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Código de Barra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla" name="producto_codigo" required value="<?php echo $producto_codigo;?>">
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Nombre del Producto</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text"class="form-control camposTabla" name="producto_nombre" value="<?php echo $producto_nombre;?>">
                             </div>
                         </div>
+                    </div>
+                    <div class="row" style="justify-content:center">     
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Marca</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
@@ -194,7 +196,7 @@ if ($_POST) {
                         </div>
                     </div>
                     <div class="row" style="justify-content:center">       
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Categoría</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
@@ -209,7 +211,7 @@ if ($_POST) {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="" class="textLabel">Proveedor</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <div class="form-group">
@@ -222,6 +224,8 @@ if ($_POST) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="row" style="justify-content:center">     
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Actual Garantía</label>
@@ -248,14 +252,14 @@ if ($_POST) {
                                     value="<?php echo $producto_stock_total;?>"  pattern="[0-9]*">
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="producto_precio_compra_edit" class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla_dinero" placeholder="$000.00" name="producto_precio_compra" id="producto_precio_compra_edit"
                                 value="<?php echo '$' . number_format($producto_precio_compra, 0, '.', ','); ?>">
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="producto_precio_venta_edit" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="texto" class="form-control camposTabla_dinero"placeholder="$000.00" name="producto_precio_venta" id="producto_precio_venta_edit"

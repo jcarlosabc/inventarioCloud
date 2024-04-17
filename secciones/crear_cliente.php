@@ -117,10 +117,26 @@ if ($_POST) {
                 <br>
                 <div class="card-body ">
                     <div class="row" style="justify-content:center">
+                        <?php if ($_SESSION['rolBodega']) { ?>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label for="cliente_empresa" class="textLabel">Empresa</label>&nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                    <input required type="text" class="form-control camposTabla"  name="cliente_empresa" id="cliente_empresa">
+                                </div>
+                            </div>                          
+                       <?php } ?>
+                       <?php if ($_SESSION['rolBodega']) { ?>                            
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label for="cliente_nit" class="textLabel">Nit</label>
+                                    <input type="text" class="form-control camposTabla"  name="cliente_nit" id="cliente_nit">
+                                </div>
+                            </div>                            
+                       <?php } ?>   
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label  for="cliente_numero_documento" class="textLabel">Cédula</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input required type="num" class="form-control camposTabla" name="cliente_numero_documento">
+                                <label  for="cliente_numero_documento" class="textLabel">Cédula</label> 
+                                <input type="num" class="form-control camposTabla" name="cliente_numero_documento">
                                 <input type="hidden" name="link" value="<?php echo $link ?>">
 
                             </div>                       
@@ -137,23 +153,14 @@ if ($_POST) {
                                 <input type="text" class="form-control camposTabla" name="cliente_apellido" required>
                             </div>
                         </div>                        
+                    </div> 
+                    <div class="row" style="justify-content:center">
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label for="cliente_telefono" class="textLabel">Teléfono</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="num" class="form-control camposTabla" name="cliente_telefono" id="cliente_telefono">
                             </div>
                         </div>
-                        <?php if ($_SESSION['rolBodega']) { ?>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label for="cliente_empresa" class="textLabel">Empresa</label>
-                                    <input type="text" class="form-control camposTabla"  name="cliente_empresa" id="cliente_empresa">
-                                </div>
-                            </div>                          
-                       <?php } ?>
-                    </div>                        
-                    
-                    <div class="row" style="justify-content:center">
                         <div class="col-2">
                             <div class="form-group">
                                 <label for="cliente_ciudad" class="textLabel">Ciudad</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
@@ -172,14 +179,6 @@ if ($_POST) {
                                 <input type="text" class="form-control camposTabla"  name="cliente_email" id="cliente_email">
                             </div>
                         </div>
-                        <?php if ($_SESSION['rolBodega']) { ?>                            
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label for="cliente_nit" class="textLabel">Nit</label>
-                                    <input type="text" class="form-control camposTabla"  name="cliente_nit" id="cliente_nit">
-                                </div>
-                            </div>                            
-                       <?php } ?>
                     </div>
                 </div>
                 <br>

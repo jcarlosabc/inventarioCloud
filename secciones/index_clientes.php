@@ -2,11 +2,14 @@
 <?php
 if ($_SESSION['valSudoAdmin']) {
   $crear_cliente_link  = "crear_cliente.php";
-  $editar_clientes  = "editar_clientes.php";
+  $editar_clientes  = "editar_clientes.php?txtID";
+  $lista_cliente_link  = "index_clientes.php?txtID";
+
 
 }else{
   $crear_cliente_link  = "crear_cliente.php?link=".$link;
-  $editar_clientes  = "editar_clientes.php?link=".$link;
+  $editar_clientes  = "editar_clientes.php?link=".$link."&txtID";
+  $lista_cliente_link  = "index_clientes.php?link=".$link."&txtID";
 }
 
 if(isset($_GET['link'])){
@@ -73,10 +76,10 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['cliente_email']; ?></td>
                   <td><?php if ($registro['link'] == "sudo_admin" ) {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <td>
-                    <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_clientes;?>&txtID=<?php echo $registro['cliente_id']; ?>"role="button" title="Editar">
+                    <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_clientes;?>=<?php echo $registro['cliente_id']; ?>"role="button" title="Editar">
                         <i class="fas fa-edit"></i>Editar
                     </a>
-                    <a class="btn btn-danger" href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>&txtID=<?php echo $registro['cliente_id']; ?>" role="button" title="Eliminar">
+                    <a class="btn btn-danger" href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>=<?php echo $registro['cliente_id']; ?>" role="button" title="Eliminar">
                         <i class="fas fa-trash-alt"></i>Eliminar
                     </a>
                   </td>

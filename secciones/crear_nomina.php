@@ -77,8 +77,6 @@ if ($_POST) {
 
     $nomina_adelanto = isset($_POST['nomina_adelanto']) ? $_POST['nomina_adelanto'] : "";
 
-    $nomina_adelanto = isset($_POST['nomina_adelanto']) ? $_POST['nomina_adelanto'] : "";
-
     //Nomina
     $metodo_pago = isset($_POST['metodo_pago_nomina']) ? $_POST['metodo_pago_nomina'] : $_POST['metodo_pago_nomina'];
   //  print_r(" //Metoro: ".$metodo_pago . " //// ");
@@ -144,10 +142,6 @@ if ($_POST) {
     $estado_prestamo->bindParam(":usuario_id", $usuario_id);
     $estado_prestamo->execute();
     $resultado_estado_prestamo = $estado_prestamo->fetch(PDO::FETCH_ASSOC);
-    $estado_prestamo=$conexion->prepare("SELECT nomina_estado FROM nomina WHERE nomina_usuario_id =:usuario_id AND nomina_estado =  2");
-    $estado_prestamo->bindParam(":usuario_id", $usuario_id);
-    $estado_prestamo->execute();
-    $resultado_estado_prestamo = $estado_prestamo->fetch(PDO::FETCH_ASSOC);
 
 
     $sentencia=$conexion->prepare("SELECT * FROM usuario WHERE usuario_id =:usuario_id AND link = :link");
@@ -163,35 +157,6 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         });
         </script>';
-    }else if($nomina_adelanto == 00){
-        if ($resultado_estado_prestamo && $resultado_estado_prestamo['nomina_estado'] == 2)  {
-
-            $sql = "UPDATE nomina SET nomina_cantidad = ?, nomina_fecha = ?, nomina_hora = ?, nomina_estado = ? WHERE nomina_usuario_id = ?";
-            $sentencia_nomina = $conexion->prepare($sql);
-            $params = array(
-                $nomina_cantidad,
-                $fechaActual,
-                $horaActual,
-                1,
-                $usuario_id
-            );
-            $resultado = $sentencia_nomina->execute($params);
-
-        }else{
-            $sql = "INSERT INTO nomina (nomina_usuario_id, nomina_fecha, nomina_hora, nomina_cantidad, nomina_estado, link) 
-            VALUES (?,?,?,?,?,?)";
-            $sentencia_nomina = $conexion->prepare($sql);
-            $params = array(
-                $usuario_id,
-                $fechaActual,
-                $horaActual,
-                $nomina_cantidad,
-                1,
-                $link
-            );
-            $resultado = $sentencia_nomina->execute($params);
-
-        }
     }else if($nomina_adelanto == 00){
         if ($resultado_estado_prestamo && $resultado_estado_prestamo['nomina_estado'] == 2)  {
 
@@ -310,7 +275,10 @@ if ($_POST) {
             });
             </script>';
         }
+        
     } 
+        
+    
 }
 ?>
 <br>
@@ -373,28 +341,14 @@ if ($_POST) {
              <!--Comienzo -->
              <div class="row" style="justify-content:center">
                 <div class="col-sm-2">
-                    
-             </div>
-             <!--Comienzo -->
-             <div class="row" style="justify-content:center">
-                <div class="col-sm-2">
                         <label class="textLabel">Escoger Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                         <select class="form-control select2 camposTabla" style="width: 100%;" name="nomina_caja">
                             <option value="">Escoger Caja</option>
                             <?php foreach ($lista_cajas as $registro) { ?>
                                 <option value="<?php echo $registro['caja_id']; ?>"><?php echo  $registro['caja_nombre'] . " " . " (". "Caja: ". '$' . number_format($registro['caja_efectivo'], 0, '.', ',') .") - ".$registro['empresa_nombre']; ?></option>
-                                <option value="<?php echo $registro['caja_id']; ?>"><?php echo  $registro['caja_nombre'] . " " . " (". "Caja: ". '$' . number_format($registro['caja_efectivo'], 0, '.', ',') .") - ".$registro['empresa_nombre']; ?></option>
                             <?php } ?>          
                         </select>
                     </div>
-                    <div class="col-sm-2">
-                    <label class="textLabel">Adelanto</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
-                        <select class="form-control select2 camposTabla" id="nomina_adelanto" name="nomina_adelanto">                                    
-                            <option value="00" style="color:#22c600">No</option> 
-                            <option value="01" style="color:#009fc1">Si</option>
-                        </select>
-                     </div>
-                    <div class="col-sm-2">
                     <div class="col-sm-2">
                     <label class="textLabel">Adelanto</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                         <select class="form-control select2 camposTabla" id="nomina_adelanto" name="nomina_adelanto">                                    
@@ -410,11 +364,9 @@ if ($_POST) {
                             </select>
                     </div>
                     
-                    
                 </div>
                 <br>
                 <div class="row" style="justify-content:center" id="metodo_transferencia_nomina">
-                
                 
                     <div class="col-sm-3">
                         <label class="textLabel">Escoger Banco</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
