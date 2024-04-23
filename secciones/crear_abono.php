@@ -21,7 +21,7 @@ if(isset($_GET['txtID'])){
 
     $sentencia=$conexion->prepare("SELECT hc.historial_abono, hc.historial_fecha, hc.historial_hora, hc.historial_dinero_pendiente, hc.historial_id_dnp,
     v.venta_id, v.venta_total,v.venta_cambio, v.venta_fecha, v.venta_hora, v.estado_venta, 
-    c.cliente_id,c.cliente_nombre,c.cliente_apellido, c.cliente_telefono, c.cliente_numero_documento FROM historial_credito hc JOIN venta v ON hc.historial_venta_id = v.venta_id LEFT JOIN cliente c ON v.cliente_id = c.cliente_id WHERE hc.historial_venta_codigo = :venta_codigo;");
+    c.cliente_id,c.cliente_nombre,c.cliente_apellido, c.cliente_telefono, c.cliente_nit FROM historial_credito hc JOIN venta v ON hc.historial_venta_id = v.venta_id LEFT JOIN cliente c ON v.cliente_id = c.cliente_id WHERE hc.historial_venta_codigo = :venta_codigo;");
     $sentencia->bindParam(":venta_codigo",$txtID);
     $sentencia->execute();
     $listaAbonos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -307,7 +307,7 @@ if ($_POST) {
                                 <th>Cliente:</th>
                                   <td></strong><?php echo $registro['cliente_nombre'] ."  ". $registro['cliente_apellido']; ?></td>
                                 <th>CC:</th>
-                                  <td></strong><?php echo $registro['cliente_numero_documento']; ?></td>
+                                  <td></strong><?php echo $registro['cliente_nit']; ?></td>
                                 <th>Teléfono:</th>
                                   <td></strong><?php echo $registro['cliente_telefono']; ?></td>
                             </tr>

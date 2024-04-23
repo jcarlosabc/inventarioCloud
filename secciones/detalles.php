@@ -52,10 +52,12 @@
 
     $caja_id=$registro["caja_id"];  
     $usuario_nombre=$registro["usuario_nombre"];  
-    $cliente_numero_documento=$registro["cliente_numero_documento"];  
+    $cliente_nit=$registro["cliente_nit"];  
     $cliente_nombre=$registro["cliente_nombre"];  
     $cliente_apellido=$registro["cliente_apellido"];  
-    $cliente_telefono=$registro["cliente_telefono"];  
+    $cliente_empresa=$registro["cliente_empresa"];  
+    $cliente_ciudad=$registro["cliente_ciudad"];  
+    $cliente_direccion=$registro["cliente_direccion"];  
 
     // Datos de empresa para la factura
     if ($_SESSION['rolBodega']) {   
@@ -163,7 +165,7 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
 
     <div class="col-12 text-center">
       <h1><br>
-        <?php echo $empresa_nombre;?>
+      VARIEDADES21TECHNOLOGY
       </h1>
     </div>
   </div>
@@ -207,28 +209,41 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                   float: right;
                   font-size: 1.5em;
                 }
+                .textTittleAddress{
+                  font-size: 17px;
+                }
+                .textContentAddress{
+                  font-size: 16px;
+                }
             </style>
-           <div class="row invoice-info contorno-negro">
+           <div class="row invoice-info contorno-negro" style="border: solid 1px #00000047; border-radius: 7px;">
             <div class= "invoice-col">
               <br>                
               <address>
-                <strong>Código de Venta: </strong><?php echo $venta_codigo;?><br>
-                <strong>Vendedor: </strong><?php echo $usuario_nombre;?><br>
-                <strong>Direccion: </strong><?php echo $empresa_direccion;?><br>
-                <strong>Telefono: </strong><?php echo $empresa_telefono;?><br>
-                <strong>Ciudad: </strong> Cartagena de Indias<br>  
+                <strong>Código de Venta: </strong><span class="textContentAddress"><span><?php echo $venta_codigo;?></span><br>
+                <strong class="textTittleAddress">Vendedor: </strong><span class="textContentAddress"><?php echo $usuario_nombre;?></span><br>
+                <strong class="textTittleAddress">Dirección: </strong><span class="textContentAddress"><?php echo $empresa_direccion;?></span><br>
+                <strong class="textTittleAddress">Teléfono: </strong><span class="textContentAddress"><?php echo $empresa_telefono;?></span><br>
+                <strong class="textTittleAddress">Ciudad: </strong><span class="textContentAddress"> Cartagena de Indias</span><br>  
               </address>
             </div>
             <!-- /.col -->
             <div class=" invoice-col" style="position: relative;">
+            <br>
               <strong style="font-size: 1.5em;" class="remision">REMISION: <?php echo $venta_id; ?></strong> 
                 <address>      
-                  <strong>Fecha: </strong> <?php echo $venta_fecha;?><br>           
-                  <?php if ($venta_metodo_pago == "Credito") { ?>
-                    <strong>Vence: </strong><?php echo $fechaVencimiento?><br>
+                  <strong class="textTittleAddress">Cliente: </strong><span class="textContentAddress"><?php echo $cliente_nombre;?> <?php echo $cliente_apellido;?></span><br>
+                  <strong class="textTittleAddress">Teléfono: </strong><span class="textContentAddress"><?php echo $cliente_telefono;?></span><br>                                  
+                  <?php if ($cliente_empresa) { ?>
+                    <strong class="textTittleAddress">Empresa: </strong><span class="textContentAddress"><?php echo $cliente_empresa?></span><br>
                     <?php } ?>
-                    <strong>Cliente: </strong><?php echo $cliente_nombre;?> <?php echo $cliente_apellido;?><br>
-                    <strong>CC: </strong><?php echo $cliente_numero_documento;?>                                  
+                  <strong class="textTittleAddress">Nit: </strong><span class="textContentAddress"><?php echo $cliente_nit;?></span><br>                                  
+                  <strong class="textTittleAddress">Dirección: </strong><span class="textContentAddress"><?php echo $cliente_ciudad ." " . $cliente_direccion?></span><br>                                  
+                  <?php if ($venta_metodo_pago == "Credito") { ?>
+                    <strong class="textTittleAddress">Fecha: </strong><span class="textContentAddress"><?php echo $venta_fecha ?> <strong> Vence </strong> <?php echo $fechaVencimiento?></span><br>           
+                    <?php } else { ?>
+                      <strong class="textTittleAddress">Fecha: </strong><span class="textContentAddress"><?php echo $venta_fecha;?></span><br>           
+                    <?php } ?>
                   </address>
                 </div>               
               </div>
@@ -241,8 +256,8 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
 
                 .table-bordered th,
                 .table-bordered td {
-                    border: 1px solid grey; 
-                     text-align: center; /* Centra el contenido horizontalmente */
+                    /* border: 1px solid grey;  */
+                     text-align: center; 
                  }
                 .tableProductos{
                 margin-left: 5%;
@@ -253,10 +268,9 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
             <div class="row tableProductos">
                 <div class="col-12 table-responsive " >
                     <table class="table table-bordered table-striped  invoice-info">
-                        <thead>
+                        <thead style="font-size: 13px;">
                             <tr>
-                                <th>#</th>
-                                <th>CÓDIGO PRODUCTO</th>
+                                <th>CÓDIGO</th>
                                 <th>PRODUCTO</th>
                                 <th>MARCA</th>
                                 <th>REFERENCIA</th>
@@ -264,28 +278,25 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                                 <th>PRECIO</th>
                                 <th>PAGADO</th>
                                 <th>SUBTOTAL</th>
-                                <?php if ($venta_metodo_pago == "Credito") { ?>
+                                <!-- <?php if ($venta_metodo_pago == "Credito") { ?>
                                   <th>CREDITO PENDIENTE</th>
                                 <?php } else { ?>
                                   <th>CAMBIO</th>
-                                <?php } ?>
+                                <?php } ?> -->
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php $count = 0;
-                            foreach ($detalle_venta as $registro) {?>
-                                <tr class="">
-                                    <td scope="row"><?php $count++; echo $count; ?></td>
+                        <tbody style="font-size: 13px;">
+                            <?php foreach ($detalle_venta as $registro) {?>
+                                <tr>
                                     <td><?php echo $registro['producto_codigo']; ?></td>
                                     <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
-                                             <td><?php echo $registro['producto_marca']; ?></td>
+                                    <td><?php echo $registro['producto_marca']; ?></td>
                                     <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
                                     <td><?php if ($registro['estado_mayor_menor'] == 0) { echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',');}else { echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ',') ;} ?></td> 
                                     <td><?php echo '$' . number_format(abs($registro['venta_pagado']), 0, '.', ','); ?></td>
                                     <td><?php echo '$' . number_format($registro['venta_detalle_total'], 0, '.', ','); ?></td>    
-                                    <td><?php echo '$' . number_format(abs($registro['venta_cambio']), 0, '.', ','); ?></td>
-             
+                                    <!-- <td><?php echo '$' . number_format(abs($registro['venta_cambio']), 0, '.', ','); ?></td> -->
                                 </tr>  
                             <?php } ?>
                         </tbody>
@@ -293,33 +304,33 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                 </div>
                 <!-- /.col -->
             </div>
-
-
-            <!-- <div class="row">
-              <div class="col-6">
-                <div class="table-responsive">
-                  <table class="table">
-                    <tr>
-                      <th style="width:50%">Total:</th>
-                      <td class="tdColor"></strong><?php echo '$' . number_format($venta_total, 0, '.', ','); ?></td>
-                    </tr>
-                    <tr>
-                      <th>Pagado:</th>
-                      <td></strong><?php echo '$' . number_format($venta_pagado, 0, '.', ','); ?></td>
-                    </tr>                      
-                    <tr>
-                      <?php if ($venta_metodo_pago == "Credito") { ?>
+            <!-- /.row -->
+            <div class="row justify-content-end">
+    <div class="col-6">
+        <div class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th style="width:50%">Total:</th>
+                    <td class="tdColor"><?php echo '<strong>$' . number_format($venta_total, 0, '.', ',') . '</strong>'; ?></td>
+                </tr>
+                <tr>
+                    <th>Pagado:</th>
+                    <td><?php echo '<strong>$' . number_format($venta_pagado, 0, '.', ',') . '</strong>'; ?></td>
+                </tr>
+                <tr>
+                    <?php if ($venta_metodo_pago == "Credito") { ?>
                         <th>Credito Pendiente:</th>
-                      <?php } else { ?>
+                    <?php } else { ?>
                         <th>Cambio:</th>
-                      <?php } ?>
-                      <td></strong><?php echo '$' . number_format($venta_cambio, 0, '.', ','); ?></td>
-                    </tr>
-                  </table>
-                </div>
-              </div>
-               /.col -->
+                    <?php } ?>
+                    <td class="text-warning"><?php echo '<strong>$' . number_format($venta_cambio, 0, '.', ',') . '</strong>'; ?></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
 
+            
             <?php
                 $detalles_venta_array = array();
                 foreach ($detalle_venta as $registro) {
@@ -353,7 +364,7 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
               <input type="hidden" name="usuario_nombre" value="<?php echo $usuario_nombre ?>">
               <!-- Datos del cliente -->
               <input type="hidden" name="nombre_cliente" value="<?php echo $cliente_nombre;?> <?php echo $cliente_apellido;?>">
-              <input type="hidden" name="cliente_numero_documento" value="<?php echo $cliente_numero_documento ?>">
+              <input type="hidden" name="cliente_nit" value="<?php echo $cliente_nit ?>">
               <input type="hidden" name="cliente_telefono" value="<?php echo $cliente_telefono ?>">
               <!-- Datos de dinero  -->
               <input type="hidden" name="venta_total" value="<?php echo $venta_total ?>">
@@ -363,6 +374,7 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
               <input type="hidden" name="tiempo" value="<?php echo $tiempo ?>">
 
               <input type="hidden" name="detalles_venta" value='<?php echo json_encode($detalles_venta_array); ?>'>
+
 
               <div class="row no-print">
                 <div class="col-12">                    
@@ -377,8 +389,8 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                   </button>   
                   
                
-                  <!-- <div id="ID_mostrar_info"></div> -->
-                </div>
+                  <div id="ID_mostrar_info"></div>
+                </div> 
               </div>
             </form>
           </div>

@@ -17,7 +17,7 @@ if(isset($_GET['txtID'])){
     $sentencia->execute();
     $registro=$sentencia->fetch(PDO::FETCH_LAZY);
     $cliente_id=$registro["cliente_id"];
-    $cliente_numero_documento=$registro["cliente_numero_documento"];
+    $cliente_nit=$registro["cliente_nit"];
     $cliente_nombre=$registro["cliente_nombre"];
     $cliente_apellido=$registro["cliente_apellido"];
     $cliente_ciudad=$registro["cliente_ciudad"];
@@ -29,7 +29,7 @@ if(isset($_GET['txtID'])){
 
 if ($_POST) {
     $txtID = (isset($_POST['txtID'])) ? $_POST['txtID'] : "";
-    $cliente_numero_documento= isset($_POST['cliente_numero_documento']) ? $_POST['cliente_numero_documento'] : "";
+    $cliente_nit= isset($_POST['cliente_nit']) ? $_POST['cliente_nit'] : "";
     $cliente_nombre= isset($_POST['cliente_nombre']) ? $_POST['cliente_nombre'] : "";
     $cliente_apellido= isset($_POST['cliente_apellido']) ? $_POST['cliente_apellido'] : "";
     $cliente_ciudad= isset($_POST['cliente_ciudad']) ? $_POST['cliente_ciudad'] : "";
@@ -41,7 +41,7 @@ if ($_POST) {
     $link =  isset($_POST['cliente_link']) ? $_POST['cliente_link'] : "";
     
     $sentencia_edit = $conexion->prepare("UPDATE cliente SET 
-    cliente_numero_documento=:cliente_numero_documento,
+    cliente_nit=:cliente_nit,
     cliente_nombre=:cliente_nombre,
     cliente_apellido=:cliente_apellido,
     cliente_ciudad=:cliente_ciudad,
@@ -52,7 +52,7 @@ if ($_POST) {
     WHERE cliente_id =:cliente_id");
     
     $sentencia_edit->bindParam(":cliente_id",$txtID);
-    $sentencia_edit->bindParam(":cliente_numero_documento",$cliente_numero_documento);
+    $sentencia_edit->bindParam(":cliente_nit",$cliente_nit);
     $sentencia_edit->bindParam(":cliente_nombre",$cliente_nombre);
     $sentencia_edit->bindParam(":cliente_apellido",$cliente_apellido);
     $sentencia_edit->bindParam(":cliente_ciudad",$cliente_ciudad);
@@ -100,8 +100,8 @@ if ($_POST) {
                             <div class="form-group">
                                 <input type="hidden" name="txtID"  value="<?php echo $cliente_id;?>" >
                                 <input type="hidden" name="cliente_link" value="<?php echo $cliente_link;?>" >
-                                <label  for="cliente_numero_documento" class="textLabel">Cédula</label>
-                                <input required type="num" class="form-control camposTabla" name="cliente_numero_documento" value="<?php echo $cliente_numero_documento;?>">
+                                <label  for="cliente_nit" class="textLabel">Cédula</label>
+                                <input required type="num" class="form-control camposTabla" name="cliente_nit" value="<?php echo $cliente_nit;?>">
                             </div>                       
                         </div> 
                         <div class="col-sm-2">

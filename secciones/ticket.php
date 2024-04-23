@@ -24,7 +24,7 @@
     $usuario_nombre = isset($_POST['usuario_nombre']) ? $_POST['usuario_nombre'] : "No hay nada";
     // Datos del cliente
     $nombre_cliente = isset($_POST['nombre_cliente']) ? $_POST['nombre_cliente'] : "No hay nada";
-    $cliente_numero_documento = isset($_POST['cliente_numero_documento']) ? $_POST['cliente_numero_documento'] : "No hay nada";
+    $cliente_nit = isset($_POST['cliente_nit']) ? $_POST['cliente_nit'] : "No hay nada";
     $cliente_telefono = isset($_POST['cliente_telefono']) ? $_POST['cliente_telefono'] : "No hay nada";
     // Datos de dinero
     $venta_total = isset($_POST['venta_total']) ? $_POST['venta_total'] : "No hay nada";
@@ -57,7 +57,7 @@
     $pdf->Ln(5);
 
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Fecha: " . $venta_fecha . " Hora: " . $venta_hora ),0,'C',false);
-    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Cajero: ". $usuario_nombre ),0,'C',false);
+    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Cajero: VARIEDADES21CTG"),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Caja Nro: ". $caja_id),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Método de Pago: " . $venta_metodo_pago),0,'C',false);
     $pdf->SetFont('Arial','B',10);
@@ -69,7 +69,7 @@
     $pdf->Ln(5);
 
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Cliente: ". $nombre_cliente),0,'C',false);
-    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Nit/C.C: ". $cliente_numero_documento),0,'C',false);
+    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Nit/C.C: ". $cliente_nit),0,'C',false);
     // $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Teléfono: ". $cliente_telefono),0,'C',false);
 
     $pdf->Ln(1);

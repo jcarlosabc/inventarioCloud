@@ -1189,7 +1189,7 @@ if(isset($_POST['productos_vendidos'])) {
                                             <select class="form-control select2" name="cliente_id" style="height: 20px">
                                                 <option value="0">Público General </option> 
                                                 <?php foreach ($lista_cliente as $registro) {?>   
-                                                    <option value="<?php echo $registro['cliente_id']; ?>"><?php echo $registro['cliente_nombre']; echo " "; echo $registro['cliente_numero_documento']; ?></option> 
+                                                    <option value="<?php echo $registro['cliente_id']; ?>"><?php echo $registro['cliente_nombre']; echo " "; echo $registro['cliente_nit']; ?></option> 
                                                 <?php } ?>                                    
                                             </select>  
                                         </div>

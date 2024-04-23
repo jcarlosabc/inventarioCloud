@@ -26,7 +26,7 @@ if(isset($_GET['txtID'])){
     $caja_id=$registro["caja_id"];  
     $usuario_nombre=$registro["usuario_nombre"];  
 
-    $cliente_numero_documento=$registro["cliente_numero_documento"];  
+    $cliente_nit=$registro["cliente_nit"];  
     $cliente_nombre=$registro["cliente_nombre"];  
     $cliente_apellido=$registro["cliente_apellido"];  
 
@@ -191,7 +191,7 @@ if ($_POST) {
                     <strong>Vendedor: </strong><?php echo $usuario_nombre;?><br>
                     <strong>Caja: </strong><?php echo $caja_id;?><br>
                     <strong>Cliente: </strong><?php echo $cliente_nombre;?> <?php echo $cliente_apellido;?><br>
-                    <strong>CC: </strong><?php echo $cliente_numero_documento;?>                    
+                    <strong>CC: </strong><?php echo $cliente_nit;?>                    
                 </address>
             </div>               
         </div>

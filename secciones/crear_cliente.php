@@ -14,7 +14,7 @@ if ($_SESSION['valSudoAdmin']) {
 if ($_POST) {
     
     $cliente_id = isset($_POST['cliente_id']) ? $_POST['cliente_id'] : "";
-    $cliente_numero_documento = isset($_POST['cliente_numero_documento']) ? $_POST['cliente_numero_documento'] : "";
+    $cliente_nit = isset($_POST['cliente_nit']) ? $_POST['cliente_nit'] : "";
     $cliente_nombre = isset($_POST['cliente_nombre']) ? $_POST['cliente_nombre'] : "";
     $cliente_apellido = isset($_POST['cliente_apellido']) ? $_POST['cliente_apellido'] : "";
     $cliente_ciudad = isset($_POST['cliente_ciudad']) ? $_POST['cliente_ciudad'] : "";
@@ -32,7 +32,6 @@ if ($_POST) {
     if ($_SESSION['rolBodega']) {
         $sentencia = $conexion->prepare("INSERT INTO cliente(
             cliente_id,
-            cliente_numero_documento, 
             cliente_nombre,
             cliente_apellido,
             cliente_ciudad,
@@ -43,9 +42,8 @@ if ($_POST) {
             cliente_nit,
             link,
             responsable) 
-            VALUES (NULL,:cliente_numero_documento, :cliente_nombre,:cliente_apellido,:cliente_ciudad, :cliente_direccion,:cliente_telefono,:cliente_email,:cliente_empresa,:cliente_nit, :link,:responsable)");
+            VALUES (NULL,:cliente_nombre,:cliente_apellido,:cliente_ciudad, :cliente_direccion,:cliente_telefono,:cliente_email,:cliente_empresa,:cliente_nit, :link,:responsable)");
         
-        $sentencia->bindParam(":cliente_numero_documento", $cliente_numero_documento);
         $sentencia->bindParam(":cliente_nombre", $cliente_nombre);
         $sentencia->bindParam(":cliente_apellido", $cliente_apellido);
         $sentencia->bindParam(":cliente_ciudad", $cliente_ciudad);
@@ -60,24 +58,26 @@ if ($_POST) {
     }else{
         $sentencia = $conexion->prepare("INSERT INTO cliente(
             cliente_id,
-            cliente_numero_documento, 
             cliente_nombre,
             cliente_apellido,
             cliente_ciudad,
             cliente_direccion,
             cliente_telefono,
             cliente_email,
+            cliente_empresa,
+            cliente_nit, 
             link,
             responsable) 
-            VALUES (NULL,:cliente_numero_documento, :cliente_nombre,:cliente_apellido,:cliente_ciudad, :cliente_direccion,:cliente_telefono,:cliente_email, :link,:responsable)");
+            VALUES (NULL,:cliente_nombre,:cliente_apellido,:cliente_ciudad, :cliente_direccion,:cliente_telefono,:cliente_email,:cliente_empresa, :cliente_nit,:link,:responsable)");
         
-        $sentencia->bindParam(":cliente_numero_documento", $cliente_numero_documento);
         $sentencia->bindParam(":cliente_nombre", $cliente_nombre);
         $sentencia->bindParam(":cliente_apellido", $cliente_apellido);
         $sentencia->bindParam(":cliente_ciudad", $cliente_ciudad);
         $sentencia->bindParam(":cliente_direccion", $cliente_direccion);
         $sentencia->bindParam(":cliente_telefono", $cliente_telefono);
         $sentencia->bindParam(":cliente_email", $cliente_email);
+        $sentencia->bindParam(":cliente_empresa", $cliente_empresa);
+        $sentencia->bindParam(":cliente_nit", $cliente_nit);
         $sentencia->bindParam(":link", $link);
         $sentencia->bindParam(":responsable",$responsable);
 
@@ -117,30 +117,23 @@ if ($_POST) {
                 <br>
                 <div class="card-body ">
                     <div class="row" style="justify-content:center">
-                        <?php if ($_SESSION['rolBodega']) { ?>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label for="cliente_empresa" class="textLabel">Empresa</label>&nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                    <input required type="text" class="form-control camposTabla"  name="cliente_empresa" id="cliente_empresa">
-                                </div>
-                            </div>                          
-                       <?php } ?>
-                       <?php if ($_SESSION['rolBodega']) { ?>                            
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label for="cliente_nit" class="textLabel">Nit</label>
-                                    <input type="text" class="form-control camposTabla"  name="cliente_nit" id="cliente_nit">
-                                </div>
-                            </div>                            
-                       <?php } ?>   
+                    <!-- ?php if ($_SESSION['rolBodega']) { ?> -->
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label  for="cliente_numero_documento" class="textLabel">Cédula</label> 
-                                <input type="num" class="form-control camposTabla" name="cliente_numero_documento">
+                                <label for="cliente_empresa" class="textLabel">Empresa</label>
+                                <input type="text" class="form-control camposTabla" name="cliente_empresa" id="cliente_empresa">
+                            </div>
+                        </div>                          
+                    <!-- ?php } ?> -->
+                    <!-- ?php if ($_SESSION['rolBodega']) { ?>                             -->
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="cliente_nit" class="textLabel">Nit</label>
+                                <input type="text" class="form-control camposTabla" name="cliente_nit" id="cliente_nit">
                                 <input type="hidden" name="link" value="<?php echo $link ?>">
-
-                            </div>                       
-                        </div> 
+                            </div>
+                        </div>                            
+                    <!-- ?php } ?>    -->
                         <div class="col-2">
                             <div class="form-group">
                                 <label for="cliente_nombre" class="textLabel">Nombres</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
