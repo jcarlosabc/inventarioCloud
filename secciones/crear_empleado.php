@@ -18,6 +18,7 @@ if ($_POST) {
     $usuario_rol = 2;
     $usuario_empresa = isset($_POST['usuario_empresa']) ? $_POST['usuario_empresa'] : "";
     $quincena_empleado = isset($_POST['quincena_empleado']) ? $_POST['quincena_empleado'] : "";
+    $quincena_empleado = str_replace(array('$','.',','), '', $quincena_empleado); 
     if (!$usuario_empresa) { $usuario_empresa = $link;  }
     $link =  isset($_POST['link']) ? $_POST['link'] : "";
      if ($responsable == 1) {$link = $usuario_empresa; }
@@ -30,15 +31,16 @@ if ($_POST) {
     $sentencia_caja->execute();
     $listas_cajas = $sentencia_caja->fetchAll(PDO::FETCH_ASSOC);
 
-    if (empty($listas_cajas)) {
-        echo '<script>
-        Swal.fire({
-            title: "Esta Caja no Pertenece a la empresa seleccionada",
-            icon: "info",
-            confirmButtonText: "¡Entendido!"
-        })
-        </script>';
-    } else {
+    // if (empty($listas_cajas)) {
+        // echo '<script>
+        // Swal.fire({
+        //     title: "Esta Caja no Pertenece a la empresa seleccionada",
+        //     icon: "info",
+        //     confirmButtonText: "¡Entendido!"
+        // })
+        // </script>';
+    // } else {
+        echo " quincena_empleado = > " .$quincena_empleado;
         $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
                 usuario_nombre, usuario_apellido, usuario_telefono, usuario_cedula, usuario_email, usuario_usuario,
                 usuario_clave, quincena_empleado, rol, caja_id, link, responsable) 
@@ -78,7 +80,7 @@ if ($_POST) {
             });
             </script>';
         }
-    }
+    // }
 }
 
 $responsable = $_SESSION['usuario_id'];
@@ -186,16 +188,16 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                         <div class="form-group">
                             <label class="textLabel">Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <div class="form-group">
-                                <?php if($lista_cajas){ ?> 
+                                <!-- php if($lista_cajas){ ?>  -->
                                     <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja">
                                         <option value="">Escoger Caja</option>
                                         <?php foreach ($lista_cajas as $registro) { ?>
                                             <option value="<?php echo $registro['caja_id']; ?>"><?php echo $registro['caja_nombre']; ?> - <?php echo $registro['empresa_nombre']; ?></option>
                                         <?php } ?>
                                     </select>
-                                        <?php } else { ?>
+                                        <!-- ?php } else { ?> -->
                                            <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Debe tener minimo una caja para asignar al <strong>Empleado</strong></article>
-                                <?php } ?>
+                                <!-- <php } ?> -->
                             </div>
                         </div>
                     </div>

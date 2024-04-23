@@ -73,7 +73,7 @@ if ($_POST) {
             confirmButtonText: "¡Entendido!"
         }).then((result)=>{
             if(result.isConfirmed){
-                window.location.href="'.$url_base.'secciones/"
+                 window.location.href="'.$url_base.'secciones/index.php"
             }
         })
         </script>';

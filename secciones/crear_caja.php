@@ -41,7 +41,7 @@ if ($_POST) {
     if ($resultado) {
         echo '<script>
         Swal.fire({
-            title: "Bodega Creada Exitosamente!",
+            title: "Caja Creada Exitosamente!",
             icon: "success",
             confirmButtonText: "¡Entendido!"
         }).then((result)=>{

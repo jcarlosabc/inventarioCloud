@@ -986,11 +986,11 @@ if(isset($_POST['productos_vendidos'])) {
                             <tr>
                                 <th>Código</th>
                                 <th>Nombre</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
                                 <th>Existencias</th>
                                 <th>Precio al por Menor</th>
                                 <th>Precio al por Mayor</th>
-                                <th>Marca</th>
-                                <th>Modelo</th>
                                 <th>Escoger</th>
                             </tr>
                         </thead>
@@ -999,6 +999,8 @@ if(isset($_POST['productos_vendidos'])) {
                                 <tr>
                                     <td scope="row"><?php echo $registro['producto_codigo']; ?></td>
                                     <td><?php echo $registro['producto_nombre']; ?></td>
+                                         <td><?php echo $registro['producto_marca']; ?></td>
+                                    <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td>
                                         <?php if ($registro['producto_stock_total'] < 5) {?>
                                             <span class="text-danger"> El producto está por agotar existencias</span>
@@ -1010,8 +1012,7 @@ if(isset($_POST['productos_vendidos'])) {
                                         <?php  echo $registro['producto_stock_total']; ?></td>
                                     <td class="tdColor"><?php echo '$ ' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
                                     <td class="tdColor"><?php echo '$ ' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ','); ?></td>
-                                    <td><?php echo $registro['producto_marca']; ?></td>
-                                    <td><?php echo $registro['producto_modelo']; ?></td>
+                               
                                     <td>
                                         <form action="<?php echo $ventas_link ?>" method="POST">
                                             <input type="hidden" name="link" value="<?php echo $linkeo; ?>">
@@ -1034,7 +1035,7 @@ if(isset($_POST['productos_vendidos'])) {
             <!-- formulario -->
             <form method="post" action="">
                 <div class="row">
-                    <div class="col-7">
+                    <div class="col-6">
                         <div class="card card-success">
                             <div class="card-header">
                                 <h3 class="card-title textTabla">PRODUCTOS ESCOGIDOS</h3>
@@ -1051,6 +1052,7 @@ if(isset($_POST['productos_vendidos'])) {
                                 }
                             </style>
                             <div class="card-body" style="overflow-x: auto;">
+                                <div class="table-container">
                                 <table class="table table-bordered table-striped" style="text-align:center; max-width: 100%;">
                                     <thead>
                                         <tr>
@@ -1095,7 +1097,7 @@ if(isset($_POST['productos_vendidos'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-5">
+                    <div class="col-6">
                         <div class="card card-success">
                             <div class="card-header">
                                 <h3 class="card-title textTabla">DETALLES</h3>

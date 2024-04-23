@@ -1,5 +1,3 @@
-
-
 <?php include("../templates/header.php") ?>
 <?php
     $index_nomina  = "nomina.php";
@@ -10,13 +8,13 @@
         FROM usuario
         LEFT JOIN nomina ON usuario.usuario_id = nomina.nomina_usuario_id
         WHERE usuario.usuario_id = :usuario_id 
-        AND (nomina.nomina_estado = 2 OR nomina.nomina_estado IS NULL)
-");
+        AND (nomina.nomina_estado = 2 OR nomina.nomina_estado IS NULL)");
+
 
     //Llamando datos del usuario
     $datos_usuario->bindParam(":usuario_id", $txtID);
     $datos_usuario->execute();
-    $registro = $datos_usuario->fetch(PDO::FETCH_ASSOC);
+    $registro = $datos_usuario->fetch(PDO::FETCH_LAZY);
 
 // Comprobamos si $registro contiene datos válidos
 if ($registro && isset($registro["nomina_prestamo"]) && $registro["nomina_prestamo"] !== null) {

@@ -31,11 +31,13 @@ if ($_SESSION['valSudoAdmin']) {
                 <th>#</th>
                 <th>Codigo</th>
                 <th>Nombre</th>
-                <th>Stock </th>
-                <th>Precio Compra </th> 
-                <th>Precio Venta</th> 
                 <th>Marca </th> 
                 <th>Modelo</th> 
+                <th>Stock </th>
+                <th>Precio Compra </th> 
+                <th>Precio Venta al Menor</th> 
+                <th>Precio Venta al Mayor</th> 
+               
                 <th>Opciones</th> 
             </tr>
             </thead>
@@ -46,14 +48,16 @@ if ($_SESSION['valSudoAdmin']) {
                 <td scope="row"><?php $count++; echo $count; ?></td>
                 <td><?php echo $registro['producto_codigo']; ?></td>
                 <td><?php echo $registro['producto_nombre']; ?></td>
+                    <td><?php echo $registro['producto_marca']; ?></td>
+                <td><?php echo $registro['producto_modelo']; ?></td>
                 <td><?php echo $registro['producto_stock_total']; ?></td>
                 <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
                 <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
-                <td><?php echo $registro['producto_marca']; ?></td>
-                <td><?php echo $registro['producto_modelo']; ?></td>
+                  <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ','); ?></td>
+            
                 <td class="text-center">
-                  <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Añadir Stock">
-                    <i class="fa fa-plus-circle"></i> Añadir Stock
+                  <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Ingresar Stock">
+                    <i class="fa fa-plus-circle"></i> Ingresar tock
                   </a>
                   <a class="btn btn-info" href="editar_producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Editar">
                     <i class="fas fa-edit"></i>Editar

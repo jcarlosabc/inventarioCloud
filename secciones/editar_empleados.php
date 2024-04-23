@@ -1,5 +1,12 @@
 <?php include("../templates/header.php") ?>
 <?php
+
+if ($_SESSION['valSudoAdmin']) {
+    $lista_empleados_link  = "index_empleados.php";
+  
+ }else{
+    $lista_empleados_link  = "index_empleados.php?link=".$link;
+ }
 if (isset($_GET['txtID'])) {
 
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
@@ -78,7 +85,7 @@ if (isset($_GET['txtID'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result) => {
                 if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/index_empleados.php";
+                    window.location.href = "'.$url_base.'secciones/'.$lista_empleados_link.'";
                 }
             })
         </script>';

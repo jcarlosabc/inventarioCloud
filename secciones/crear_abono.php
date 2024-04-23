@@ -21,7 +21,7 @@ if(isset($_GET['txtID'])){
 
     $sentencia=$conexion->prepare("SELECT hc.historial_abono, hc.historial_fecha, hc.historial_hora, hc.historial_dinero_pendiente, hc.historial_id_dnp,
     v.venta_id, v.venta_total,v.venta_cambio, v.venta_fecha, v.venta_hora, v.estado_venta, 
-    c.cliente_id,c.cliente_nombre,c.cliente_apellido, c.cliente_telefono, c.cliente_numero_documento FROM historial_credito hc JOIN venta v ON hc.historial_venta_id = v.venta_id JOIN cliente c ON v.cliente_id = c.cliente_id WHERE hc.historial_venta_codigo = :venta_codigo;");
+    c.cliente_id,c.cliente_nombre,c.cliente_apellido, c.cliente_telefono, c.cliente_numero_documento FROM historial_credito hc JOIN venta v ON hc.historial_venta_id = v.venta_id LEFT JOIN cliente c ON v.cliente_id = c.cliente_id WHERE hc.historial_venta_codigo = :venta_codigo;");
     $sentencia->bindParam(":venta_codigo",$txtID);
     $sentencia->execute();
     $listaAbonos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -276,6 +276,8 @@ if ($_POST) {
 <div class="">
   <!-- general form elements -->
     <div class="card card-warning" style="margin-top:7%">
+          <img src="../dist/img/logos/logofernando.jpg" style="width: 88px;margin-left: 20%;margin-bottom: 1%;" alt="AdminLTE Logo" class="float-right brand-image img-circle elevation-3">
+
       <div class="card-header ">
           <h3 class="card-title textTabla">INFORMACIÓN DEL CREDITO</h3>
     </div>

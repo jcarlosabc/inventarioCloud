@@ -1,10 +1,17 @@
 <?php include("../templates/header.php") ?>
 <?php
 
+if ($_SESSION['valSudoAdmin']) {
+    $lista_proveedor_link  = "index_proveedores.php";
+  
+ }else{
+    $lista_proveedor_link  = "index_proveedores.php?link=".$link;
+ }
+
 if (isset($_GET['txtID'])) {
 
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
-    echo "asasasasa => " . $txtID; 
+   
     // Obtener la categoría actual del producto
     $datos_proveedores = $conexion->prepare("SELECT * FROM proveedores WHERE id_proveedores = :id_proveedores");
 

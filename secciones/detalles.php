@@ -31,8 +31,9 @@
     $venta_total=$registro["venta_total"];
     $venta_pagado=$registro["venta_pagado"];  
     $venta_cambio=$registro["venta_cambio"];
-    $venta_cambio = abs($venta_cambio);  
     $venta_metodo_pago=$registro["venta_metodo_pago"];  
+    $venta_metodo_pago == 2 ?  $venta_pagado=$registro["venta_pagado"] : $venta_pagado = $venta_pagado + $venta_cambio;
+    $venta_cambio = abs($venta_cambio);  
     $plazo=$registro["plazo"];  
     $tiempo=$registro["tiempo"];
     $cliente_telefono=$registro["cliente_telefono"];
@@ -67,7 +68,7 @@
       $empresa_direccion = isset($registro_empresa["bodega_direccion"]) ? $registro_empresa["bodega_direccion"] : "";
       $empresa_nit = isset($registro_empresa["bodega_nit"]) ? $registro_empresa["bodega_nit"] : "";
 
-    }if ($_SESSION['rolSudoAdmin']){
+    }else if ($_SESSION['rolSudoAdmin']){
       $sentencia_empresa = $conexion->prepare("SELECT empresa.* FROM empresa INNER JOIN venta ON empresa.link = venta.link
         WHERE venta.venta_id = :venta_id");
         $sentencia_empresa->bindParam(":venta_id", $txtID);
@@ -94,7 +95,6 @@
     $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
 
   }
-  
   // $empresa_nombre=$registro_empresa["empresa_nombre"];  
   // $empresa_telefono=$registro_empresa["empresa_telefono"];  
   // $empresa_direccion=$registro_empresa["empresa_direccion"];  
@@ -102,7 +102,7 @@
  
   // Mostrar lista comprados
   if($_SESSION['rolSudoAdmin']){
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo,producto_precio_venta_xmayor
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
@@ -110,7 +110,7 @@
     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
 
   }else  if ($_SESSION['rolBodega']) {
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo,producto_precio_venta_xmayor
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN bodega ON venta_detalle.producto_id = bodega.producto_id
@@ -118,7 +118,7 @@
     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
     $sentencia_venta->bindParam(":link", $link);
   }else {
-    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo
+    $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo,producto_precio_venta_xmayor
     FROM venta
     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
@@ -159,6 +159,8 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
 <!-- Main content -->
 <div class="invoice p-3 mb-3">
   <div class="row">
+          <img src="../dist/img/logos/logofernando.jpg" style="width: 88px; margin-left: 5%; margin-top: 5%;margin-bottom: -5%; " alt="AdminLTE Logo" class="float-right brand-image img-circle elevation-3">
+
     <div class="col-12 text-center">
       <h1><br>
         <?php echo $empresa_nombre;?>
@@ -168,13 +170,13 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
             <!-- info row -->
             <style>
                 .contorno-negro {
-                    border: 1px solid black;
+                    border: 1px solid grey;
                     padding: 10px; /* Opcional: ajusta el relleno según sea necesario */
                     position: relative; /* Establece el contexto de posicionamiento */
                 }
                 
                 .contorno-negro2 {
-                    border: 1px solid black;
+                    border: 1px solid grey;
                     padding: 10px; /* Opcional: ajusta el relleno según sea necesario */
                     position: absolute; /* Posiciona el elemento en relación con el padre (.contorno-negro) */
                     top: -9%; /* Ajusta la posición en la parte superior del contenedor */
@@ -188,8 +190,8 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                     align-items: center; /* Centra verticalmente */
                     position: relative; /* Establece el contexto de posicionamiento */
                     margin: 1% 1%;
-                    margin-left: 10%;
-                    margin-right: 10%;
+                    margin-left: 5%;
+                    margin-right: 5%;
                 }
 
                 .invoice-col {
@@ -206,7 +208,7 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                   font-size: 1.5em;
                 }
             </style>
-          <div class="row invoice-info contorno-negro">
+           <div class="row invoice-info contorno-negro">
             <div class= "invoice-col">
               <br>                
               <address>
@@ -233,18 +235,18 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
               <!-- /.row -->
               <style>
                 .table-bordered {
-                    border: 1px solid black;
+                    border: 1px solid grey;
                     border-collapse: collapse;                     
                 }
 
                 .table-bordered th,
                 .table-bordered td {
-                    border: 1px solid black; 
+                    border: 1px solid grey; 
                      text-align: center; /* Centra el contenido horizontalmente */
                  }
                 .tableProductos{
-                margin-left: 10%;
-                margin-right: 10% ;
+                margin-left: 5%;
+                margin-right: 5% ;
                 }
             </style>
 
@@ -254,11 +256,19 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Codigo de Producto</th>
+                                <th>CÓDIGO PRODUCTO</th>
                                 <th>PRODUCTO</th>
+                                <th>MARCA</th>
+                                <th>REFERENCIA</th>
                                 <th>CANTIDAD</th>
                                 <th>PRECIO</th>
+                                <th>PAGADO</th>
                                 <th>SUBTOTAL</th>
+                                <?php if ($venta_metodo_pago == "Credito") { ?>
+                                  <th>CREDITO PENDIENTE</th>
+                                <?php } else { ?>
+                                  <th>CAMBIO</th>
+                                <?php } ?>
                             </tr>
                         </thead>
                         <tbody>
@@ -268,9 +278,14 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                                     <td scope="row"><?php $count++; echo $count; ?></td>
                                     <td><?php echo $registro['producto_codigo']; ?></td>
                                     <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
+                                             <td><?php echo $registro['producto_marca']; ?></td>
+                                    <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
-                                    <td><?php echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ','); ?></td> 
-                                    <td><?php echo '$' . number_format($registro['venta_detalle_total'], 0, '.', ','); ?></td>                 
+                                    <td><?php if ($registro['estado_mayor_menor'] == 0) { echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',');}else { echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ',') ;} ?></td> 
+                                    <td><?php echo '$' . number_format(abs($registro['venta_pagado']), 0, '.', ','); ?></td>
+                                    <td><?php echo '$' . number_format($registro['venta_detalle_total'], 0, '.', ','); ?></td>    
+                                    <td><?php echo '$' . number_format(abs($registro['venta_cambio']), 0, '.', ','); ?></td>
+             
                                 </tr>  
                             <?php } ?>
                         </tbody>
@@ -278,7 +293,6 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                 </div>
                 <!-- /.col -->
             </div>
-            <!-- /.row -->
 
 
             <!-- <div class="row">
@@ -357,7 +371,10 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                   </button>   
                   <a href="https://api.whatsapp.com/send?phone=57<?php echo $cliente_telefono ?>" class="btn btn-success float-right" style="margin-right: 5px;" target="_blank">
                       <i class="fab fa-whatsapp"></i> WhatsApp
-                  </a><!-- intentar que abra whatssap WEB -->
+                  </a>
+                               <button type="button" class="btn btn-default float-right" onclick="window.print()" style="margin-right: 5px;">
+                    <i class="fa fa-print"></i> Imprimir
+                  </button>   
                   
                
                   <!-- <div id="ID_mostrar_info"></div> -->

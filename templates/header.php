@@ -2,7 +2,7 @@
 
     session_start();
     include("../db.php");
-    $url_base = "http://localhost/inventariocloud/";
+    $url_base = "https://piventas.v21technology.com/";
     
     $link = (isset($_GET['link']))?$_GET['link']:"";
     $sentencia=$conexion->prepare("SELECT empresa_nombre FROM empresa WHERE link = :link LIMIT 1 ");

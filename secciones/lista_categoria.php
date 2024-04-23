@@ -60,7 +60,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['categoria_id']; ?></td>
                   <td><?php echo $registro['categoria_nombre']; ?></td>                               
                   <td><?php echo $registro['categoria_fecha_creacion']; ?></td>                  
-                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
+                  <td><?php if ($registro['link'] == "sudo_bodega") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                                    
                   <?php if ($_SESSION['rolSudoAdmin']) { ?>
                   <td>
                     <a class="btn btn-danger" href="lista_categoria.php?txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">

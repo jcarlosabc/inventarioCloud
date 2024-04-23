@@ -3,12 +3,14 @@
 if ($_SESSION['valSudoAdmin']) {
   $ventas_link_bodega = "venta_bodega.php";
   $crear_ventas_link_bodega = "crear_venta_bodega.php";
-  $devolucion_venta ="devolucion_venta.php";
+  $devolucion_venta ="devolucion_venta.php?txtID";
+  $ventas_detalles_link ="detalles.php?link=sudo_bodega&txtID";
 
 }else{
   $ventas_link_bodega = "venta_bodega.php?link=sudo_bodega";
   $crear_ventas_link_bodega = "crear_venta_bodega.php?link=sudo_bodega";
   $devolucion_venta ="devolucion_venta_bodega.php?link=sudo_bodega";
+  $ventas_detalles_link ="detalles.php?link=sudo_bodega&txtID";
 }
 if($_SESSION['rolSudoAdmin']){
   $linkeo = "sudo_admin";
@@ -26,11 +28,16 @@ if(isset($_GET['txtID'])){
   $sentencia->execute();
   
 }
-if($_SESSION['rolSudoAdmin'] || $_SESSION['rolBodega']){
+if($_SESSION['rolSudoAdmin']){
   $sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*
   FROM venta 
-  INNER JOIN usuario ON venta.responsable = usuario.usuario_id 
-  INNER JOIN cliente ON venta.cliente_id = cliente.cliente_id
+  LEFT JOIN usuario ON venta.responsable = usuario.usuario_id 
+  LEFT JOIN cliente ON venta.cliente_id = cliente.cliente_id");
+}else if($_SESSION['rolBodega']){
+  $sentencia=$conexion->prepare("SELECT venta.*, usuario.*, cliente.*
+  FROM venta 
+  LEFT JOIN usuario ON venta.responsable = usuario.usuario_id 
+  LEFT JOIN cliente ON venta.cliente_id = cliente.cliente_id
   WHERE venta.link =:link;");
   $sentencia->bindParam(":link",$linkeo);
 }
@@ -72,7 +79,7 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><a  <?php if($registro['cliente_id'] != 0 ){ ?> href="editar_clientes.php?link=sudo_bodega&txtID=<?php echo $registro['cliente_id']; ?>" <?php }?>    ><?php echo $registro['cliente_nombre']; ?></a></td>
                   <td><?php echo  $registro['usuario_nombre']; ?></td>
                   <td>
-                      <a class="btn btn-primary btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_detalles_link . '&txtID=' . $registro['venta_id']; ?>" role="button" title="Detalles">
+                      <a class="btn btn-primary btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_detalles_link ;?>=<?php echo $registro['venta_id']; ?>" role="button" title="Detalles">
                       <i class="fas fa-eye"></i> Ver
                     </a>
                     <a class="btn btn-warning btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $devolucion_venta.'&txtID='.$registro['venta_id']; ?>" role="button" title="Devolucion">

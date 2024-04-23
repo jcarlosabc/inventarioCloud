@@ -4,6 +4,8 @@
 if ($_SESSION['valSudoAdmin']) {
   $editar_empleados_link = "editar_empleados.php?txtID";
   $index_empleados_link = "index_empleados.php?txtID";
+  $crear_nomina_link = "crear_nomina.php?txtID";
+  
 }else{
   $editar_empleados_link = "editar_empleados.php?link=".$link."&txtID";
   $index_empleados_link = "index_empleados.php?link=".$link."&txtID";
@@ -70,7 +72,7 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['empresa_nombre']; ?></td>
                   <td>
                     <?php if ($_SESSION['valSudoAdmin']) { ?> 
-                      <a class="btn btn-success" href="crear_nomina.php?txtID=<?php echo $registro['usuario_id']; ?>"role="button" title="Nomina">
+                      <a class="btn btn-success" href="<?php echo $url_base;?>secciones/<?php echo $crear_nomina_link . '=' . $registro['usuario_id']; ?>" role="button" title="Nomina">
                       <i class="fa fa-list-alt nav-icon"></i> Nómina
                       </a>
                   <?php } ?> 

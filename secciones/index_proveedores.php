@@ -2,11 +2,13 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
   $crear_proveedor_link  = "crear_proveedor.php";
-  $editar_proveedores  = "editar_proveedores.php&txtID";
+  $editar_proveedores  = "editar_proveedores.php?txtID";
+  $lista_proveedore_link  = "index_proveedores.php?txtID";
 
 }else{
   $crear_proveedor_link  = "crear_proveedor.php?link=".$link;
   $editar_proveedores  = "editar_proveedores.php?link=".$link."&txtID";
+  $lista_proveedore_link  = "index_proveedores.php?link=".$link."&txtID";
 }
 //Eliminar Elementos
 if(isset($_GET['txtID'])){

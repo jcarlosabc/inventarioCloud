@@ -21,6 +21,7 @@ if(isset($_GET['link'])){
     $producto_nombre=$registro["producto_nombre"];
     $producto_precio_compra=$registro["producto_precio_compra"];  
     $producto_precio_venta=$registro["producto_precio_venta"];  
+    $producto_precio_venta_xmayor=$registro["producto_precio_venta_xmayor"];  
     $producto_stock_total=$registro["producto_stock_total"];  
     $producto_marca=$registro["producto_marca"];  
     $producto_modelo=$registro["producto_modelo"];  
@@ -75,6 +76,8 @@ if ($_POST) {
     $producto_stock_total= isset($_POST['producto_stock_total']) ? $_POST['producto_stock_total'] : "";
     $producto_precio_compra= isset($_POST['producto_precio_compra']) ? $_POST['producto_precio_compra'] : "";
     $producto_precio_venta= isset($_POST['producto_precio_venta']) ? $_POST['producto_precio_venta'] : "";
+        $producto_precio_venta_xmayor= isset($_POST['producto_precio_venta_xmayor']) ? $_POST['producto_precio_venta_xmayor'] : "";
+
     $producto_marca= isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
     $producto_modelo= isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
     $categoria_id= isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";
@@ -87,6 +90,7 @@ if ($_POST) {
     // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
     $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
     $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
+      $producto_precio_venta_xmayor = str_replace(array('$','.', ','), '', $producto_precio_venta_xmayor);
     
     $sentencia_edit = $conexion->prepare("UPDATE bodega SET 
     producto_codigo=:producto_codigo,
@@ -96,6 +100,7 @@ if ($_POST) {
     producto_stock_total=:producto_stock_total,
     producto_precio_compra=:producto_precio_compra,
     producto_precio_venta=:producto_precio_venta,
+    producto_precio_venta_xmayor=:producto_precio_venta_xmayor,
     producto_marca=:producto_marca,
     producto_modelo=:producto_modelo,
     categoria_id=:categoria_id,
@@ -110,6 +115,7 @@ if ($_POST) {
     $sentencia_edit->bindParam(":producto_stock_total", $producto_stock_total);
     $sentencia_edit->bindParam(":producto_precio_compra", $producto_precio_compra);
     $sentencia_edit->bindParam(":producto_precio_venta", $producto_precio_venta);
+        $sentencia_edit->bindParam(":producto_precio_venta_xmayor", $producto_precio_venta_xmayor);
     $sentencia_edit->bindParam(":producto_marca", $producto_marca);
     $sentencia_edit->bindParam(":producto_modelo", $producto_modelo);
     $sentencia_edit->bindParam(":categoria_id", $categoria_id);
@@ -248,9 +254,16 @@ if ($_POST) {
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label for="producto_precio_venta_edit" class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <label for="producto_precio_venta_edit" class="textLabel">Precio de Venta al por Menor
                                 <input type="texto" class="form-control camposTabla_dinero"placeholder="$000.00" name="producto_precio_venta" id="producto_precio_venta_edit"
                                     value="<?php echo '$' . number_format($producto_precio_venta, 0, '.', ','); ?>">                                 
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="producto_precio_venta_edit" class="textLabel">Precio de Venta al por Mayor</label>
+                                <input type="texto" class="form-control camposTabla_dinero"placeholder="$000.00" name="producto_precio_venta_xmayor" id="producto_precio_venta_xmayor_edit"
+                                    value="<?php echo '$' . number_format($producto_precio_venta_xmayor, 0, '.', ','); ?>">                                 
                             </div>
                         </div>
                     </div>    

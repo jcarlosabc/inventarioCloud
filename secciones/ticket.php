@@ -102,7 +102,7 @@
             $pdf->Cell(19,4,iconv("UTF-8", "ISO-8859-1"," "),0,0,'C');
             $pdf->Cell(28,4,iconv("UTF-8", "ISO-8859-1"," " . $detalle_total),0,0,'C');
             $pdf->Ln(4);
-            $pdf->MultiCell(0,4,iconv("UTF-8", "ISO-8859-1","Garantía " . $detalle['fecha_garantia']),0,'C',false);
+            // $pdf->MultiCell(0,4,iconv("UTF-8", "ISO-8859-1","Garantía " . $detalle['fecha_garantia']),0,'C',false);
             // $pdf->Cell(72,5,iconv("UTF-8", "ISO-8859-1","----------------------"),0,0,'C');
 
             $pdf->Ln(7);

@@ -23,7 +23,8 @@ if(isset($_GET['txtID'])){
     $producto_codigo=$registro["producto_codigo"];
     $producto_nombre=$registro["producto_nombre"];
     $producto_precio_compra=$registro["producto_precio_compra"];  
-    $producto_precio_venta=$registro["producto_precio_venta"];  
+    $producto_precio_venta=$registro["producto_precio_venta"];
+    $producto_precio_venta_xmayor=$registro["producto_precio_venta_xmayor"];  
     $producto_stock_total=$registro["producto_stock_total"];  
     $producto_marca=$registro["producto_marca"];  
     $producto_modelo=$registro["producto_modelo"];
@@ -57,6 +58,7 @@ if ($_POST) {
     $producto_nombre = (isset($_POST['producto_nombre'])) ? $_POST['producto_nombre'] : "";
     $producto_stock_total = (isset($_POST['producto_stock_total'])) ? $_POST['producto_stock_total'] : "";
     $producto_precio_compra = (isset($_POST['producto_precio_compra'])) ? $_POST['producto_precio_compra'] : "";
+    $producto_precio_venta_xmayor = (isset($_POST['producto_precio_venta_xmayor'])) ? $_POST['producto_precio_venta_xmayor'] : "";
     $producto_precio_venta = (isset($_POST['producto_precio_venta'])) ? $_POST['producto_precio_venta'] : "";
     $producto_marca = (isset($_POST['producto_marca'])) ? $_POST['producto_marca'] : "";
     $producto_modelo = (isset($_POST['producto_modelo'])) ? $_POST['producto_modelo'] : "";
@@ -77,8 +79,8 @@ if ($_POST) {
 
     $traslado ="tb";
     if ($lista_producto_buscado) {
-        echo " SI hay un producto con ese codigo... ";
-        echo "<br>";
+        // echo " SI hay un producto con ese codigo... ";
+        // echo "<br>";
         // Actualizando la cantidad en el stock del LOCAL que le pasamos de bodega
         $sql = "UPDATE producto SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ?, traslado = ? WHERE producto_codigo = ? AND link= ?";
         $sentencia_envio = $conexion->prepare($sql);
@@ -91,12 +93,12 @@ if ($_POST) {
         $resultado_bodega = $sentencia_bodega->execute($params);
         
     }else{
-        echo "No hay producto con ese codigo...aqui va insert";
-        echo "<br>";
-        echo "INSERTANDO NUEVO PRODUCTO";
+        // echo "No hay producto con ese codigo...aqui va insert";
+        // echo "<br>";
+        // echo "INSERTANDO NUEVO PRODUCTO";
      $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion, producto_fecha_garantia,producto_nombre, producto_stock_total,
-        producto_precio_compra,producto_precio_venta,producto_marca,producto_modelo, categoria_id,proveedor_id, link, responsable, traslado )         
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        producto_precio_compra,producto_precio_venta,producto_precio_venta_xmayor,producto_marca,producto_modelo, categoria_id,proveedor_id, link, responsable, traslado )         
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $sentencia = $conexion->prepare($sql);
     $params = array(
@@ -106,7 +108,8 @@ if ($_POST) {
         $producto_nombre,
         $cantidad_enviada, 
         $producto_precio_compra,
-        $producto_precio_venta, 
+        $producto_precio_venta,
+        $producto_precio_venta_xmayor,
         $producto_marca, 
         $producto_modelo,
         0,
@@ -187,7 +190,7 @@ if ($_POST) {
                         </div>
                     </div>
                     <div class="row" style="justify-content:center">
-                        <div class="col-sm-2">
+                        <div class="col-sm-1">
                             <div class="form-group">
                                 <label class="textLabel">Modelo</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="text" class="form-control camposTabla" name="producto_modelo" readonly value="<?php echo $producto_modelo;?>">
@@ -209,10 +212,7 @@ if ($_POST) {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                <div class="row" style="justify-content:center">
-                    <div class="col-sm-2">
+                        <div class="col-sm-1">
                             <div class="form-group">
                                 <label class="textLabel">Stock</label>
                                 <div class="form-group">
@@ -220,16 +220,26 @@ if ($_POST) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    
+                <div class="row" style="justify-content:center">
+                    
                         <div class="col-sm-2">
                             <div class="form-group">
                                 <label class="textLabel">Precio de Compra</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="texto" class="form-control camposTabla_dinero" readonly value="<?php echo $producto_precio_compra; ?>" id="precio_compra_stock" name="producto_precio_compra">
+                                <input type="texto" class="form-control camposTabla_dinero" readonly value="<?php echo $producto_precio_compra; ?>" name="producto_precio_compra">
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label class="textLabel">Precio de Venta</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
-                                <input type="texto" class="form-control camposTabla_dinero " readonly value="<?php echo $producto_precio_venta; ?>" id="precio_venta_stock" name="producto_precio_venta">                                 
+                                <label class="textLabel">Precio de Venta </label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="texto" class="form-control camposTabla_dinero " readonly value="<?php echo $producto_precio_venta; ?>" name="producto_precio_venta">                                 
+                            </div>
+                        </div>
+                           <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="textLabel">Precio de Venta </label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <input type="texto" class="form-control camposTabla_dinero " readonly value="<?php echo $producto_precio_venta_xmayor; ?>"  name="producto_precio_venta_xmayor">                                 
                             </div>
                         </div>
                         

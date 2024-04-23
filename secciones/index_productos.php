@@ -50,10 +50,12 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>#</th>
               <th>Código</th>
               <th>Nombre</th>
-              <th>Precio de compra</th>
-              <th>Precio de Venta</th>
               <th>Marca</th>
-              <th>Modelo</th>                                    
+              <th>Modelo</th>
+              <th>Precio de compra</th>
+              <th>Precio de Venta al por menor</th>
+              <th>Precio de Venta al por mayor</th>
+                                                
               <th>Categoría</th>
               <th>Cantidad en Stock</th>
               <th>Garantía</th>
@@ -68,10 +70,12 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td scope="row"><?php $count++; echo $count; ?></td>
                   <td><?php echo $registro['producto_codigo']; ?></td>
                   <td><?php echo $registro['producto_nombre']; ?></td>
-                  <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
-                  <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>                
-                  <td><?php echo $registro['producto_marca']; ?></td>
+                    <td><?php echo $registro['producto_marca']; ?></td>
                   <td><?php echo $registro['producto_modelo']; ?></td>
+                  <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
+                  <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
+                  <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ','); ?></td>                  
+                
                   <td>
                  <!-- corregir mostrar de donde llega el producto -->   <?php if($registro['categoria_id'] == 0){ ?> 
                       <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Este producto viene de Bodega debe <strong>Asignarle o Crearle </strong>una <strong>Categoria.</strong></article>

@@ -420,7 +420,7 @@ function mostrarMetodosNomina() {
           return "$" + parseFloat(valor).toFixed(0).replace(/\d(?=(\d{3})+$)/g, "$&,");
       }
       $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta,#producto_precio_venta_xmayor, " + 
-        "#producto_precio_compra_edit, #producto_precio_venta_edit,#producto_precio_venta_xmayor_edit #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad, " +
+        "#producto_precio_compra_edit, #producto_precio_venta_edit, #producto_precio_venta_xmayor_edit,#producto_precio_venta_xmayor_edit #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad, " +
         "#historialAbono, #quincenaEmpleado").on("input", function() {
           var valor = $(this).val().replace(/[^0-9]/g, '');
           $(this).val(formatDineroSinDecimales(valor));
@@ -458,7 +458,7 @@ function mostrarMetodosNomina() {
       // }
     }else if(id == 2){
       var rolSeleccionado = document.forms["formEmpleado"]["usuario_empresa"].value;
-      var cajaSeleccionado = document.forms["formEmpleado"]["usuario_caja"].value;
+    //   var cajaSeleccionado = document.forms["formEmpleado"]["usuario_caja"].value;
 
       if (rolSeleccionado == "") {
           Swal.fire({
@@ -468,14 +468,14 @@ function mostrarMetodosNomina() {
           });
           return false;
       }
-      if (cajaSeleccionado == "") {
-          Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Por favor, seleccione una Caja para el empleado.',
-          });
-          return false;
-      }
+    //   if (cajaSeleccionado == "") {
+    //       Swal.fire({
+    //           icon: 'error',
+    //           title: 'Oops...',
+    //           text: 'Por favor, seleccione una Caja para el empleado.',
+    //       });
+    //       return false;
+    //   }
     }else if (id == 3) {
       var usuario_empresaSeleccionada = document.forms["formGastos"]["usuario_empresa_gastos"].value;
       if (usuario_empresaSeleccionada == "") {

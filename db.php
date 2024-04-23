@@ -1,9 +1,9 @@
 <?php
 
 $DB_SERVER= "localhost";
-$DB_NAME = "ventas";
-$DB_USER = "root";
-$DB_PASS = "";
+$DB_NAME = "vtechno1_piventas";
+$DB_USER = "vtechno1_piventasdb";
+$DB_PASS = "Tgn466WDq[S^";
 
 try {
     $conexion = new PDO("mysql:host=$DB_SERVER;dbname=$DB_NAME", $DB_USER, $DB_PASS);
