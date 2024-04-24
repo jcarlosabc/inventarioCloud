@@ -164,9 +164,9 @@
 
         // Obtener el precio según el tipo seleccionado
         if (tipoPrecio === 'porMenor') {
-            precio_fila = fila.find('td:eq(6)').text(); // al por menor
+            precio_fila = fila.find('.precio_menor').val();
         } else {
-            precio_fila = fila.find('td:eq(7)').text(); // al por mayor
+            precio_fila = fila.find('.precio_mayor').val();
         }
 
         let precio_formateado = precio_fila.replace(/[$,]/g, "");
@@ -192,6 +192,19 @@
         var fila = $(this).closest('tr');
         var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); // Obtener el tipo de precio seleccionado
         actualizarTotal(fila, tipoPrecio); // Pasar el tipo de precio al llamar a actualizarTotal
+    });
+
+
+    // Escucha los cambios en los campos precio menor y mayor
+    $(document).on('input', '.precio_menor', function () {
+      var fila = $(this).closest('tr');
+      var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); 
+      actualizarTotal(fila, tipoPrecio); 
+    });
+    $(document).on('input', '.precio_mayor', function () {
+      var fila = $(this).closest('tr');
+      var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); 
+      actualizarTotal(fila, tipoPrecio); 
     });
 
     // Función para actualizar el campo total global
@@ -222,7 +235,7 @@
 
     // Escucha los cambios en el campo "Recibido"
     $('.recibido').on('input', function () {
-        actualizarCampoCambio();
+      actualizarCampoCambio();
     });
 
     // Llama a la función al cargar la página para inicializar el campo de cambio
@@ -259,7 +272,7 @@ function actualizarCampoCambio() {
  
     //  CONFIGURANDO TABLAS
     $(document).ready(function () {
-    var table = $("#vBuscar, #vBuscar_bodega, #producto_bodega, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario, #lista_categoria").DataTable({
+      var table = $("#vBuscar_bodega, #producto_bodega, #historialVentas, #listaClientes, #listaProductos, #lista_cajas, #lista_usuario, #lista_categoria").DataTable({
         "responsive": true,
         "lengthChange": false,
         "autoWidth": false,
@@ -288,10 +301,46 @@ function actualizarCampoCambio() {
                 "sortDescending": ": Activar para ordenar la columna en orden descendente"
             }
         }
-    });
+      });
 
-    table.buttons().container().appendTo('#vBuscar_wrapper .col-md-6:eq(0)');
-});
+      table.buttons().container().appendTo('#vBuscar_wrapper .col-md-6:eq(0)');
+    });
+    //  CONFIGURANDO TABLAS DE VENTAS
+    $(document).ready(function () {
+      var table = $("#vBuscar").DataTable({
+        "responsive": true,
+        "lengthChange": false,
+        "pageLength": 5,
+        "autoWidth": false,
+        "language": {
+            "decimal":        ",",
+            "thousands":      ".",
+            "emptyTable":     "No hay datos disponibles en la tabla",
+            "info":           "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+            "infoEmpty":      "Mostrando 0 a 0 de 0 Páginas",
+            "infoFiltered":   "(filtrado de _MAX_ entradas totales)",
+            "infoPostFix":    "",
+            "thousands":      ",",
+            "lengthMenu":     "Mostrar _MENU_ entradas",
+            "loadingRecords": "Cargando...",
+            "processing":     "Procesando...",
+            "search":         "Buscar:",
+            "zeroRecords":    "No se encontraron registros coincidentes",
+            "paginate": {
+                "first":      "Primero",
+                "last":       "Último",
+                "next":       "Siguiente",
+                "previous":   "Anterior"
+            },
+            "aria": {
+                "sortAscending":  ": Activar para ordenar la columna en orden ascendente",
+                "sortDescending": ": Activar para ordenar la columna en orden descendente"
+            }
+        }
+      });
+
+      table.buttons().container().appendTo('#vBuscar_wrapper .col-md-6:eq(0)');
+    });
 
     // Quitar las flechas de los campos number
     document.addEventListener('DOMContentLoaded', function() {

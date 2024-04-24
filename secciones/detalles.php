@@ -4,7 +4,7 @@
   if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
     $link=(isset($_GET['link']))?$_GET['link']:"";
-    
+  
     if($_SESSION['rolSudoAdmin']){
       $sentencia=$conexion->prepare("SELECT venta.*, usuario.*,cliente.* 
       FROM venta 
@@ -59,6 +59,14 @@
     $cliente_ciudad=$registro["cliente_ciudad"];  
     $cliente_direccion=$registro["cliente_direccion"];  
 
+    // Creando link de bono link en detalle
+    if ($_SESSION['rolBodega']) {   
+      $crear_abono_links = "crear_abono.php?link=sudo_bodega&txtID";
+    }else if ($_SESSION['rolSudoAdmin']){
+      $crear_abono_links = "crear_abono.php?txtID";
+    }else{
+      $crear_abono_links = "crear_abono.php?txtID";
+    }
     // Datos de empresa para la factura
     if ($_SESSION['rolBodega']) {   
       $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa_bodega WHERE link = :link");
@@ -160,15 +168,22 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
 
 <!-- Main content -->
 <div class="invoice p-3 mb-3">
-  <div class="row">
-          <img src="../dist/img/logos/logofernando.jpg" style="width: 88px; margin-left: 5%; margin-top: 5%;margin-bottom: -5%; " alt="AdminLTE Logo" class="float-right brand-image img-circle elevation-3">
-
-    <div class="col-12 text-center">
-      <h1><br>
-      VARIEDADES21TECHNOLOGY
-      </h1>
+ <br>
+ <br>
+    
+    <div class="row" style="margin-left: 16%;">
+      <div class="col-2 text-right">
+        <img src="../dist/img/logos/logofernando.jpg" style="width: 84px; margin-top: -5%;" alt="AdminLTE Logo" class="brand-image img-circle elevation-3">
+      </div>
+      <div class="col-10 text-left align-self-center">
+        <h1 style="font-size: 2.8rem !important; margin-top: 20px; margin-bottom: 0;">
+          VARIEDADES21TECHNOLOGY
+        </h1>
+      </div>
     </div>
-  </div>
+ 
+
+
             <!-- info row -->
             <style>
                 .contorno-negro {
@@ -276,7 +291,7 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                                 <th>REFERENCIA</th>
                                 <th>CANTIDAD</th>
                                 <th>PRECIO</th>
-                                <th>PAGADO</th>
+                                <!-- <th>PAGADO</th> -->
                                 <th>SUBTOTAL</th>
                                 <!-- <?php if ($venta_metodo_pago == "Credito") { ?>
                                   <th>CREDITO PENDIENTE</th>
@@ -294,7 +309,7 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                                     <td><?php echo $registro['producto_modelo']; ?></td>
                                     <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
                                     <td><?php if ($registro['estado_mayor_menor'] == 0) { echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',');}else { echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ',') ;} ?></td> 
-                                    <td><?php echo '$' . number_format(abs($registro['venta_pagado']), 0, '.', ','); ?></td>
+                                    <!-- <td><?php echo '$' . number_format(abs($registro['venta_pagado']), 0, '.', ','); ?></td> -->
                                     <td><?php echo '$' . number_format($registro['venta_detalle_total'], 0, '.', ','); ?></td>    
                                     <!-- <td><?php echo '$' . number_format(abs($registro['venta_cambio']), 0, '.', ','); ?></td> -->
                                 </tr>  
@@ -374,21 +389,22 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
               <input type="hidden" name="tiempo" value="<?php echo $tiempo ?>">
 
               <input type="hidden" name="detalles_venta" value='<?php echo json_encode($detalles_venta_array); ?>'>
-
-
               <div class="row no-print">
                 <div class="col-12">                    
                   <button type="submit" class="btn btn-primary float-right" style="margin-right: 5px;">
                     <i class="fas fa-download"></i> Generar Ticket                    
                   </button>   
                   <a href="https://api.whatsapp.com/send?phone=57<?php echo $cliente_telefono ?>" class="btn btn-success float-right" style="margin-right: 5px;" target="_blank">
-                      <i class="fab fa-whatsapp"></i> WhatsApp
+                      <i class="fab fa-whatsapp"></i>
                   </a>
-                               <button type="button" class="btn btn-default float-right" onclick="window.print()" style="margin-right: 5px;">
-                    <i class="fa fa-print"></i> Imprimir
-                  </button>   
-                  
-               
+                  <button type="button" class="btn btn-default float-right" onclick="window.print()" style="margin-right: 5px;">
+                    <i class="fa fa-print"></i>
+                  </button>
+                  <?php if ($venta_metodo_pago == "Credito") { ?>
+                    <a class="btn btn-warning float-right" style="margin-right: 5px;" href="<?php echo $url_base ?>secciones/<?php echo $crear_abono_links ?>=<?php echo $venta_codigo; ?>" role="button" title="Abonar">
+                      <i class="fa fa-credit-card" aria-hidden="true"></i> Abonar
+                    </a>   
+                  <?php } ?>
                   <div id="ID_mostrar_info"></div>
                 </div> 
               </div>

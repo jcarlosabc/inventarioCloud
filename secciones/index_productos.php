@@ -53,7 +53,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Marca</th>
               <th>Modelo</th>
               <th>Precio de compra</th>
-              <th>Precio de Venta al por menor</th>
+              <th>Precio de Venta al Detal</th>
               <th>Precio de Venta al por mayor</th>
                                                 
               <th>Categoría</th>

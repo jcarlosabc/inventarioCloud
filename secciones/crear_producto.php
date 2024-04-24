@@ -293,7 +293,7 @@ if ($user_id == 1) {
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group">
-                            <label for="producto_precio_venta" class="textLabel">Precio de Venta al por menor</label>
+                            <label for="producto_precio_venta" class="textLabel">Precio de Venta al Detal</label>
                             <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta" id="producto_precio_venta">
                         </div>
                     </div>

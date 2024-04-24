@@ -266,7 +266,7 @@ if ($_POST) {
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <label for="producto_precio_venta_edit" class="textLabel">Precio de Venta al por Menor</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
+                                <label for="producto_precio_venta_edit" class="textLabel">Precio de Venta al Detal</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
                                 <input type="texto" class="form-control camposTabla_dinero"placeholder="$000.00" name="producto_precio_venta" id="producto_precio_venta_edit"
                                     value="<?php echo '$' . number_format($producto_precio_venta, 0, '.', ','); ?>">                                 
                             </div>
