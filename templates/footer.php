@@ -43,6 +43,7 @@
 <script src="../dist/js/pages/dashboard.js"></script>
 <!-- barcode -->
 <script type="text/javascript" src="../dist/js/barcode.js"></script>
+<script type="text/javascript" src="../dist/js/barcode.js"></script>
 <!-- DataTables  & Plugins -->
 <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -62,6 +63,7 @@
 <script src="../plugins/dropzone/min/dropzone.min.js"></script>
 
 <script>
+  
   // Escaneo de código de barras
   $.widget.bridge('uibutton', $.ui.button);
   var sound = new Audio("../dist/sound/barcode.wav");
@@ -678,7 +680,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
 </script>
 </body>
 </html>

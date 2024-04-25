@@ -38,12 +38,80 @@ if(isset($_GET['link'])){
     $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
     // Mostrando los clientes del local
-    $sentencia=$conexion->prepare("SELECT * FROM cliente WHERE cliente_id > 0 AND link = :link");
-    $sentencia->bindParam(":link", $linkeo);
-    $sentencia->execute();
-    $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+    // $sentencia=$conexion->prepare("SELECT * FROM cliente WHERE cliente_id > 0 AND link = :link");
+    // $sentencia->bindParam(":link", $linkeo);
+    // $sentencia->execute();
+    // $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 // ===========================================================
+
+// Modal de Crear Producto
+if(isset($_POST['producto_modal'])) {    
+    $producto_codigo = isset($_POST['producto_codigo']) ? $_POST['producto_codigo'] : "";
+    $fechaGarantia =  isset($_POST['fechaGarantia']) ? $_POST['fechaGarantia'] : "";
+    $producto_nombre = isset($_POST['producto_nombre']) ? $_POST['producto_nombre'] : "";
+    $producto_stock_total = isset($_POST['producto_stock_total']) ? $_POST['producto_stock_total'] : "";
+    $producto_precio_compra = isset($_POST['producto_precio_compra']) ? $_POST['producto_precio_compra'] : "";
+    $producto_precio_venta = isset($_POST['producto_precio_venta']) ? $_POST['producto_precio_venta'] : "";
+    $producto_precio_venta_xmayor = isset($_POST['producto_precio_venta_xmayor']) ? $_POST['producto_precio_venta_xmayor'] : "";
+    $producto_marca = isset($_POST['producto_marca']) ? $_POST['producto_marca'] : "";
+    $producto_modelo = isset($_POST['producto_modelo']) ? $_POST['producto_modelo'] : "";
+    $categoria_id = isset($_POST['categoria_id']) ? $_POST['categoria_id'] : "";  
+    $proveedor_id = isset($_POST['proveedor_id']) ? $_POST['proveedor_id'] : "";
+    $link = "sudo_bodega";  
+    $idResponsable = $_SESSION['usuario_id'];
+    
+    // Eliminar el signo "$" y el separador de miles "," del valor del campo de entrada
+    $producto_precio_compra = str_replace(array('$','.', ','), '', $producto_precio_compra);
+    $producto_precio_venta = str_replace(array('$','.', ','), '', $producto_precio_venta);
+    $producto_precio_venta_xmayor = str_replace(array('$','.', ','), '', $producto_precio_venta_xmayor);
+
+    date_default_timezone_set('America/Bogota'); 
+    $fechaActual = date("d-m-Y");
+  
+    $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion, producto_fecha_ingreso,
+    producto_fecha_garantia,producto_nombre, producto_stock_total,producto_precio_compra,producto_precio_venta,producto_precio_venta_xmayor,producto_marca,producto_modelo,
+    categoria_id,proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    $sentencia = $conexion->prepare($sql);
+    $params = array(
+        $producto_codigo, 
+        $fechaActual, 
+        $fechaActual, 
+        $fechaGarantia, 
+        $producto_nombre,
+        $producto_stock_total, 
+        $producto_precio_compra,
+        $producto_precio_venta,
+        $producto_precio_venta_xmayor, 
+        $producto_marca, 
+        $producto_modelo,
+        $categoria_id,
+        $proveedor_id
+    );
+    $resultado_bodega = $sentencia->execute($params);
+    if ($resultado_bodega) {
+        echo '<script>
+        Swal.fire({
+            title: "¡Producto creado Exitosamente!",
+            icon: "success",
+            confirmButtonText: "¡Entendido!"
+        }).then((result)=>{
+            if(result.isConfirmed){
+                window.location.href = "'.$url_base.'secciones/'.$ventas_link.'";
+            }
+        })
+        </script>';
+    }else {
+        echo '<script>
+        Swal.fire({
+            title: "Error al Crear Producto",
+            icon: "error",
+            confirmButtonText: "¡Entendido!"
+        });
+        </script>';
+    }
+    } 
 
 // Guardar productos escogidos, al carrito
 if(isset($_POST['producto_seleccionado'])) {
@@ -89,15 +157,14 @@ if(isset($_POST['producto_seleccionado'])) {
         $total_precio_venta_mayor += $precio_venta_mayor;
     }
 }
-
 // Realizando venta
 if(isset($_POST['productos_vendidos'])) {
     $cantidades = isset($_POST['cantidad']) ? $_POST['cantidad'] : array();
     $totales = isset($_POST['total']) ? $_POST['total'] : array();
     $totales = str_replace(array('$','.', ','), '', $totales);
-    $precio_menor = isset($_POST['precio_menor']) ? $_POST['precio_menor'] : array();
+    $precio_menor = isset($_POST['precio']) ? $_POST['precio'] : array();
     $precio_menor = str_replace(array('$','.', ','), '', $precio_menor);
-    $precio_mayor = isset($_POST['precio_mayor']) ? $_POST['precio_mayor'] : array();
+    $precio_mayor = isset($_POST['precio_venta_mayor']) ? $_POST['precio_venta_mayor'] : array();
     $precio_mayor = str_replace(array('$','.', ','), '', $precio_mayor);
     $codigo_factura = isset($_POST['codigo_factura']) ? $_POST['codigo_factura'] : $_POST['codigo_factura'];
     $total_dinero = isset($_POST['total_dinero']) ? $_POST['total_dinero'] : $_POST['total_dinero'];
@@ -984,6 +1051,28 @@ if(isset($_POST['productos_vendidos'])) {
         </script>';
     }
 }
+/////////CREAR PRODUCTO MODAL//////////
+$user_id = $_SESSION['usuario_id'];
+$sudo_admin = "sudo_admin";
+if ($user_id == 1) {
+    $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria WHERE link = :link");
+    $sentencia_categoria->bindParam(":link", $sudo_admin);
+
+    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores WHERE link = :link");
+    $sentencia_prove->bindParam(":link", $sudo_admin);
+} else {
+    $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria WHERE link = :link");
+    $sentencia_categoria->bindParam(":link", $link);
+    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores WHERE link = :link");
+    $sentencia_prove->bindParam(":link", $link);
+}
+    $sentencia_categoria->execute();
+    $lista_categoria = $sentencia_categoria->fetchAll(PDO::FETCH_ASSOC);
+
+    $sentencia_prove->execute();
+    $lista_proveedores = $sentencia_prove->fetchAll(PDO::FETCH_ASSOC);
+////////////////////////////////////////////
+
 
 ?>
 <br>
@@ -1190,22 +1279,24 @@ if(isset($_POST['productos_vendidos'])) {
                                                 </select>
                                             </div>
                                             </div>
-
-                                            <label class="">Cliente</label> 
-                                            <select class="form-control select2" name="cliente_id" style="height: 20px">
+                                            <label>Clientes</label>
+                                            <select class="form-control select2" name="cliente_id" id="fastCliente" style="height: 20px">
+                                            </select>
+                                            <!-- <select class="form-control select2" name="cliente_id" id="fastCliente" style="height: 20px">
                                                 <option value="0">Público General </option> 
-                                                <?php foreach ($lista_cliente as $registro) {?>   
-                                                    <option value="<?php echo $registro['cliente_id']; ?>"><?php echo $registro['cliente_nombre']; echo " "; echo $registro['cliente_nit']; ?></option> 
-                                                <?php } ?>                                    
-                                            </select>  
+                                                php foreach ($lista_cliente as $registro) {?>   
+                                                    <option value="?php echo $registro['cliente_id']; ?>">?php echo $registro['cliente_nombre']; echo " "; echo $registro['cliente_nit']; ?></option> 
+                                                php } ?>                                    
+                                            </select>   -->
                                         </div>
                                     </div>
-                                    <!-- <div class="col-3">
+                                    <div class="col-3">
                                         <div class="form-group">
-                                        <label class="textLabel">Fecha de Venta</label> 
-                                            <input type="text" class="form-control" style="text-align:center;font-weight:600" readonly value="<?php echo $fechaActual ?>">
+                                            <label>Accesos Rápidos</label> 
+                                            <span><a type="button" class="" data-toggle="modal" data-target="#exampleModalCenter">- Crear Cliente</a> </span>
+                                            <span><a type="button" class="" data-toggle="modal" data-target="#crearProducto">- Crear Producto</a> </span>
                                         </div>
-                                    </div> -->
+                                    </div>
                                 </div>
                                 <br>
                                 <br>
@@ -1237,8 +1328,196 @@ if(isset($_POST['productos_vendidos'])) {
                             </div>
                         </div>
                     </form>
+                    <!-- Modal Crear Cliente-->
+                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Crear Cliente</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="cliente_empresa" class="">Empresa</label>
+                                                <input type="text" class="form-control" id="cliente_empresa">
+                                            </div>
+                                        </div>                          
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="cliente_nit" class="">Nit</label>
+                                                <input type="text" class="form-control " id="cliente_nit">
+                                                <input type="hidden" id="link" value="<?php echo $link ?>">
+                                            </div>
+                                        </div>                            
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="cliente_nombre" class="">Nombres</label>
+                                                <input type="text" class="form-control " id="cliente_nombre" required>
+                                            </div>
+                                        </div>                     
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="cliente_apellido" class="">Apellidos</label>
+                                                <input type="text" class="form-control " id="cliente_apellido" required>
+                                            </div>
+                                        </div>                        
+                                    </div> 
+                                    <div class="row" style="justify-content:center">
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="cliente_telefono" class="">Teléfono</label>
+                                                <input type="num" class="form-control" id="cliente_telefono">
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="cliente_ciudad" >Ciudad</label>
+                                                <input type="text" class="form-control" id="cliente_ciudad">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label for="cliente_direccion">Dirección</label> 
+                                                <input type="text" class="form-control" id="cliente_direccion">
+                                            </div>
+                                        </div>                        
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label for="cliente_email">Correo</label>
+                                                <input type="text" class="form-control " id="cliente_email">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="modal-footer">
+                                <button type="button" id="cerrarModalCliente" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                <button type="button" onclick="sendData()" class="btn btn-primary">Registrar</button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal -->
+                    <!-- Modal Crear Producto-->
+                    <div class="modal fade" id="crearProducto" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Crear Producto</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form method="post" action="">
+                                <div class="modal-body">
+                                    <div class="row">                        
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label>Código</label>
+                                                <input type="text" class="form-control camposTabla" name="producto_codigo" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label>Nombre</label>
+                                                <input type="text" class="form-control camposTabla" name="producto_nombre" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label>Marca</label>
+                                                <input type="text" class="form-control camposTabla" name="producto_marca" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label>Modelo</label>
+                                                <input type="text" class="form-control camposTabla" name="producto_modelo" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label>Categoría</label>
+                                                <div class="form-group camposTabla">
+                                                    <select class="form-control select2 camposTabla" style="width: 100%;" name="categoria_id">                                    
+                                                        <option value="">Escoger Categoría</option> 
+                                                        <?php foreach ($lista_categoria as $registro) {?>   
+                                                            <option value="<?php echo $registro['categoria_id']; ?>"><?php echo $registro['categoria_nombre']; ?></option> 
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label>Proveedor</label>
+                                                <div class="form-group">
+                                                    <select class="form-control select2 camposTabla" style="width: 100%;" name="proveedor_id">                                    
+                                                        <option value="">Escoger tu proveedor</option> 
+                                                        <?php foreach ($lista_proveedores as $registro) {?>   
+                                                            <option value="<?php echo $registro['id_proveedores']; ?>"><?php echo $registro['nombre_proveedores']; ?></option> 
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label>Fecha de Garantía</label>
+                                                <div class="input-group date" id="fechaGarantia" data-target-input="nearest">
+                                                    <input name ="fechaGarantia" type="text" class="form-control datetimepicker-input" data-target="#fechaGarantia" />
+                                                    <div class="input-group-append" data-target="#fechaGarantia" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label>Stock o Existencias</label>
+                                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="producto_precio_compra">Precio de Compra</label>
+                                                <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_compra" id="producto_precio_compra">
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="producto_precio_venta">Precio al Detal</label>
+                                                <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta" id="producto_precio_venta">
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="producto_precio_venta_xmayor">Precio al por mayor</label> 
+                                                <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta_xmayor" id="producto_precio_venta_xmayor">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                    <button type="submit" name="producto_modal" class="btn btn-primary">Registrar</button>
+                                </div>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal -->
                 </div>
             </div>
-    <?php include("../templates/footer.php") ?>
+<script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
+<script src="accion_fetch.js"></script>
+<?php include("../templates/footer.php") ?>
 
                             

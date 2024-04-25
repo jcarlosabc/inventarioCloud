@@ -277,8 +277,8 @@ if ($user_id == 1) {
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row" style="justify-content:center">
+                    </div>
+                    <div class="row" style="justify-content:center">
                     <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Stock o Existencias</label> &nbsp;<i class="nav-icon fas fa-edit"></i> 
