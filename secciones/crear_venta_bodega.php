@@ -164,7 +164,7 @@ if(isset($_POST['productos_vendidos'])) {
     $totales = str_replace(array('$','.', ','), '', $totales);
     $precio_menor = isset($_POST['precio']) ? $_POST['precio'] : array();
     $precio_menor = str_replace(array('$','.', ','), '', $precio_menor);
-    $precio_mayor = isset($_POST['precio_venta_mayor']) ? $_POST['precio_venta_mayor'] : array();
+    $precio_mayor = isset($_POST['precio_venta_xmayor']) ? $_POST['precio_venta_xmayor'] : array();
     $precio_mayor = str_replace(array('$','.', ','), '', $precio_mayor);
     $codigo_factura = isset($_POST['codigo_factura']) ? $_POST['codigo_factura'] : $_POST['codigo_factura'];
     $total_dinero = isset($_POST['total_dinero']) ? $_POST['total_dinero'] : $_POST['total_dinero'];
@@ -901,8 +901,8 @@ if(isset($_POST['productos_vendidos'])) {
     // ================================
     foreach ($cantidades as $id => $cantidad) {
         $total = $totales[$id] ?? 0;
-        $precio_menor = $precio_menor[$id] ?? 0;
-        $precio_mayor = $precio_mayor[$id] ?? 0;
+        $precio_menor_actual = isset($precio_menor[$id]) ? $precio_menor[$id] : 0;
+        $precio_mayor_actual = isset($precio_mayor[$id]) ? $precio_mayor[$id] : 0;
 
         // Agregando al carrito los productos
         $sql = "UPDATE carrito SET cantidad = ?, total = ?, estado = ?, responsable = ? WHERE id = ?";
@@ -962,9 +962,9 @@ if(isset($_POST['productos_vendidos'])) {
                 $sentencia->execute($params);
 
         if ($tipo_precio == 0 ) {
-            $precio_detalle = $precio_menor;
+            $precio_detalle = $precio_menor_actual;
         }else {
-            $precio_detalle = $precio_mayor;
+            $precio_detalle = $precio_mayor_actual;
         }                
         // Guardando el detalle de la venta
        $sql = "INSERT INTO venta_detalle (venta_detalle_cantidad,
@@ -1178,7 +1178,7 @@ if ($user_id == 1) {
                                                 <td><?php echo $registro['modelo']; ?></td>
                                                 <td><input style="width: 49px" type="number" class="cantidad-input form-control" name="cantidad[<?php echo $registro['id']; ?>]" value="<?php echo $registro['cantidad']; ?>"></td>
                                                 <td style="font-weight: 800;"><input type="text" class="precio_menor form-control" name="precio[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio'], 0, '.', ','); ?>"></td>
-                                                <td style="font-weight: 800;"><input type="text" class="precio_mayor form-control" name="precio_venta_mayor[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio_venta_mayor'], 0, '.', ','); ?>"> </td>
+                                                <td style="font-weight: 800;"><input type="text" class="precio_mayor form-control" name="precio_venta_xmayor[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio_venta_mayor'], 0, '.', ','); ?>"> </td>
                                                 <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
                                                 <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
                                                     <div class="btn-group">

@@ -361,6 +361,29 @@ $sentencia_estadisticas = $conexion->prepare("  SELECT
             </div>
           </section>
            <!--Estadisticas de Dinero -->
+
+           <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fa fa-asterisk mr-1" style="font-size: 40px;"></i>
+                  <h2 style="font-size: 26px;">Actualizaciones </h2>
+                </h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <ul class="todo-list" data-widget="todo-list">
+                  <li style="color:blue">
+                    * Actualizaciones 25/04/2024*
+                  </li>
+                  <li>
+                    - Ahora usted puede editar los precios justo durante la venta
+                  </li>
+                  <li>
+                    - Ahora usted puede: Crear Clientes y Productos Durante la venta en Acciones Rapidas 
+                  </li>
+                </ul>
+              </div>
+            </div>
           
   <?php if ($_SESSION['valSudoAdmin']) { ?>
     <?php
