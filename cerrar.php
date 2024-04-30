@@ -6,5 +6,5 @@ session_destroy();
 if (!empty($link)) {
     header("Location: http://localhost/inventariocloud/login.php?link=".$link);
 } else {
-    header("Location: http://localhost/inventariocloud/login.php.php");
+    header("Location: http://localhost/inventariocloud/login.php");
 }

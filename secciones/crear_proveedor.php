@@ -55,7 +55,8 @@ if ($_POST) {
     <!-- general form elements -->
     <div class="card card-primary" style="margin-top:7%">
         <div class="card-header">
-            <h2 class="card-title textTabla">REGISTRE PROVEEDORES &nbsp;  <a href="<?php echo $url_base;?>secciones/<?php echo $lista_proveedor_link;?>" class="btn btn-warning" style="color:black"> Lista proveedores </a></h2>
+            <h2 class="card-title textTabla">REGISTRE PROVEEDORES </h2>
+                <!-- &nbsp; <a href="<?php echo $url_base;?>secciones/<?php echo $lista_proveedor_link;?>" class="btn btn-warning" style="color:black"> Lista proveedores </a> -->
         </div>
         <!-- /.card-header -->
         <!-- form start -->

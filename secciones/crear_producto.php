@@ -144,16 +144,19 @@ if ($_POST) {
 $user_id = $_SESSION['usuario_id'];
 $sudo_admin = "sudo_admin";
 if ($user_id == 1) {
-    $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria WHERE link = :link");
-    $sentencia_categoria->bindParam(":link", $sudo_admin);
+    // $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria WHERE link = :link");
+    $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria");
+    // $sentencia_categoria->bindParam(":link", $sudo_admin);
 
-    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores WHERE link = :link");
-    $sentencia_prove->bindParam(":link", $sudo_admin);
+    // $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores WHERE link = :link");
+    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores ");
+    // $sentencia_prove->bindParam(":link", $sudo_admin);
 } else {
     $sentencia_categoria = $conexion->prepare("SELECT * FROM categoria WHERE link = :link");
     $sentencia_categoria->bindParam(":link", $link);
-    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores WHERE link = :link");
-    $sentencia_prove->bindParam(":link", $link);
+    // $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores WHERE link = :link");
+    $sentencia_prove = $conexion->prepare("SELECT * FROM proveedores");
+    // $sentencia_prove->bindParam(":link", $link);
 }
     $sentencia_categoria->execute();
     $lista_categoria = $sentencia_categoria->fetchAll(PDO::FETCH_ASSOC);
@@ -164,17 +167,16 @@ if ($user_id == 1) {
 <script>
 </script>
         <br>
-        <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero crear <strong>categoría</strong> y registrar <strong>proveedor</strong> del producto a crear. </article>
+        <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero crear <strong>categoría</strong>. 
+        <!-- y registrar <strong>proveedor</strong> del producto a crear. </article> -->
         <br>
         <div class="row no-gutters">
             <div class="col-1">
                 <a href="<?php echo $url_base;?>secciones/<?php echo $crear_categoria_link;?>"><button type="button" class="btn btn-outline-primary">Crear Categoría</button></a>
-                
             </div>
-            <div class="col-2">
+            <!-- <div class="col-2">
                 <a href="<?php echo $url_base;?>secciones/<?php echo $crear_proveedor_link;?>"><button type="button" class="btn btn-outline-info">Registrar Proveedor</button></a>
-                
-            </div>
+            </div> -->
         </div>
         <div class="card card-primary" style="margin-top:3%">
             <div class="card-header">

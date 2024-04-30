@@ -35,8 +35,8 @@ if ($_SESSION['valSudoAdmin']) {
                 <th>Modelo</th> 
                 <th>Stock </th>
                 <th>Precio Compra </th> 
-                <th>Precio Venta al Menor</th> 
-                <th>Precio Venta al Mayor</th> 
+                <th>Precio al Detal</th> 
+                <th>Precio al Mayor</th> 
                
                 <th>Opciones</th> 
             </tr>
@@ -53,20 +53,19 @@ if ($_SESSION['valSudoAdmin']) {
                 <td><?php echo $registro['producto_stock_total']; ?></td>
                 <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
                 <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
-                  <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ','); ?></td>
-            
+                <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ','); ?></td>
                 <td class="text-center">
-                  <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Ingresar Stock">
-                    <i class="fa fa-plus-circle"></i> Ingresar tock
+                  <a class="btn btn-purple btn-sm" style="background: #6f42c1; color: white;" href="ingresar_stock_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Ingresar Stock">
+                    <i class="fa fa-plus-circle"></i>
                   </a>
-                  <a class="btn btn-info" href="editar_producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Editar">
-                    <i class="fas fa-edit"></i>Editar
+                  <a class="btn btn-info btn-sm" href="editar_producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Editar">
+                    <i class="fas fa-edit"></i>
                   </a>
-                  <a class="btn btn-primary" href="trasladar_producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Enviar">
-                    <i class="fa fa-share"></i>Enviar
+                  <a class="btn btn-primary btn-sm" href="trasladar_producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Enviar">
+                    <i class="fa fa-share"></i>
                   </a>
-                  <a class="btn btn-danger"href="producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>" role="button"title="Eliminar">
-                      <i class="fas fa-trash-alt"></i>Eliminar
+                  <a class="btn btn-danger btn-sm"href="producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>" role="button"title="Eliminar">
+                      <i class="fas fa-trash-alt"></i>
                   </a>
                 </td>
                 </tr> 

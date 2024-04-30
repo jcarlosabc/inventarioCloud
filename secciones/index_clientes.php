@@ -72,11 +72,11 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['cliente_email']; ?></td>
                   <td><?php if ($registro['link'] == "sudo_admin" ) {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                  
                   <td>
-                    <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_clientes;?>=<?php echo $registro['cliente_id']; ?>"role="button" title="Editar">
-                        <i class="fas fa-edit"></i>Editar
+                    <a class="btn btn-info btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $editar_clientes;?>=<?php echo $registro['cliente_id']; ?>"role="button" title="Editar">
+                        <i class="fas fa-edit"></i>
                     </a>
-                    <a class="btn btn-danger" href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>=<?php echo $registro['cliente_id']; ?>" role="button" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i>Eliminar
+                    <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $lista_cliente_link;?>=<?php echo $registro['cliente_id']; ?>" role="button" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
                     </a>
                   </td>
                 </tr>  

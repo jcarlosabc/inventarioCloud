@@ -57,7 +57,7 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Cambio/Deuda</th>
               <th>Metodo de Pago</th>
               <th>Cliente</th>
-              <th>responsable</th>
+              <th>Responsable</th>
               <?php if ($_SESSION['rolSudoAdmin']) { ?>
               <th>Negocio</th>
               <?php } ?>            
@@ -94,27 +94,27 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
                   <?php if ($_SESSION['rolSudoAdmin']) { ?>
                     <a class="btn btn-primary btn-sm" href="detalles.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Detalles">
-                      <i class="fas fa-eye"></i> Ver
+                      <i class="fas fa-eye"></i> 
                     </a>
                     <?php } else { ?>
                       <a class="btn btn-primary btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_detalles_link . '&txtID=' . $registro['venta_id']; ?>" role="button" title="Detalles">
-                      <i class="fas fa-eye"></i> Ver
+                      <i class="fas fa-eye"></i> 
                     </a>
                    <?php } ?>
 
                    <?php if ($_SESSION['rolSudoAdmin']) { ?>
                     <a class="btn btn-warning btn-sm" href="devolucion_venta.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Devolucion">
-                      <i class="fas fa-retweet"></i> Devolución
+                      <i class="fas fa-retweet"></i> 
                     </a>
                     <?php } else { ?>
                             <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="mostrarPrompt(<?php echo $registro['venta_id']; ?>)" title="Devolucion">
-                                <i class="fas fa-retweet"></i> Devolución
+                                <i class="fas fa-retweet"></i> 
                             </a>
                         <?php } ?>
 
                     <?php if ($_SESSION['rolSudoAdmin']) { ?>
                       <a class="btn btn-danger btn-sm" href="index_ventas.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i> Eliminar 
+                        <i class="fas fa-trash-alt"></i>  
                       </a>
                     <?php } ?>
                   </td>

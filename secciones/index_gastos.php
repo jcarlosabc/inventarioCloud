@@ -63,7 +63,7 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               foreach ($lista_gastos as $registro) {?>
                 <tr class="">
                   <td scope="row"><?php $count++; echo $count; ?></td>
-                  <td><?php echo $registro['gasto_fecha']; ?> // <?php echo $registro['gasto_hora']; ?></td>
+                  <td><?php echo $registro['gasto_fecha']; ?> / <?php echo $registro['gasto_hora']; ?></td>
                   <td><?php echo $registro['gasto_producto']; ?></td>
                   <td><?php echo $registro['gasto_motivo']; ?></td>
                   <td class="tdColor"> <?php echo '$' . number_format($registro['gasto_precio'], 0, '.', ','); ?></td>
@@ -73,8 +73,8 @@ $lista_gastos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php echo $registro['usuario_nombre'] . " " . $registro['usuario_apellido'] ?></td>
                   <?php if ($_SESSION['rolSudoAdmin']) { ?>
                   <td>
-                    <a class="btn btn-danger"href="index_gastos.php?txtID=<?php echo $registro['gasto_id']; ?>" role="button" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i> Eliminar
+                    <a class="btn btn-danger btn-sm" href="index_gastos.php?txtID=<?php echo $registro['gasto_id']; ?>" role="button" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i> 
                     </a>
                   </td>
                   <?php }?>

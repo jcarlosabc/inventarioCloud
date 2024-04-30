@@ -399,12 +399,16 @@ if(isset($_POST['productos_vendidos'])) {
                             $total_dinero = 0;
                         }else if($tipoAbono === "2"){
                             $total_dinero = $recibe_dinero;
+                            $metodo_pago_escogido = "Efectivo";
                         }else if($tipoAbono === "00"){
                             $total_dinero = $recibe_dinero;
+                            $metodo_pago_escogido = "Davivienda";
                         }else if($tipoAbono === "01"){
                             $total_dinero = $recibe_dinero;
+                            $metodo_pago_escogido = "Bancolombia";
                         }else if($tipoAbono === "02"){
                             $total_dinero = $recibe_dinero;
+                            $metodo_pago_escogido = "Nequi";
                         }
                     }                    
                     // echo "total dinero => " .$total_dinero;
@@ -426,8 +430,8 @@ if(isset($_POST['productos_vendidos'])) {
                     // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
                     if ($metodo_pago == 2) {
                         $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
-                                historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                historial_cliente_id, historial_abono, historial_dinero_pendiente, metodo_pago,
+                                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                             $sentencia = $conexion->prepare($sql);
                             $params = array(
                             $ultimo_id_insertadoDPQ,
@@ -435,7 +439,8 @@ if(isset($_POST['productos_vendidos'])) {
                             $codigo_factura, 
                             $cliente_id, 
                             $recibe_dinero,
-                            $cambio_dinero, 
+                            $cambio_dinero,
+                            $metodo_pago_escogido,
                             $fechaActual, 
                             $horaActual,
                             $user_id
@@ -460,15 +465,19 @@ if(isset($_POST['productos_vendidos'])) {
                 }else if($tipoAbono === "2"){
                     $total_dinero = $recibe_dinero;
                     $transferenciaMetodo = $tipoAbono;
+                    $metodo_pago_escogido = "Efectivo";
                 }else if($tipoAbono === "00"){
                     $total_dinero = $recibe_dinero;
                     $transferenciaMetodo = $tipoAbono;
+                    $metodo_pago_escogido = "Davivienda";
                 }else if($tipoAbono === "01"){
                     $total_dinero = $recibe_dinero;
                     $transferenciaMetodo = $tipoAbono;
+                    $metodo_pago_escogido = "Bancolombia";
                 }else if($tipoAbono === "02"){
                     $total_dinero = $recibe_dinero;
                     $transferenciaMetodo = $tipoAbono;
+                    $metodo_pago_escogido = "Nequi";
                 }
             }
             $sql = "INSERT INTO dinero_por_quincena (dinero, link, dia, mes, anio, metodo_pago, transferencia_metodo, estado_credito ) 
@@ -492,8 +501,8 @@ if(isset($_POST['productos_vendidos'])) {
                 // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
                 if ($metodo_pago == 2) {
                     $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
-                            historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            historial_cliente_id, historial_abono, historial_dinero_pendiente, metodo_pago, 
+                            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         $sentencia = $conexion->prepare($sql);
                         $params = array(
                         $ultimo_id_insertadoDPQ,
@@ -501,7 +510,8 @@ if(isset($_POST['productos_vendidos'])) {
                         $codigo_factura, 
                         $cliente_id, 
                         $recibe_dinero,
-                        $cambio_dinero, 
+                        $cambio_dinero,
+                        $metodo_pago_escogido, 
                         $fechaActual, 
                         $horaActual,
                         $user_id
@@ -526,16 +536,20 @@ if(isset($_POST['productos_vendidos'])) {
                         $total_dinero = 0;
                     }else if($tipoAbono === "2"){
                         $total_dinero = $recibe_dinero;
-                    $transferenciaMetodo = $tipoAbono;
+                        $transferenciaMetodo = $tipoAbono;
+                         $metodo_pago_escogido = "Efectivo";
                     }else if($tipoAbono === "00"){
                         $total_dinero = $recibe_dinero;
-                    $transferenciaMetodo = $tipoAbono;
+                        $transferenciaMetodo = $tipoAbono;
+                         $metodo_pago_escogido = "Davivienda";
                     }else if($tipoAbono === "01"){
                         $total_dinero = $recibe_dinero;
-                    $transferenciaMetodo = $tipoAbono;
+                        $transferenciaMetodo = $tipoAbono;
+                         $metodo_pago_escogido = "Bancolombia";
                     }else if($tipoAbono === "02"){
                         $total_dinero = $recibe_dinero;
-                    $transferenciaMetodo = $tipoAbono;
+                        $transferenciaMetodo = $tipoAbono;
+                         $metodo_pago_escogido = "Nequi";
                     }
                 }
 
@@ -559,8 +573,8 @@ if(isset($_POST['productos_vendidos'])) {
                 // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
                 if ($metodo_pago == 2) {
                     $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
-                            historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            historial_cliente_id, historial_abono, historial_dinero_pendiente, metodo_pago,
+                            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         $sentencia = $conexion->prepare($sql);
                         $params = array(
                         $ultimo_id_insertadoDPQ,
@@ -568,7 +582,8 @@ if(isset($_POST['productos_vendidos'])) {
                         $codigo_factura, 
                         $cliente_id, 
                         $recibe_dinero,
-                        $cambio_dinero, 
+                        $cambio_dinero,
+                        $metodo_pago_escogido, 
                         $fechaActual, 
                         $horaActual,
                         $user_id
@@ -624,15 +639,19 @@ if(isset($_POST['productos_vendidos'])) {
                     }else if($tipoAbono === "2"){
                         $total_dinero = $recibe_dinero;
                         $transferenciaMetodo = $tipoAbono;
+                         $metodo_pago_escogido = "Efectivo";
                     }else if($tipoAbono === "00"){
                         $total_dinero = $recibe_dinero;
                         $transferenciaMetodo = $tipoAbono;
+                         $metodo_pago_escogido = "Davivienda";
                     }else if($tipoAbono === "01"){
                         $total_dinero = $recibe_dinero;
                         $transferenciaMetodo = $tipoAbono;
+                         $metodo_pago_escogido = "Bancolombia";
                     }else if($tipoAbono === "02"){
                         $total_dinero = $recibe_dinero;
                         $transferenciaMetodo = $tipoAbono;
+                         $metodo_pago_escogido = "Nequi";
                     }
                 }
 
@@ -656,8 +675,8 @@ if(isset($_POST['productos_vendidos'])) {
                     // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
                     if ($metodo_pago == 2) {
                         $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
-                                historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                historial_cliente_id, historial_abono, historial_dinero_pendiente, metodo_pago,
+                                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                             $sentencia = $conexion->prepare($sql);
                             $params = array(
                             $ultimo_id_insertadoDPQ,
@@ -665,7 +684,8 @@ if(isset($_POST['productos_vendidos'])) {
                             $codigo_factura, 
                             $cliente_id, 
                             $recibe_dinero,
-                            $cambio_dinero, 
+                            $cambio_dinero,
+                            $metodo_pago_escogido, 
                             $fechaActual, 
                             $horaActual,
                             $user_id
@@ -691,15 +711,19 @@ if(isset($_POST['productos_vendidos'])) {
                         }else if($tipoAbono === "2"){
                             $total_dinero = $recibe_dinero; 
                             $transferenciaMetodo = $tipoAbono;
+                             $metodo_pago_escogido = "Efectivo";
                         }else if($tipoAbono === "00"){
                             $total_dinero = $recibe_dinero; 
                             $transferenciaMetodo = $tipoAbono;
+                             $metodo_pago_escogido = "Davivienda";
                         }else if($tipoAbono === "01"){
                             $total_dinero = $recibe_dinero; 
                             $transferenciaMetodo = $tipoAbono;
+                             $metodo_pago_escogido = "Bancolombia";
                         }else if($tipoAbono === "02"){
                             $total_dinero = $recibe_dinero; 
                             $transferenciaMetodo = $tipoAbono;
+                             $metodo_pago_escogido = "Nequi";
                         }
                     }
                  
@@ -723,8 +747,8 @@ if(isset($_POST['productos_vendidos'])) {
                     // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
                     if ($metodo_pago == 2) {
                         $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
-                                historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                historial_cliente_id, historial_abono, historial_dinero_pendiente, metodo_pago,
+                                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                             $sentencia = $conexion->prepare($sql);
                             $params = array(
                             $ultimo_id_insertadoDPQ,
@@ -732,7 +756,8 @@ if(isset($_POST['productos_vendidos'])) {
                             $codigo_factura, 
                             $cliente_id, 
                             $recibe_dinero,
-                            $cambio_dinero, 
+                            $cambio_dinero,
+                            $metodo_pago_escogido, 
                             $fechaActual, 
                             $horaActual,
                             $user_id
@@ -756,12 +781,16 @@ if(isset($_POST['productos_vendidos'])) {
                         $total_dinero = 0;
                     }else if($tipoAbono === "2"){
                         $total_dinero = $recibe_dinero;
+                         $metodo_pago_escogido = "Efectivo";
                     }else if($tipoAbono === "00"){
                         $total_dinero = $recibe_dinero;
+                         $metodo_pago_escogido = "Davivienda";
                     }else if($tipoAbono === "01"){
                         $total_dinero = $recibe_dinero;
+                         $metodo_pago_escogido = "Bancolombia";
                     }else if($tipoAbono === "02"){
                         $total_dinero = $recibe_dinero;
+                         $metodo_pago_escogido = "Nequi";
                     }
                 }
 
@@ -801,8 +830,8 @@ if(isset($_POST['productos_vendidos'])) {
                 // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
                 if ($metodo_pago == 2) {
                     $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
-                            historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            historial_cliente_id, historial_abono, historial_dinero_pendiente,metodo_pago, 
+                            historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         $sentencia = $conexion->prepare($sql);
                         $params = array(
                         $ultimo_id_actualizadoDPQ,
@@ -810,7 +839,8 @@ if(isset($_POST['productos_vendidos'])) {
                         $codigo_factura, 
                         $cliente_id, 
                         $recibe_dinero,
-                        $cambio_dinero, 
+                        $cambio_dinero,
+                        $metodo_pago_escogido, 
                         $fechaActual, 
                         $horaActual,
                         $user_id
@@ -847,18 +877,22 @@ if(isset($_POST['productos_vendidos'])) {
                 // echo "<br>";
                 $total_dinero = $recibe_dinero;
                 $transferenciaMetodo = $tipoAbono;
+                 $metodo_pago_escogido = "Efectivo";
             }else if($tipoAbono === "00"){
                 // echo "...| Entrando al 00 tipo abono |.. => " . $tipoAbono;
                 $total_dinero = $recibe_dinero;
                 $transferenciaMetodo = $tipoAbono;
+                 $metodo_pago_escogido = "Davivienda";
             }else if($tipoAbono === "01"){
                 // echo "...| Entrando al 01 tipo abono |.. => " . $tipoAbono;
                 $total_dinero = $recibe_dinero;
                 $transferenciaMetodo = $tipoAbono;
+                 $metodo_pago_escogido = "Bancolombia";
             }else if($tipoAbono === "02"){
                 // echo "...| Entrando al 02 tipo abono |.. => " . $tipoAbono;
                 $total_dinero = $recibe_dinero;
                 $transferenciaMetodo = $tipoAbono;
+                 $metodo_pago_escogido = "Nequi";
             }
         }
 
@@ -882,8 +916,8 @@ if(isset($_POST['productos_vendidos'])) {
         // INSERTANDO AUN ASI CUANDO EL ABONO SE VA EN CERO o ya lleva algo
         if ($metodo_pago == 2) {
             $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
-                    historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                    historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    historial_cliente_id, historial_abono, historial_dinero_pendiente,metodo_pago, 
+                    historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
                 $ultimo_id_insertadoDPQ,
@@ -891,7 +925,8 @@ if(isset($_POST['productos_vendidos'])) {
                 $codigo_factura, 
                 $cliente_id, 
                 $recibe_dinero,
-                $cambio_dinero, 
+                $cambio_dinero,
+                $metodo_pago_escogido,
                 $fechaActual, 
                 $horaActual,
                 $user_id
@@ -1125,7 +1160,7 @@ if ($user_id == 1) {
                                             <?php if($registro['producto_stock_total'] == 0) { ?>
                                                 <button type="button" class="btn btn-warning">Agotado</button>
                                             <?php }else { ?>
-                                                   <button type="submit" name="producto_seleccionado" value="<?php echo base64_encode(serialize($registro)); ?>" class="btn btn-primary">Escoger <i class="fas fa-chevron-right"></i></button>
+                                                   <button type="submit" name="producto_seleccionado" value="<?php echo base64_encode(serialize($registro)); ?>" class="btn btn-primary"><i class="fas fa-chevron-right"></i></button>
                                             <?php } ?>
                                         </form>
                                     </td>
@@ -1297,8 +1332,8 @@ if ($user_id == 1) {
                                     <div class="col-3">
                                         <div class="form-group">
                                             <label>Accesos Rápidos</label> 
-                                            <span><a type="button" class="" data-toggle="modal" data-target="#crearClienteLocal">- Crear Cliente</a> </span>
-                                            <span><a type="button" class="" data-toggle="modal" data-target="#crearProductoLocal">- Crear Producto</a> </span>
+                                            <span><a type="button" data-toggle="modal" data-target="#crearClienteLocal">- Crear Cliente</a> </span>
+                                            <span><a type="button" data-toggle="modal" data-target="#crearProductoLocal">- Crear Producto</a> </span>
                                         </div>
                                     </div>
                                 </div>
@@ -1322,8 +1357,8 @@ if ($user_id == 1) {
                                 </div>
                                 <br>
                                 <div class="row" style="justify-content:center">
-                                    <div class="col-4">
-                                        <button type="submit" name="productos_vendidos" class="btn btn-success btn-lg">Realizar Venta <i class="fa fa-shopping-cart" aria-hidden="true"></i> </button>
+                                    <div class="col-3">
+                                        <button type="submit" name="productos_vendidos" style="width: 108%;font-size: 21px;" class="btn btn-success btn-lg">Vender <i class="fa fa-shopping-cart" aria-hidden="true"></i> </button>
                                     </div>
                                 </div>
                             </div>

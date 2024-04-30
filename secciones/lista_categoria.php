@@ -49,7 +49,7 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Nombre</th>
               <th>Fecha de creación</th> 
               <th>Negocio</th>         
-              <th>Editar</th>
+              <th>Opciones</th>
             </tr>
             </thead>
             <tbody>
@@ -63,14 +63,14 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><?php if ($registro['link'] == "sudo_bodega") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td>                                    
                   <?php if ($_SESSION['rolSudoAdmin']) { ?>
                   <td>
-                    <a class="btn btn-danger" href="lista_categoria.php?txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i> Eliminar
+                    <a class="btn btn-danger btn-sm" href="lista_categoria.php?txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i> 
                     </a>
                   </td>
                   <?php } else {?>
                   <td>
-                  <a class="btn btn-danger" href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>&txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i> Eliminar
+                  <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $lista_categoria_link;?>&txtID=<?php echo $registro['categoria_id']; ?>" role="button" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i> 
                     </a>
                   </td>
                 </tr>  

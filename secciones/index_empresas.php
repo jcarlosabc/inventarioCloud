@@ -49,11 +49,11 @@ $responsable = $_SESSION['usuario_id'];
                 <td><?php echo $registro['empresa_nit']; ?></td>
                 <td><?php echo $registro['codigo_seguridad']; ?></td>
                 <td class="text-center">
-                  <a class="btn btn-info" href="editar_empresa.php?txtID=<?php echo $registro['empresa_id']; ?>"role="button"title="Editar">
-                    <i class="fas fa-edit"></i>Editar
+                  <a class="btn btn-info btn-sm" href="editar_empresa.php?txtID=<?php echo $registro['empresa_id']; ?>"role="button"title="Editar">
+                    <i class="fas fa-edit"></i>
                   </a>
-                  <a class="btn btn-danger"href="index_empresas.php?txtID=<?php echo $registro['empresa_id']; ?>" role="button"title="Eliminar">
-                      <i class="fas fa-trash-alt"></i>Eliminar
+                  <a class="btn btn-danger btn-sm"href="index_empresas.php?txtID=<?php echo $registro['empresa_id']; ?>" role="button"title="Eliminar">
+                      <i class="fas fa-trash-alt"></i>
                   </a>
                 </td>
                 </tr> 

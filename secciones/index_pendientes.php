@@ -60,7 +60,7 @@
               <th>Método de Pago</th>
               <th>Plazo Inicial</th>
               <th>Tiempo Restante</th>
-              <th>Abonar</th>
+              <th>Opciones</th>
 
             </tr>
             </thead>
@@ -78,19 +78,20 @@
                   <td><?php echo $registro['plazo']; ?> <?php if ($registro['tiempo'] == 0) { echo "Dias" ;}else {echo "Meses" ;}; ?></td>
                   <td>
                     <?php if ($registro['estado_venta'] != 1) { ?>
-                        <?php echo $plazo . " " ; if ($registro['tiempo'] == 0) { echo "Dias" ;}else {echo "Meses" ;}; ?>
-                        <?php if ($plazo == 20 && $plazo <= 8) { ?>
+                      <?php 
+                            $venta_fecha = $registro['venta_fecha'];
+                            $plazo = $registro['plazo'];
+                            $fechaInicio = strtotime($venta_fecha);
+                            $fechaActual = time(); // Obtener la fecha actual
+                            $fechaActuales = strtotime(date("Y-m-d", $fechaActual));
+                            $diferenciaDias = ($fechaActuales - $fechaInicio) / (60*60*24);
+                            $plazo -= $diferenciaDias;
+                            if ($plazo < 0) {$plazo =  0 ; }
+                            echo $plazo ." ";
+                             if ($registro['tiempo'] == 0) { echo "Dias" ;}else {echo "Meses" ;}; ?>
+                        <?php if ($plazo == 20 && $plazo >= 8) { ?>
                           <article class="text-warning">
                             <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong> Quedan <strong class="text-warning">
-                              <?php $venta_fecha = $registro['venta_fecha'];
-                                  $plazo = $registro['plazo'];
-                                  $fechaInicio = strtotime($venta_fecha);
-                                  $fechaActual = time(); // Obtener la fecha actual
-                                  $fechaActuales = strtotime(date("Y-m-d", $fechaActual));
-                                  $diferenciaDias = ($fechaActuales - $fechaInicio) / (60*60*24);
-                                  $plazo -= $diferenciaDias;
-                                  // if ($plazo < 0) {$plazo = 0; }
-                                  echo $plazo; ?>
                               </strong> días <br>para vencerse el plazo, del pago de esta <strong>Factura</strong>.
                           </article>
                         <?php } else if($plazo <= 8 && $plazo >= 1){ ?>
@@ -102,7 +103,7 @@
                               $fechaActuales = strtotime(date("Y-m-d", $fechaActual));
                               $diferenciaDias = ($fechaActuales - $fechaInicio) / (60*60*24);
                               $plazo -= $diferenciaDias;
-                              // if ($plazo < 0) {$plazo = 0;}
+                              if ($plazo < 0) {$plazo = 0;}
                               echo $plazo;?>
                               </strong> días <br>para vencerse el plazo, del pago de esta <strong>Factura</strong>.
                           </article>
@@ -115,9 +116,11 @@
                               $fechaActuales = strtotime(date("Y-m-d", $fechaActual));
                               $diferenciaDias = ($fechaActuales - $fechaInicio) / (60*60*24);
                               $plazo -= $diferenciaDias;
-                              if ($plazo < 0) {$plazo = 0;}
-                              echo $plazo;?>
-                              </strong> días <br>Plazo <strong>Vencido</strong>.
+                              $dias_retraso = abs($plazo);
+                              if ($plazo < 0) {$plazo_vencido = 0;}
+                              echo $plazo_vencido;?>
+                              </strong> días <br>Plazo <strong>Vencido</strong>. <br>
+                              </strong> Días de Retraso: <strong><?php echo $dias_retraso ?></strong>.
                           </article>
                         <?php }else if($registro['estado_venta'] == 1 ){ ?>
                           <a class="btn btn-success btn-sm" role="button" title="Pagado">

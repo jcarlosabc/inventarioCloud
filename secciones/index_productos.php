@@ -53,9 +53,8 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
               <th>Marca</th>
               <th>Modelo</th>
               <th>Precio de compra</th>
-              <th>Precio de Venta al Detal</th>
-              <th>Precio de Venta al por mayor</th>
-                                                
+              <th>Precio al Detal</th>
+              <th>Precio al por mayor</th>
               <th>Categoría</th>
               <th>Cantidad en Stock</th>
               <th>Garantía</th>
@@ -75,40 +74,39 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
                   <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
                   <td class="tdColor"><?php echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ','); ?></td>                  
-                
                   <td>
                  <!-- corregir mostrar de donde llega el producto -->   <?php if($registro['categoria_id'] == 0){ ?> 
-                      <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Este producto viene de Bodega debe <strong>Asignarle o Crearle </strong>una <strong>Categoria.</strong></article>
-                    <?php } else { echo $registro['categoria_nombre']; }?>
+                  <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Este producto viene de Bodega debe <strong>Asignarle o Crearle </strong>una <strong>Categoria.</strong></article>
+                  <?php } else { echo $registro['categoria_nombre']; }?>
                   </td>
                   <td><?php echo $registro['producto_stock_total']; ?></td>
                   <td><?php echo $registro['producto_fecha_garantia']; ?></td>
-                   <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td> 
+                  <td><?php if ($registro['link'] == "sudo_admin") {echo "Bodega";} else { echo $registro['empresa_nombre']; } ?></td> 
      
                    
                   <?php if (!$_SESSION['rolUserEmpleado']) { ?>
                   <td>
-                    <a class="btn btn-purple" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Añadir Stock">
-                      <i class="fa fa-plus-circle"></i> Añadir Stock
+                    <a class="btn btn-purple btn-sm" style="background: #6f42c1; color: white;" href="ingresar_stock.php?txtID=<?php echo $registro['producto_id'];?><?php echo $link ?>" role="button" title="Añadir Stock">
+                      <i class="fa fa-plus-circle"></i> 
                     </a>
                     <?php } ?>
                     <?php if ($_SESSION['rolSudoAdmin']) { ?>
-                      <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_producto_link . '?' . http_build_query(['data-value' => $registro['link']]); ?><?php echo '&txtID=' . $registro['producto_id']; ?>" role="button" title="Editar">
-                      <i class="fas fa-edit"></i>Editar
+                      <a class="btn btn-info btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $editar_producto_link . '?' . http_build_query(['data-value' => $registro['link']]); ?><?php echo '&txtID=' . $registro['producto_id']; ?>" role="button" title="Editar">
+                      <i class="fas fa-edit"></i>
                     <?php } else if($_SESSION['roladminlocal']) { ?>
-                      <a class="btn btn-info" href="<?php echo $url_base;?>secciones/<?php echo $editar_producto_link . '&txtID=' . $registro['producto_id']; ?>" role="button" title="Editar"> 
-                       <i class="fas fa-edit"></i>Editar
+                      <a class="btn btn-info btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $editar_producto_link . '&txtID=' . $registro['producto_id']; ?>" role="button" title="Editar"> 
+                       <i class="fas fa-edit"></i>
                    </a>
                    <?php } ?>
                    </a>
                    <?php if (!$_SESSION['rolSudoAdmin']) { ?>
-                    <a class="btn btn-primary" href="<?php echo $url_base;?>secciones/<?php echo $trasladar_producto_local_link . '&txtID=' . $registro['producto_id']; ?>"role="button"title="Enviar">
-                      <i class="fa fa-share"></i>Enviar
+                    <a class="btn btn-primary btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $trasladar_producto_local_link . '&txtID=' . $registro['producto_id']; ?>"role="button"title="Enviar">
+                      <i class="fa fa-share"></i>
                     </a>
                     <?php } ?>
                     <?php if ($_SESSION['rolSudoAdmin']) { ?>
-                    <a class="btn btn-danger" href="index_productos.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar">
-                      <i class="far fa-trash-alt"></i>Eliminar 
+                    <a class="btn btn-danger btn-sm" href="index_productos.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar">
+                      <i class="far fa-trash-alt"></i> 
                     </a>
                     <?php } ?>
                   </td>

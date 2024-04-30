@@ -184,7 +184,6 @@ if ($_POST) {
     header("Location:".$url_base);
   }
 
-
   }
 }
 
@@ -361,8 +360,7 @@ $sentencia_estadisticas = $conexion->prepare("  SELECT
             </div>
           </section>
            <!--Estadisticas de Dinero -->
-
-           <div class="card">
+                      <div class="card">
               <div class="card-header">
                 <h3 class="card-title">
                   <i class="fa fa-asterisk mr-1" style="font-size: 40px;"></i>

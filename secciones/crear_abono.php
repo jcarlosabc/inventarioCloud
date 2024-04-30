@@ -19,7 +19,7 @@ if ($encontrado_usuario) {
 if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
 
-    $sentencia=$conexion->prepare("SELECT hc.historial_abono, hc.historial_fecha, hc.historial_hora, hc.historial_dinero_pendiente, hc.historial_id_dnp,
+    $sentencia=$conexion->prepare("SELECT hc.historial_abono, hc.historial_fecha, hc.historial_hora, hc.historial_dinero_pendiente, hc.historial_id_dnp, hc.metodo_pago, 
     v.venta_id, v.venta_total,v.venta_cambio, v.venta_fecha, v.venta_hora, v.estado_venta, 
     c.cliente_id,c.cliente_nombre,c.cliente_apellido, c.cliente_telefono, c.cliente_nit FROM historial_credito hc JOIN venta v ON hc.historial_venta_id = v.venta_id LEFT JOIN cliente c ON v.cliente_id = c.cliente_id WHERE hc.historial_venta_codigo = :venta_codigo;");
     $sentencia->bindParam(":venta_codigo",$txtID);
@@ -56,124 +56,80 @@ if ($_POST) {
     $fecha_abono=$fechaActual;
     $hora_abono=$horaActual;
 
+    if ($metodo_pago_abono == 0) {
+      $metodo_pago = "Efectivo";
+    }else if($metodo_pago_abono == 1){
+      $banco_transferencia= isset($_POST['banco_transferencia']) ? $_POST['banco_transferencia'] : "";    
+      if ($banco_transferencia == 00) {
+          $metodo_pago = "Davivienda";
+        }else if ($banco_transferencia == 01) {
+        $metodo_pago = "Bancolombia";
+      }else if ($banco_transferencia == 02) {
+        $metodo_pago = "Nequi";
+      }
+  }
+
     if ($lista_historial) {
-            $historial_dinero_pendiente = $venta_cambio + $historial_abono;
-            $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
-                    historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                    historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                $sentencia = $conexion->prepare($sql);
-                $params = array(
-                $historial_id_dnp,
-                $venta_id, 
-                $venta_codigo, 
-                $cliente_id, 
-                $historial_abono,
-                $historial_dinero_pendiente, 
-                $fecha_abono, 
-                $hora_abono,
-                $responsable
-              );
-            $sentencia->execute($params);
+        $historial_dinero_pendiente = $venta_cambio + $historial_abono;
+        $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
+                historial_cliente_id, historial_abono, historial_dinero_pendiente, metodo_pago, 
+                historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sentencia = $conexion->prepare($sql);
+            $params = array(
+            $historial_id_dnp,
+            $venta_id, 
+            $venta_codigo, 
+            $cliente_id, 
+            $historial_abono,
+            $historial_dinero_pendiente,
+            $metodo_pago, 
+            $fecha_abono, 
+            $hora_abono,
+            $responsable
+          );
+        $sentencia->execute($params);
 
-             $venta_cambio_positivo = abs($venta_cambio);
-             $estado = 0;
-             if ($historial_abono >= $venta_cambio_positivo) {
-               $estado = 1;
-             }
+        $venta_cambio_positivo = abs($venta_cambio);
+        $estado = 0;
+        if ($historial_abono >= $venta_cambio_positivo) {
+          $estado = 1;
+        }
 
-            $sentencia_venta = $conexion->prepare("UPDATE venta SET 
-            venta_pagado = venta_pagado+:historial_abono,
-            venta_cambio = venta_cambio+:historial_cambio,
-            estado_venta=:estado
-            WHERE venta_id = :venta_id AND venta_codigo = :venta_codigo");
+        $sentencia_venta = $conexion->prepare("UPDATE venta SET 
+        venta_pagado = venta_pagado+:historial_abono,
+        venta_cambio = venta_cambio+:historial_cambio,
+        estado_venta=:estado
+        WHERE venta_id = :venta_id AND venta_codigo = :venta_codigo");
 
-            $sentencia_venta->bindParam(":venta_id", $venta_id);
-            $sentencia_venta->bindParam(":historial_abono", $historial_abono);
-            $sentencia_venta->bindParam(":historial_cambio", $historial_abono);
-            $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
-            $sentencia_venta->bindParam(":estado", $estado);
-            $resultado_upd = $sentencia_venta->execute();  
+        $sentencia_venta->bindParam(":venta_id", $venta_id);
+        $sentencia_venta->bindParam(":historial_abono", $historial_abono);
+        $sentencia_venta->bindParam(":historial_cambio", $historial_abono);
+        $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
+        $sentencia_venta->bindParam(":estado", $estado);
+        $resultado_upd = $sentencia_venta->execute();  
             
-            if ($resultado_upd) {
-              echo '<script>
-              Swal.fire({
-                  title: "Abono Procesado Correctamente!",
-                  icon: "success",
-                  confirmButtonText: "¡Entendido!"
-              }).then((result) => {
-                  if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/'.$crear_abono_link.'";
-                  }
-              })
-              </script>';
+          if ($resultado_upd) {
+            echo '<script>
+            Swal.fire({
+                title: "Abono Procesado Correctamente!",
+                icon: "success",
+                confirmButtonText: "¡Entendido!"
+            }).then((result) => {
+                if(result.isConfirmed){
+                  window.location.href = "'.$url_base.'secciones/'.$crear_abono_link.'";
+                }
+            })
+            </script>';
           }else {
-              echo '<script>
-              Swal.fire({
-                  title: "Error al Procesar Cuota",
-                  icon: "error",
-                  confirmButtonText: "¡Entendido!"
-              });
-              </script>';
+            echo '<script>
+            Swal.fire({
+                title: "Error al Procesar Cuota",
+                icon: "error",
+                confirmButtonText: "¡Entendido!"
+            });
+            </script>';
           }
-} else {
-          $historial_dinero_pendiente = $venta_cambio + $historial_abono;
-            $sql = "INSERT INTO historial_credito (historial_id_dnp, historial_venta_id, historial_venta_codigo, 
-                    historial_cliente_id, historial_abono, historial_dinero_pendiente, 
-                    historial_fecha, historial_hora, historial_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                $sentencia = $conexion->prepare($sql);
-                $params = array(
-                $historial_id_dnp,
-                $venta_id, 
-                $venta_codigo, 
-                $cliente_id, 
-                $historial_abono,
-                $historial_dinero_pendiente, 
-                $fecha_abono, 
-                $hora_abono,
-                $responsable
-              );
-            $sentencia->execute($params);
-
-            $venta_cambio_positivo = abs($venta_cambio);
-            $estado = 0;
-            if ($historial_abono >= $venta_cambio_positivo) {
-              $estado = 1;
-            }
-            $sentencia_venta = $conexion->prepare("UPDATE venta SET 
-                  venta_pagado = venta_pagado + :historial_abono,
-                  venta_cambio = venta_cambio + :historial_cambio,
-                  estado_venta =:estado                  
-              WHERE venta_id = :venta_id AND venta_codigo = :venta_codigo");
-
-            $sentencia_venta->bindParam(":venta_id", $venta_id);
-            $sentencia_venta->bindParam(":historial_abono", $historial_abono);
-            $sentencia_venta->bindParam(":historial_cambio", $historial_abono);
-            $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
-            $sentencia_venta->bindParam(":estado", $estado);
-            $resultado = $sentencia_venta->execute();   
-
-            if ($resultado) {
-                echo '<script>
-                Swal.fire({
-                    title: "Abono Procesado Correctamente!",
-                    icon: "success",
-                    confirmButtonText: "¡Entendido!"
-                }).then((result) => {
-                    if(result.isConfirmed){
-                        window.location.href = "'.$url_base.'secciones/'.$crear_abono_link.'";
-                    }
-                })
-                </script>';
-            }else {
-                echo '<script>
-                Swal.fire({
-                    title: "Error al Procesar Cuota",
-                    icon: "error",
-                    confirmButtonText: "¡Entendido!"
-                });
-                </script>';
-            }
-        }  
+      } 
       
          // Buscando caja del vendedor actual
         $sentencia=$conexion->prepare("SELECT * FROM caja WHERE caja_id = :caja_id ");
@@ -224,7 +180,6 @@ if ($_POST) {
             $params = array($caja_efectivo);
             $sentencia->execute($params);
 
-
         }else if($metodo_pago_abono == 1){
             $banco_transferencia= isset($_POST['banco_transferencia']) ? $_POST['banco_transferencia'] : "";    
             if ($banco_transferencia == 00) {
@@ -247,7 +202,6 @@ if ($_POST) {
               $sentencia = $conexion->prepare($sql);
               $params = array($caja_bancolombia, $result_cajaId, $link );
               $sentencia->execute($params);
-
               
               $sql = "UPDATE dtpmp SET bancolombia = ?";
               $sentencia = $conexion->prepare($sql);
@@ -272,8 +226,6 @@ if ($_POST) {
 
 ?>
 
-<!-- left column -->
-<div class="">
   <!-- general form elements -->
     <div class="card card-warning" style="margin-top:7%">
           <img src="../dist/img/logos/logofernando.jpg" style="width: 88px;margin-left: 20%;margin-bottom: 1%;" alt="AdminLTE Logo" class="float-right brand-image img-circle elevation-3">
@@ -373,7 +325,7 @@ if ($_POST) {
                               <th>Fecha:</th>
                                 <td></strong><?php echo $registro['historial_fecha']." / ".$registro['historial_hora']?></td>
                                 <th>Abono:</th>
-                                  <td class="tdColor"></strong><?php echo '$' . number_format($registro['historial_abono'], 0, '.', ',') ?></td>
+                                  <td class="tdColor"></strong><?php echo '$' . number_format($registro['historial_abono'], 0, '.', ',') ." " ?> &nbsp;<span class="text-info" ><?php echo $registro['metodo_pago']; ?> </span></td>
                                 <th>Pago Pendiente:</th>
                                   <td class="text-danger"></strong><?php echo '$' . number_format(abs($registro['historial_dinero_pendiente']), 0, '.', ','); ?></td>
                             </tr>
@@ -441,7 +393,5 @@ if ($_POST) {
           <input type="hidden" name="historial_id_dnp" value="<?php echo $historial_id_dnp?>">
       </form>
   </div>
-  <!-- /.card -->
-</div>
 
 <?php include("../templates/footer.php") ?>

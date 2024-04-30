@@ -126,14 +126,14 @@ if ($_POST) {
                         <textarea name="gasto_motivo" style="height: 50px;" class="form-control camposTabla" cols="20" rows="2" required></textarea>
                     </div>
                 </div>
-            </div>
-            <div class="row" style="justify-content:center">
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <label for="producto_precio_compra" class="textLabel">Precio</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                        <label for="producto_precio_compra" class="textLabel">Monto</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                         <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="gasto_precio" id="gastoPrecio" required>
                     </div>
                 </div>
+            </div>
+            <div class="row" style="justify-content:center">
                 <?php if ($responsable == 1) { ?>
                     <div class="col-sm-3">
                         <div class="form-group">

@@ -79,15 +79,15 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                   <td><a  <?php if($registro['cliente_id'] != 0 ){ ?> href="editar_clientes.php?link=sudo_bodega&txtID=<?php echo $registro['cliente_id']; ?>" <?php }?>    ><?php echo $registro['cliente_nombre']; ?></a></td>
                   <td><?php echo  $registro['usuario_nombre']; ?></td>
                   <td>
-                      <a class="btn btn-primary btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_detalles_link ;?>=<?php echo $registro['venta_id']; ?>" role="button" title="Detalles">
-                      <i class="fas fa-eye"></i> Ver
+                    <a class="btn btn-primary btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_detalles_link ;?>=<?php echo $registro['venta_id']; ?>" role="button" title="Detalles">
+                      <i class="fas fa-eye"></i> 
                     </a>
                     <a class="btn btn-warning btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $devolucion_venta.'&txtID='.$registro['venta_id']; ?>" role="button" title="Devolucion">
-                      <i class="fas fa-retweet"></i> Devolución
+                      <i class="fas fa-retweet"></i> 
                     </a>
-                      <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link_bodega.'&txtID='.$registro['venta_id']; ?>" role="button" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i> Eliminar 
-                      </a>
+                    <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link_bodega.'&txtID='.$registro['venta_id']; ?>" role="button" title="Eliminar">
+                      <i class="fas fa-trash-alt"></i>  
+                    </a>
                   </td>
                 </tr>  
               <?php } ?>
