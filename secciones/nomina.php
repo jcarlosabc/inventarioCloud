@@ -10,9 +10,10 @@ if(isset($_GET['txtID'])){
 
 $crear_nomina  = "crear_nomina.php";
 $sentencia=$conexion->prepare("SELECT n.*, u.*, e.empresa_nombre, e.empresa_nit, empresa_direccion, empresa_telefono
-FROM nomina n JOIN usuario u ON n.nomina_usuario_id = u.usuario_id JOIN empresa e ON n.link = e.link");
+FROM nomina n JOIN usuario u ON n.nomina_usuario_id = u.usuario_id JOIN empresa e ON u.link = e.link");
 $sentencia->execute();
 $lista_nomina = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+
 
 ?>
       <br>
@@ -67,9 +68,13 @@ $lista_nomina = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                       <input type="hidden" name="empresa_telefono" value="<?php echo $registro['empresa_telefono']; ?>">
                       <input type="hidden" name="empresa_nit" value="<?php echo $registro['empresa_nit']; ?>">
                       <input type="hidden" name="usuario_cedula" value="<?php echo $registro['usuario_cedula']; ?>">
+                      <input type="hidden" name="usuario_id" value="<?php echo $registro['usuario_id']; ?>">
                       <input type="hidden" name="usuario_nombre" value="<?php echo $registro['usuario_nombre']; ?>">
                       <input type="hidden" name="usuario_apellido" value="<?php echo $registro['usuario_apellido']; ?>">
+                      <input type="hidden" name="quincena_empleado" value="<?php echo $registro['quincena_empleado']; ?>">
                       <input type="hidden" name="nomina_cantidad" value="<?php echo $registro['nomina_cantidad']; ?>">
+                      <input type="hidden" name="nomina_prestamo" value="<?php echo $registro['nomina_prestamo']; ?>">
+                      <input type="hidden" name="nomina_estado" value="<?php echo $registro['nomina_estado']; ?>">
                       <input type="hidden" name="nomina_fecha" value="<?php echo $registro['nomina_fecha']; ?>">
                       <input type="hidden" name="nomina_hora" value="<?php echo $registro['nomina_hora']; ?>">
                     <button type="submit" class="btn btn-primary"><i class="fas fa-download"></i> Generar Ticket</button>

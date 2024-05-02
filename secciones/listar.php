@@ -6,7 +6,7 @@ if(isset($_GET['link'])){
 // Inicializa el array para almacenar los resultados
 $respuesta = array();
 try {
-    $resultado = $conexion->prepare("SELECT * FROM cliente ");
+    $resultado = $conexion->prepare("SELECT * FROM cliente");
     $resultado->execute();
     $lista_cliente = $resultado->fetchAll(PDO::FETCH_ASSOC);
 

@@ -11,7 +11,7 @@ if (isset($_GET['txtID'])) {
 
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
     // Obtener la categoría actual del producto
-    $datos_usuario = $conexion->prepare("SELECT * FROM usuario  WHERE usuario.usuario_id =:usuario_id");
+    $datos_usuario = $conexion->prepare("SELECT * FROM usuario WHERE usuario.usuario_id =:usuario_id");
 
     $datos_usuario->bindParam(":usuario_id", $txtID);
     $datos_usuario->execute();
@@ -22,7 +22,8 @@ if (isset($_GET['txtID'])) {
     $usuario_telefono = $registro["usuario_telefono"];
     $usuario_email = $registro["usuario_email"];
     $usuario_clave = $registro["usuario_clave"];
-    $usuario_tipo = $registro["rol"] ;
+    $usuario_tipo = $registro["rol"];
+    $quincena_empleado = $registro["quincena_empleado"];
     $usuario_caja_actual_id = isset($registro["caja_id"])?$registro["caja_id"]:0;
 
     if ($_POST) {
@@ -36,13 +37,19 @@ if (isset($_GET['txtID'])) {
         // $usuario_caja = isset($_POST["usuario_caja"]) ? $_POST["usuario_caja"] : "";
         $username = "u" . $usuario_apellido;
         $responsable = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id']  : 0;
+        $quincena_empleado = isset($_POST['quincena_empleado']) ? $_POST['quincena_empleado'] : "";
+        $quincena_empleado = str_replace(array('$','.', ','), '', $quincena_empleado);
 
         if ($_SESSION['valSudoAdmin']) {
-            $admin = "admin";
+            if ($txtID == 1) {
+                $admin = "admin";
+            }else {
+                $admin = $username;
+            }
             $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
             usuario_nombre=:usuario_nombre, usuario_apellido=:usuario_apellido,usuario_telefono=:usuario_telefono,
             usuario_email=:usuario_email, usuario_usuario =:usuario_usuario,
-            usuario_clave=:usuario_clave, responsable = :responsable
+            usuario_clave=:usuario_clave, quincena_empleado=:quincena_empleado, responsable = :responsable
             WHERE usuario_id =:usuario_id");
     
             $sentencia_edit->bindParam(":usuario_id", $txtID);
@@ -52,6 +59,7 @@ if (isset($_GET['txtID'])) {
             $sentencia_edit->bindParam(":usuario_email", $usuario_email);
             $sentencia_edit->bindParam(":usuario_usuario", $admin);
             $sentencia_edit->bindParam(":usuario_clave", $usuario_clave);
+            $sentencia_edit->bindParam(":quincena_empleado", $quincena_empleado);
             // $sentencia_edit->bindParam(":rol", $usuario_rol);
             // $sentencia_edit->bindParam(":caja_id", $usuario_caja);
             $sentencia_edit->bindParam(":responsable", $responsable);
@@ -60,7 +68,7 @@ if (isset($_GET['txtID'])) {
             $sentencia_edit = $conexion->prepare("UPDATE usuario SET 
             usuario_nombre=:usuario_nombre, usuario_apellido=:usuario_apellido,usuario_telefono=:usuario_telefono,
             usuario_email=:usuario_email, usuario_usuario =:usuario_usuario,
-            usuario_clave=:usuario_clave, responsable = :responsable
+            usuario_clave=:usuario_clave, quincena_empleado=:quincena_empleado, responsable = :responsable
             WHERE usuario_id =:usuario_id");
     
             $sentencia_edit->bindParam(":usuario_id", $txtID);
@@ -70,6 +78,7 @@ if (isset($_GET['txtID'])) {
             $sentencia_edit->bindParam(":usuario_email", $usuario_email);
             $sentencia_edit->bindParam(":usuario_usuario", $username);
             $sentencia_edit->bindParam(":usuario_clave", $usuario_clave);
+            $sentencia_edit->bindParam(":quincena_empleado", $quincena_empleado);
             // $sentencia_edit->bindParam(":rol", $usuario_rol);
             // $sentencia_edit->bindParam(":caja_id", $usuario_caja);
             $sentencia_edit->bindParam(":responsable", $responsable);
@@ -109,7 +118,7 @@ if (isset($_GET['txtID'])) {
     <div class="card card-warning" style="margin-top:7%">
         <div class="card-header text-center">
         <?php if ($_SESSION['valSudoAdmin']) { ?>
-            <h2 class="card-title textTabla">EDITAR ADMIN &nbsp;</h2>
+            <h2 class="card-title textTabla">EDITAR DATOS &nbsp;</h2>
             <?php } else{ ?>
             <h2 class="card-title textTabla">EDITAR EMPLEADOS &nbsp;</h2>            
             <?php }?>
@@ -147,14 +156,20 @@ if (isset($_GET['txtID'])) {
                     </div>
                 </div>
                 <div class="row" style="justify-content:center">
-                    <div class="col-sm-3">
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label class="textLabel">Nómina</label>
+                            <input type="text" class="form-control camposTabla_dinero" id="quincenaEmpleado" name="quincena_empleado" value="<?php echo '$ ' . number_format($quincena_empleado, 0, '.', ','); ?>">
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Clave</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="hidden" class="form-control camposTabla" name="usuario_clave_db" value="<?php echo $usuario_clave ?>" >
                             <input type="password" class="form-control camposTabla" name="usuario_clave_1" id="usuario_clave_1E" >
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <div class="form-group">
                             <label class="textLabel">Confime la Clave</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
                             <input type="password" class="form-control camposTabla" name="usuario_clave_2" id="usuario_clave_2E" >

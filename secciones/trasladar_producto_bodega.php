@@ -253,7 +253,7 @@ if ($_POST) {
                                 <select class="form-control select2 camposTabla"name="empresa_destino">                                    
                                     <option value="">Escoger Local</option> 
                                     <?php foreach ($lista_empresas as $registro) {?>   
-                                        <option value="<?php echo $registro['empresa_id'] . '-' . $registro['link']?>"><?php echo $registro['empresa_nombre']; ?></option> 
+                                        <option value="<?php echo $registro['empresa_id'] . '-' . $registro['link']; ?>"><?php echo $registro['empresa_nombre']; ?></option> 
                                     <?php } ?>
                                 </select>
                             </div>

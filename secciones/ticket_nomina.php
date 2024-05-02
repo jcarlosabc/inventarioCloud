@@ -1,6 +1,6 @@
 <?php
 
-
+include("../db.php");
 	# Incluyendo librerias necesarias #
     require ('code128_nomina.php');
     
@@ -25,6 +25,27 @@
     $nomina_cantidad = '$ ' . number_format($nomina_cantidad, 0, '.', ','); 
     $nomina_fecha = isset($_POST['nomina_fecha']) ? $_POST['nomina_fecha'] : "No hay nada";
     $nomina_hora = isset($_POST['nomina_hora']) ? $_POST['nomina_hora'] : "No hay nada";
+    $nomina_prestamo = isset($_POST['nomina_prestamo']) ? $_POST['nomina_prestamo'] : "No hay nada";
+    $nomina_prestamo = '$ ' . number_format($nomina_prestamo, 0, '.', ','); 
+    $quincena_empleado = isset($_POST['quincena_empleado']) ? $_POST['quincena_empleado'] : "No hay nada";
+    $quincena_empleado = '$ ' . number_format($quincena_empleado, 0, '.', ','); 
+    $nomina_estado = isset($_POST['nomina_estado']) ? $_POST['nomina_estado'] : "No hay nada";
+    $usuario_id = isset($_POST['usuario_id']) ? $_POST['usuario_id'] : "No hay nada";
+    $sentencia = $conexion->prepare("SELECT * 
+    FROM nomina 
+    WHERE nomina_usuario_id = :usuario_ids 
+    AND nomina_estado = 1 
+    AND nomina_prestamo = (SELECT MAX(nomina_prestamo) FROM nomina WHERE nomina_usuario_id = :usuario_id)
+    ORDER BY nomina_usuario_id DESC");
+$sentencia->bindParam(":usuario_id", $usuario_id);
+$sentencia->bindParam(":usuario_ids", $usuario_id);
+$sentencia->execute();
+$nomina_vale = $sentencia->fetch(PDO::FETCH_LAZY);
+if ($nomina_vale) {
+$infoId = $nomina_vale['nomina_id'];
+$nomina_psrestamo = $nomina_vale['nomina_prestamo'];  
+}
+
  
     # Encabezado #
     $pdf->SetFont('Arial','B',10);
@@ -45,7 +66,18 @@
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Datos del Empleado "),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Cc.: ". $usuario_cedula ),0,'C',false);
     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Nombre: ". $usuario_nombre . " " . $usuario_apellido),0,'C',false);
-    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Monto Pagado: " . $nomina_cantidad),0,'C',false);
+    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Pago Normal: " . $quincena_empleado),0,'C',false);
+    // if ($nomina_estado == 0) {
+    //     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","vale: -" . $nomina_prestamo),0,'C',false);
+    // }else if($nomina_estado == 1){
+    //     $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","vale: -" . $nomina_prestamo),0,'C',false);
+    // }
+    if ($nomina_vale) {
+        $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","vale : -" . $nomina_psrestamo),0,'C',false);
+    }else {
+        $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","vale : -" . $nomina_prestamo),0,'C',false);
+    }
+    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","Pago: " . $nomina_cantidad),0,'C',false);
     $pdf->SetFont('Arial','B',10);
     // $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1",strtoupper("Ticket Nro: " . $usuario_cedula)),0,'C',false);
     $pdf->SetFont('Arial','',9);
@@ -155,7 +187,7 @@
     $pdf->Ln(10);
 
     // $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","*** Precios de productos incluyen impuestos. Para poder realizar un reclamo o devolución debe de presentar este ticket ***"),0,'C',false);
-    $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","***Para poder realizar un reclamo debe de presentar este ticket ***"),0,'C',false);
+    // $pdf->MultiCell(0,5,iconv("UTF-8", "ISO-8859-1","***Para poder realizar un reclamo debe de presentar este ticket ***"),0,'C',false);
 
     $pdf->SetFont('Arial','B',9);
     $pdf->Cell(0,7,iconv("UTF-8", "ISO-8859-1","Tu labor es importante"),'',0,'C');

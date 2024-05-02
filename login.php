@@ -159,8 +159,8 @@ if ($_POST) {
           <div class="row text-center ">
             <div class="col-12"class="" >
               <button type="submit" class="btn btn-primary btn-block">Entrar  <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
-              <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Querido usuario:  </strong>La prueba del sistema <strong>termina en 1 días</strong>, para continuar con el servicio debe ser cancelado en su totalidad en los <strong>próximos días.</strong></article>
-              Cualquier <strong>configuración, actualización y recomendaciones</strong> se irán agregando en los 3 meses de garantía.
+              <!-- <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Querido usuario:  </strong>La prueba del sistema <strong>termina en 1 días</strong>, para continuar con el servicio debe ser cancelado en su totalidad en los <strong>próximos días.</strong></article>
+              Cualquier <strong>configuración, actualización y recomendaciones</strong> se irán agregando en los 3 meses de garantía. -->
               
             </div>
           </div>

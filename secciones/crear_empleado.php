@@ -40,7 +40,6 @@ if ($_POST) {
         // })
         // </script>';
     // } else {
-        echo " quincena_empleado = > " .$quincena_empleado;
         $sentencia = $conexion->prepare("INSERT INTO usuario (usuario_id,
                 usuario_nombre, usuario_apellido, usuario_telefono, usuario_cedula, usuario_email, usuario_usuario,
                 usuario_clave, quincena_empleado, rol, caja_id, link, responsable) 
@@ -100,9 +99,9 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <br>
-    <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero debe crear <strong>Cajas</strong> para asignar a un <strong>Empleado</strong>. 
-        <span><a href="<?php echo $url_base;?>secciones/<?php echo $crear_caja_link;?>"><button type="button" class="btn btn-outline-primary">Crear Caja</button></a></span>
-    </article>
+    <!-- <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero debe crear <strong>Cajas</strong> para asignar a un <strong>Empleado</strong>.  -->
+        <!-- <span><a href="<?php echo $url_base;?>secciones/<?php echo $crear_caja_link;?>"><button type="button" class="btn btn-outline-primary">Crear Caja</button></a></span> -->
+    <!-- </article> -->
     <article> <strong class="text-info"><i class="fa fa-info-circle"></i> Nota: </strong>La misma <strong> Caja</strong> puede ser <strong>Asignada </strong>a varios empleados.</article>
     <div class="card card-primary" style="margin-top:7%">
         <div class="card-header" >
@@ -186,7 +185,7 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                         <?php } ?>
                     <div class="col-sm-3">
                         <div class="form-group">
-                            <label class="textLabel">Caja</label> &nbsp;<i class="nav-icon fas fa-edit"></i>
+                            <label class="textLabel">Caja</label> 
                             <div class="form-group">
                                 <!-- php if($lista_cajas){ ?>  -->
                                     <select class="form-control select2 camposTabla" style="width: 100%;" name="usuario_caja">
@@ -196,7 +195,7 @@ $lista_empresas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                                         <?php } ?>
                                     </select>
                                         <!-- ?php } else { ?> -->
-                                           <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Debe tener minimo una caja para asignar al <strong>Empleado</strong></article>
+                                           <!-- <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Debe tener minimo una caja para asignar al <strong>Empleado</strong></article> -->
                                 <!-- <php } ?> -->
                             </div>
                         </div>

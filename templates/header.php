@@ -223,7 +223,7 @@
     <!-- /.navbar -->
       
       <!-- Main Sidebar Container -->
-      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <aside class="main-sidebar sidebar-primary elevation-4" >
       <!-- Brand Logo -->
        <a href="#" class="brand-link">
         <img src="../dist/img/logos/logofernando.jpg" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
@@ -549,14 +549,14 @@
                   </a>
                 </li>
               </ul> -->
-              <!-- <ul class="nav nav-treeview">              
+              <ul class="nav nav-treeview">              
                 <li class="nav-item">
                   <a href="crear_nomina.php" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Pagar Nómina</p>
                   </a>
                 </li>
-              </ul> -->
+              </ul>
               <ul class="nav nav-treeview">              
                 <li class="nav-item">
                   <a href="nomina.php" class="nav-link">

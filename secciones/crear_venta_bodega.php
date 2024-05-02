@@ -2,10 +2,10 @@
 <?php 
 if ($_SESSION['valSudoAdmin']) {
     $ventas_link = "crear_venta_bodega.php";
-    $ventas_detalles_link = "detalles.php";
+    $ventas_detalles_link = "detalles.php?txtID";
  }else{
     $ventas_link = "crear_venta_bodega.php?link=sudo_bodega";
-    $ventas_detalles_link = "detalles.php?link=sudo_bodega";
+    $ventas_detalles_link = "detalles.php?link=sudo_bodega&txtID";
  }
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
 //No Caja Asignada
@@ -15,6 +15,9 @@ $sentencia_caja->execute();
 $caja_usuario = $sentencia_caja->fetch(PDO::FETCH_ASSOC); 
 if($caja_usuario['caja_id'] == 0){$noSeller = true ;} else {$caja_id = $caja_usuario['caja_id'] ;}
 
+error_reporting(E_ERROR | E_PARSE);if ($linkeo == "") {
+    $linkeo = "sudo_bodega";
+}
 //Eliminar Elementos
 if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
@@ -1046,7 +1049,7 @@ if(isset($_POST['productos_vendidos'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result)=>{
                 if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$ultimo_id_insertado.'";
+                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'='.$ultimo_id_insertado.'";
 
                 }
             })
@@ -1059,7 +1062,7 @@ if(isset($_POST['productos_vendidos'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result)=>{
                 if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$ultimo_id_insertado.'";
+                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'='.$ultimo_id_insertado.'";
                 }
             })
             </script>'; 
@@ -1071,7 +1074,7 @@ if(isset($_POST['productos_vendidos'])) {
                 confirmButtonText: "¡Entendido!"
             }).then((result)=>{
                 if(result.isConfirmed){
-                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$ultimo_id_insertado.'";
+                    window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'='.$ultimo_id_insertado.'";
                 }
             })
             </script>'; 

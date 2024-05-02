@@ -24,10 +24,14 @@ if(isset($_GET['txtID'])){
 }
   $responsable = $_SESSION['usuario_id'];
   if ($responsable == 1) {
-    $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre 
-    FROM usuario u LEFT JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 ");
+    $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre, eb.bodega_nombre
+    FROM usuario u
+    LEFT JOIN caja c ON u.caja_id = c.caja_id
+    LEFT JOIN empresa e ON u.link = e.link
+    LEFT JOIN empresa_bodega eb ON u.link = eb.link
+    WHERE u.usuario_id > 1 AND u.rol != 1 AND u.rol != 3");
   }else{
-        $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre FROM usuario u JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 AND u.link=:link AND u.rol = 2");
+    $sentencia=$conexion->prepare("SELECT u.*, c.caja_nombre, e.empresa_nombre FROM usuario u JOIN caja c ON u.caja_id = c.caja_id JOIN empresa e ON u.link = e.link WHERE u.usuario_id > 1 AND u.link=:link AND u.rol = 2");
     $sentencia->bindParam(":link",$link);
    }
   $sentencia->execute();
@@ -69,13 +73,13 @@ if(isset($_GET['txtID'])){
                   <td><?php echo $registro['usuario_usuario']; ?></td>
                   <td><?php echo $registro['caja_nombre']; ?></td>
                   <td><?php if ($registro['rol'] == 1) { echo "Administrador de Local" ;}else { echo "Empleado" ;} ?></td>
-                  <td><?php echo $registro['empresa_nombre']; ?></td>
+                  <td><?php echo $registro['empresa_nombre'] . " " . $registro['bodega_nombre'] ?></td>
                   <td>
-                    <?php if ($_SESSION['valSudoAdmin']) { ?> 
-                      <a class="btn btn-success" href="<?php echo $url_base;?>secciones/<?php echo $crear_nomina_link . '=' . $registro['usuario_id']; ?>" role="button" title="Nomina">
+                    <!-- php if ($_SESSION['valSudoAdmin']) { ?> 
+                      <a class="btn btn-success" href="<php echo $url_base;?>secciones/<php echo $crear_nomina_link . '=' . $registro['usuario_id']; ?>" role="button" title="Nomina">
                       <i class="fa fa-list-alt nav-icon"></i> Nómina
                       </a>
-                  <?php } ?> 
+                  php } ?>  -->
                     <a class="btn btn-info btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $editar_empleados_link . '=' . $registro['usuario_id']; ?>"role="button" title="Editar">
                         <i class="fas fa-edit"></i> 
                     </a>
