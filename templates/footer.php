@@ -144,19 +144,20 @@
   return result;
 }
   $("#generador_codigo_factura").val(generarRandom(14))  
-    
-  // link unico de empresa
-  function linkunico(num) {
-    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  $("#linkEmpresa").val("negocio_" + generarRandom(6))
+  
+  // Generando código ramdon para productos trasladados
+  function generarRandomTraslado(num) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const charactersLength = characters.length;
     let result = "";
-      for (let i = 0; i < num; i++) {
-          result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-
-  return result;
-}
-  $("#linkEmpresa").val("negocio_" + generarRandom(6))  
+    for (let i = 0; i < num; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    
+    return result;
+  }
+  $("#tlProductos").val("tl_" + generarRandomTraslado(6))
     
   $(document).ready(function () {
     // Función para calcular el total
@@ -177,6 +178,13 @@
         
         fila.find('.total-column').text(total_formateado);
         fila.find('.total-input').val(total_formateado);
+        
+        $('.carrito_debajo').each(function() {
+            var id = $(this).attr('name').match(/\[(.*?)\]/)[1];
+            var cantidad = $('[name="cantidad[' + id + ']"]').val();
+            $('.carrito_' + id).val(cantidad);
+        });
+
         actualizarCampoTotalGlobal();
     }
 
@@ -465,14 +473,14 @@ function mostrarMetodosNomina() {
 
     // Función formato dinero 
     // campos agregados: cajas, caja_edit, producto_precio_compra, producto_precio_venta, producto_precio_compra_edit,
-    // gasto_precio, montoDevolucion, nominaCantidad, quincenaEmpleado, vales_nomina, quincenaEmpleado
+    // gasto_precio, montoDevolucion, nominaCantidad, quincenaEmpleado, bancoEfectivo_edit, quincenaEmpleado, vales_nomina
   $(document).ready(function() {
       function formatDineroSinDecimales(valor) {
           return "$" + parseFloat(valor).toFixed(0).replace(/\d(?=(\d{3})+$)/g, "$&,");
       }
       $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta,#producto_precio_venta_xmayor, " + 
         "#producto_precio_compra_edit, #producto_precio_venta_edit, #producto_precio_venta_xmayor_edit,#producto_precio_venta_xmayor_edit #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad, " +
-        "#historialAbono, #quincenaEmpleado, #vales_nomina, #quincenaEmpleado").on("input", function() {
+        "#historialAbono, #quincenaEmpleado, #bancoEfectivo_edit, #quincenaEmpleado, #vales_nomina").on("input", function() {
           var valor = $(this).val().replace(/[^0-9]/g, '');
           $(this).val(formatDineroSinDecimales(valor));
       });
@@ -481,7 +489,7 @@ function mostrarMetodosNomina() {
       $("form").submit(function() {
           var valor = $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta,producto_precio_venta_xmayor," +
           "#producto_precio_compra_edit, #producto_precio_venta_edit,producto_precio_venta_xmayor_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio," + 
-          "#historialAbono, #montoDevolucion, #nominaCantidad, #quincenaEmpleado, #vales_nomina, #quincenaEmpleado").val().replace(/[^0-9]/g, ''); 
+          "#historialAbono, #montoDevolucion, #nominaCantidad, #quincenaEmpleado, #bancoEfectivo_edit, #quincenaEmpleado, #vales_nomina").val().replace(/[^0-9]/g, ''); 
           $("#cajaEfectivo").val(valor);
       });
   });

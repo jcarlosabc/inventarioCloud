@@ -28,14 +28,14 @@
     font-size: 23px ;
 }
 .camposTabla{
-	height: 40px ;
+	height: 50px ;
     color: black ;	
-    font-size: 18px ;
+    font-size: 21px ;
 }
 .camposTabla_dinero{
-	height: 40px ;
+	height: 50px ;
     color: #24d124 ;
-    font-size: 27px ;
+    font-size: 29px ;
     font-weight: 600;
 }
 
@@ -46,7 +46,7 @@
     font-weight: 600;
 }
 .textLabel{
-    font-size: 17px;
+    font-size: 19px;
 }
 .tdColor{
     color: #0db734;font-weight: 700;

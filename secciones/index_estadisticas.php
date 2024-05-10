@@ -184,6 +184,7 @@ if ($_POST) {
     header("Location:".$url_base);
   }
 
+
   }
 }
 
@@ -205,6 +206,24 @@ $sentencia_estadisticas = $conexion->prepare("  SELECT
 ");
   $sentencia_estadisticas->execute();
   $lista_estadisticas =$sentencia_estadisticas;
+  
+//estadisticas de dinero de Bodega
+$sentencia_estadisticas_bodega = $conexion->prepare("SELECT 
+        eb.bodega_nombre AS bodega,
+        SUM(c.caja_efectivo) AS efectivo,
+        SUM(c.nequi) AS nequi,
+        SUM(c.davivienda) AS davivienda,
+        SUM(c.bancolombia) AS bancolombia,
+        SUM(c.caja_efectivo + c.nequi + c.davivienda + c.bancolombia) AS total
+    FROM 
+        caja c
+    INNER JOIN 
+        empresa_bodega eb ON c.link = eb.link
+    GROUP BY 
+        c.link, eb.bodega_id;
+");
+$sentencia_estadisticas_bodega->execute();
+$lista_estadisticas_bodega =$sentencia_estadisticas_bodega;
 
 ?>
         <!-- Preloader -->
@@ -360,28 +379,6 @@ $sentencia_estadisticas = $conexion->prepare("  SELECT
             </div>
           </section>
            <!--Estadisticas de Dinero -->
-                      <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">
-                  <i class="fa fa-asterisk mr-1" style="font-size: 40px;"></i>
-                  <h2 style="font-size: 26px;">Actualizaciones </h2>
-                </h3>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <ul class="todo-list" data-widget="todo-list">
-                  <li style="color:blue">
-                    * Actualizaciones 25/04/2024*
-                  </li>
-                  <li>
-                    - Ahora usted puede editar los precios justo durante la venta
-                  </li>
-                  <li>
-                    - Ahora usted puede: Crear Clientes y Productos Durante la venta en Acciones Rapidas 
-                  </li>
-                </ul>
-              </div>
-            </div>
           
   <?php if ($_SESSION['valSudoAdmin']) { ?>
     <?php
@@ -394,6 +391,37 @@ $sentencia_estadisticas = $conexion->prepare("  SELECT
       $total = $row['total'];
       ?>
   
+    <div class="col-lg-2 col-4">
+        <div class="small-box bg-success">
+            <div class="inner" style="color: white !important">
+                <h3><?php echo '$' . number_format($total, 0, '.', ','); ?></h3>
+                <p  style="font-size: 20px"><?php echo $empresa; ?></p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-cash"></i> <!-- Cambiar el icono según sea necesario -->
+            </div>
+            <div class="small-box-footer">
+                <p>Efectivo: <?php echo '$' . number_format($efectivo, 0, '.', ','); ; ?></p>
+                <p>Nequi: <?php echo '$' . number_format($nequi, 0, '.', ',');  ?></p>
+                <p>Davivienda: <?php echo '$' . number_format($davivienda, 0, '.', ','); ?></p>
+                <p>Bancolombia: <?php echo '$' . number_format($bancolombia, 0, '.', ','); ?></p>
+            </div>
+        </div>
+    </div>
+    <?php } ?>
+<?php } ?>
+
+<!-- Estadisticas Bodega -->
+<?php if ($_SESSION['valSudoAdmin']) { ?>
+    <?php
+    while ($row = $lista_estadisticas_bodega->fetch(PDO::FETCH_ASSOC)) {
+      $empresa = $row['bodega'];
+      $efectivo = $row['efectivo'];
+      $nequi = $row['nequi'];
+      $davivienda = $row['davivienda'];
+      $bancolombia = $row['bancolombia'];
+      $total = $row['total'];
+      ?>
     <div class="col-lg-2 col-4">
         <div class="small-box bg-success">
             <div class="inner" style="color: white !important">

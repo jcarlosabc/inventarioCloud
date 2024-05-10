@@ -36,6 +36,27 @@ if ($responsable == 1) {
 
 $sentencia->execute();
 $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+// Preparar la consulta SQL
+$totales_empresas = $conexion->prepare("SELECT p.producto_precio_compra, p.producto_stock_total, e.empresa_nombre 
+    FROM producto p
+    INNER JOIN empresa e ON p.link = e.link;");
+$totales_empresas -> execute();
+
+// Arreglo asociativo para almacenar los totales por empresa
+$totales_por_empresa = array();
+
+// Calcular los totales por empresa
+foreach ($totales_empresas as $fila) {
+    $nombre_empresa = $fila['empresa_nombre'];
+    $total = $fila['producto_precio_compra'] * $fila['producto_stock_total'];
+    
+    // Si la empresa aún no está en el arreglo, inicializa su total en 0
+    if (!isset($totales_por_empresa[$nombre_empresa])) {
+        $totales_por_empresa[$nombre_empresa] = 0;
+    }    
+    // Sumar el total al total acumulado de la empresa
+    $totales_por_empresa[$nombre_empresa] += $total;
+}
 ?>
       <br>
       <div class="card card-primary">
@@ -64,7 +85,9 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
             </thead>
             <tbody>
               <?php $count = 0;
+              $precioComptaTotal =0;
               foreach ($lista_producto as $registro) {?>
+               
                 <tr class="">
                   <td scope="row"><?php $count++; echo $count; ?></td>
                   <td><?php echo $registro['producto_codigo']; ?></td>
@@ -99,11 +122,6 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                    </a>
                    <?php } ?>
                    </a>
-                   <?php if (!$_SESSION['rolSudoAdmin']) { ?>
-                    <a class="btn btn-primary btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $trasladar_producto_local_link . '&txtID=' . $registro['producto_id']; ?>"role="button"title="Enviar">
-                      <i class="fa fa-share"></i>
-                    </a>
-                    <?php } ?>
                     <?php if ($_SESSION['rolSudoAdmin']) { ?>
                     <a class="btn btn-danger btn-sm" href="index_productos.php?txtID=<?php echo $registro['producto_id']; ?>" role="button" title="Eliminar">
                       <i class="far fa-trash-alt"></i> 
@@ -111,9 +129,21 @@ $lista_producto=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     <?php } ?>
                   </td>
                 </tr>  
+                <?php 
+                $precioProducto = $registro['producto_precio_compra'] * $registro['producto_stock_total'];
+                $precioComptaTotal += $precioProducto;?>
               <?php } ?>
             </tbody>                  
           </table>
+           <?php if ($_SESSION['rolSudoAdmin']) { ?>
+          <p style="font-weight: bold;">Total Costo: <?php echo '$' . number_format($precioComptaTotal, 2, '.', ','); ?></p>
+          <?php 
+          // Mostrar los totales por empresa
+          foreach ($totales_por_empresa as $empresa => $total) {
+            echo '<p style="font-weight: bold;">' . $empresa . " Total: $" . number_format($total, 2, '.', ',') . "</p>";
+        }
+        ?>
+        <?php } ?>
         </div>
       </div>
       <?php include("../templates/footer.php") ?>

@@ -61,9 +61,6 @@ if ($_SESSION['valSudoAdmin']) {
                   <a class="btn btn-info btn-sm" href="editar_producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Editar">
                     <i class="fas fa-edit"></i>
                   </a>
-                  <a class="btn btn-primary btn-sm" href="trasladar_producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>"role="button"title="Enviar">
-                    <i class="fa fa-share"></i>
-                  </a>
                   <a class="btn btn-danger btn-sm"href="producto_bodega.php?link=sudo_bodega&txtID=<?php echo $registro['producto_id']; ?>" role="button"title="Eliminar">
                       <i class="fas fa-trash-alt"></i>
                   </a>

@@ -113,8 +113,8 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                         <?php } ?>
 
                     <?php if ($_SESSION['rolSudoAdmin']) { ?>
-                      <a class="btn btn-danger btn-sm" href="index_ventas.php?txtID=<?php echo $registro['venta_id']; ?>" role="button" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i>  
+                      <a class="btn btn-danger btn-sm"  onclick="confirmarEliminacion(<?php echo $registro['venta_id']; ?>)" role="button" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
                       </a>
                     <?php } ?>
                   </td>
@@ -149,5 +149,28 @@ function mostrarPrompt(venta_id) {
         allowOutsideClick: () => !Swal.isLoading()
     });
 }
+function confirmarEliminacion(venta_id) {
+        // Mostrar una alerta personalizada para confirmar la eliminación
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminarlo!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+              window.location.href = "<?php echo $url_base;?>secciones/<?php echo $ventas_link_historia_venta; ?>?txtID=" + venta_id;
+
+                Swal.fire(
+                    '¡Eliminado!',
+                    'Tu Historial ha sido eliminado.',
+                    'success'
+                );
+            }
+        });
+    }
 </script>
       <?php include("../templates/footer.php") ?>

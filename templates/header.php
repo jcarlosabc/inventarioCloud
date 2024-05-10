@@ -48,6 +48,8 @@
       $crear_producto_link = 'crear_producto.php';
       $lista_producto_link = 'index_productos.php';
       $editar_producto_link = 'editar_productos.php';
+      $index_traslados = 'index_traslados.php';
+      $detalles_traslado_local = 'detalles_traslado_local.php';
     //SECCIÓN DE CLIENTES
       $crear_cliente_link = 'crear_cliente.php';
       $lista_cliente_link = 'index_clientes.php';
@@ -88,7 +90,8 @@
       $crear_producto_link = 'crear_producto.php?link='.$link;
       $lista_producto_link ='index_productos.php?link='.$link;
       $editar_producto_link ='editar_productos.php?link='.$link;
-      $trasladar_producto_local_link ='trasladar_producto_local.php?link='.$link;
+      $index_traslados = 'index_traslados.php?link='.$link;
+      $detalles_traslado_local = 'detalles_traslado_local.php?link='.$link;
     //SECCIÓN DE CLIENTES
       $crear_cliente_link = 'crear_cliente.php?link='.$link;
       $lista_cliente_link = 'index_clientes.php?link='.$link;
@@ -223,7 +226,8 @@
     <!-- /.navbar -->
       
       <!-- Main Sidebar Container -->
-      <aside class="main-sidebar sidebar-primary elevation-4" >
+            <aside class="main-sidebar sidebar-primary elevation-4" >
+
       <!-- Brand Logo -->
        <a href="#" class="brand-link">
         <img src="../dist/img/logos/logofernando.jpg" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
@@ -355,6 +359,12 @@
                   <a href="<?php echo $url_base;?>secciones/<?php echo $lista_producto_link?>" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Lista de Productos</p>
+                  </a>
+                </li>    
+                  <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $index_traslados?>" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Historial Traslados</p>
                   </a>
                 </li>    
                 <?php } ?> 
@@ -541,14 +551,14 @@
                   <p>NÓMINA</p>
                   <i class="fas fa-angle-left right"></i>
               </a>
-              <!-- <ul class="nav nav-treeview">              
-                <li class="nav-item">
-                  <a href="adelanto_nomina.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Adelantar Nómina</p>
-                  </a>
-                </li>
-              </ul> -->
+              <!-- <ul class="nav nav-treeview">              -->
+              <!--  <li class="nav-item">-->
+              <!--    <a href="adelanto_nomina.php" class="nav-link">-->
+              <!--      <i class="far fa-circle nav-icon"></i>-->
+              <!--      <p>Adelantar Nómina</p>-->
+              <!--    </a>-->
+              <!--  </li>-->
+              <!--</ul> -->
               <ul class="nav nav-treeview">              
                 <li class="nav-item">
                   <a href="crear_nomina.php" class="nav-link">
@@ -556,7 +566,7 @@
                     <p>Pagar Nómina</p>
                   </a>
                 </li>
-              </ul>
+              </ul> 
               <ul class="nav nav-treeview">              
                 <li class="nav-item">
                   <a href="nomina.php" class="nav-link">
@@ -638,6 +648,35 @@
                 </li>              
               </ul>
             </li>
+            <?php if ($_SESSION['rolSudoAdmin']){ ?>              
+          <!-- CONFIGURACIÓNES -->
+          <!-- Permisos => sudo admin | -->
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+              <i class="nav-icon fas  fa-cog fa-lg mr-2"></i>
+                <p>
+                  CONFIGURACION
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="editar_empleados.php?txtID=<?php echo $_SESSION['usuario_id'] ?>" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Configurar Perfil</p>
+                  </a>
+                </li>
+              </ul>
+              <ul class="nav nav-treeview">              
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/configurar_bancos.php" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Configurar Bancos</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <?php } ?>
           </ul>
         </nav>
         <!-- /.sidebar-menu -->
