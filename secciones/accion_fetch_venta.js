@@ -79,9 +79,12 @@ listarClienteVenta();
 
 function update_producto(id) {
     let cantidadProducto = document.getElementById('cantidadProducto_' + id).value;
+    let cantidadPrecioMenor = document.getElementById('cantidadPrecioMenor_' + id).value;
+    let cantidadPrecioMayor = document.getElementById('cantidadPrecioMayor_' + id).value;
     fetch('updateProducto.php', {
         method: 'POST',
-        body: new URLSearchParams({id: id, cantidadProducto:cantidadProducto})
+        body: new URLSearchParams({id: id, cantidadProducto:cantidadProducto, cantidadPrecioMenor:cantidadPrecioMenor,
+            cantidadPrecioMayor:cantidadPrecioMayor })
     })
     .then(response => response.text())
     .then(data => {

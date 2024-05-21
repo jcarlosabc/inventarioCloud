@@ -85,9 +85,9 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     <a class="btn btn-warning btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $devolucion_venta.'&txtID='.$registro['venta_id']; ?>" role="button" title="Devolucion">
                       <i class="fas fa-retweet"></i> 
                     </a>
-                    <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link_bodega.'&txtID='.$registro['venta_id']; ?>" role="button" title="Eliminar">
+                    <button class="btn btn-danger btn-sm" onclick="confirmDeleteBodega('<?php echo $registro['venta_id']; ?>')" role="button" title="Eliminar">
                       <i class="fas fa-trash-alt"></i>  
-                    </a>
+                    </button>
                   </td>
                 </tr>  
               <?php } ?>
@@ -95,30 +95,22 @@ $lista_ventas=$sentencia->fetchAll(PDO::FETCH_ASSOC);
           </table>
         </div>
       </div>
+      <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
       <script>
-function mostrarPrompt(venta_id) {
-    Swal.fire({
-        title: 'Ingrese el código de seguridad:',
-        input: 'password',
-        inputAttributes: {
-            autocapitalize: 'off'
-        },
-        showCancelButton: true,
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cancelar',
-        showLoaderOnConfirm: true,
-        preConfirm: (codigoIngresado) => {
-            var codigoAlmacenado = document.querySelector('input[name="codigo_seguridad"]').value;
-            if (!codigoIngresado || codigoIngresado.trim() === '') {
-                Swal.showValidationMessage('Debe ingresar un código de seguridad');
-            } else if (codigoIngresado === codigoAlmacenado) {
-                window.location.href = "<?php echo $url_base;?>secciones/<?php echo $devolucion_venta_link; ?>&txtID=" + venta_id;
-            } else {
-                Swal.showValidationMessage('El código de seguridad ingresado no es válido.');
-            }
-        },
-        allowOutsideClick: () => !Swal.isLoading()
-    });
-}
-</script>
+          // Borrar para ventas bodega
+          function confirmDeleteBodega(venta_id) {
+          Swal.fire({
+              title: '¿Estás seguro?',
+              text: "¡No podrás revertir esto!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Sí, eliminar',
+              cancelButtonText: 'No, cancelar'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  window.location.href = "<?php echo $url_base;?>secciones/<?php echo $ventas_link_bodega; ?>&txtID=" + venta_id;
+              }
+          });
+      }
+      </script>
       <?php include("../templates/footer.php") ?>
