@@ -22,10 +22,10 @@ if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
 
-//   $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id = :id AND link = :link");
-//   $sentencia->bindParam(":id",$txtID);
-//   $sentencia->bindParam(":link",$link);
-//   $sentencia->execute();
+  $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id = :id AND link = :link");
+  $sentencia->bindParam(":id",$txtID);
+  $sentencia->bindParam(":link",$link);
+  $sentencia->execute();
 
   // Mostrar el carrito
   $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, precio_venta_mayor, marca, modelo FROM carrito WHERE estado = 0 AND link = :link");
@@ -1375,13 +1375,13 @@ if(isset($_POST['productos_traslados'])) {
                                             <td><?php echo $registro['producto']; ?></td>
                                             <td><?php echo $registro['marca']; ?></td>
                                             <td><?php echo $registro['modelo']; ?></td>
-                                            <td><input style="width: 49px" type="number" class="cantidad-input form-control" name="cantidad[<?php echo $registro['id']; ?>]" value="<?php echo $registro['cantidad']; ?>"></td>
+                                            <td><input style="width: 49px" type="number" onblur="update_producto(<?php echo $registro['id']; ?>)" class="cantidad-input form-control" id="cantidadProducto_<?php echo $registro['id']; ?>" name="cantidad[<?php echo $registro['id']; ?>]" value="<?php echo $registro['cantidad']; ?>"></td>
                                             <td style="font-weight: 800;"><input type="text" class="precio_menor form-control" name="precio[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio'], 0, '.', ','); ?>"></td>
                                             <td style="font-weight: 800;"><input type="text" class="precio_mayor form-control" name="precio_venta_xmayor[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio_venta_mayor'], 0, '.', ','); ?>"> </td>
                                             <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
                                             <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="remover_producto(<?php echo $registro['id']; ?>)"><i class="far fa-trash-alt"></i></button>
+                                                <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link . '&txtID=' . $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
                                             </div>  
                                         </td>
                                     </tr>  

@@ -77,32 +77,18 @@ function mostrarClienteVenta(info) {
 // Llamar a la función para listar productos al cargar la página
 listarClienteVenta();
 
-function remover_producto(id) {
-    fetch('removerProducto.php', {
+function update_producto(id) {
+    let cantidadProducto = document.getElementById('cantidadProducto_' + id).value;
+    fetch('updateProducto.php', {
         method: 'POST',
-        body: new URLSearchParams({id: id})
+        body: new URLSearchParams({id: id, cantidadProducto:cantidadProducto})
     })
     .then(response => response.text())
     .then(data => {
-        console.log("Borrado");
-        // Seleccionar y eliminar la fila del carrito del HTML
-        var filaEliminar = document.getElementById('producto_' + id);
-        if (filaEliminar) {
-            filaEliminar.parentNode.removeChild(filaEliminar);
-            // Llamar a la función para actualizar los totales globales y otros campos
-            if (typeof actualizarCampoTotalGlobal === 'function') {
-                actualizarCampoTotalGlobal();
-            }
-        } else {
-            console.log("Fila del carrito no encontrada en el HTML");
-        }
+    //    console.log("update realizado...");
     })
     .catch(error => {
-        console.log("No borrado");
+        // console.log("Algo salio mal con el update...");
         console.error('Error:', error);
     });
 }
-
-
-
-

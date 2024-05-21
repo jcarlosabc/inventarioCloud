@@ -98,7 +98,6 @@ if ($_SESSION['valSudoAdmin']) {
       $empresa_nit = isset($registro_empresa["bodega_nit"]) ? $registro_empresa["bodega_nit"] : "";
 
     }else if ($_SESSION['rolSudoAdmin']){
-      echo "clientre => " .$txtID;
       $sentencia_empresa=$conexion->prepare("SELECT link FROM venta WHERE cliente_id = :txtID");
       $sentencia_empresa->bindParam(":txtID", $txtID);
       $sentencia_empresa->execute();
