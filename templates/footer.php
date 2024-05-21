@@ -188,37 +188,8 @@
         actualizarCampoTotalGlobal();
     }
 
-    // Escucha los cambios en los radio buttons
-    $('input[name="tipo-precio"]').on('change', function() {
-        var tipoPrecio = $(this).val();
-        $('.cantidad-input').each(function () {
-            var fila = $(this).closest('tr');
-            actualizarTotal(fila, tipoPrecio);
-        });
-    });
-
-    // Llama a la función al cargar la página para inicializar los totales
-    $('.cantidad-input').each(function () {
-        var fila = $(this).closest('tr');
-        var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); // Obtener el tipo de precio seleccionado
-        actualizarTotal(fila, tipoPrecio); // Pasar el tipo de precio al llamar a actualizarTotal
-    });
-
-
-    // Escucha los cambios en los campos precio menor y mayor
-    $(document).on('input', '.precio_menor', function () {
-      var fila = $(this).closest('tr');
-      var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); 
-      actualizarTotal(fila, tipoPrecio); 
-    });
-    $(document).on('input', '.precio_mayor', function () {
-      var fila = $(this).closest('tr');
-      var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); 
-      actualizarTotal(fila, tipoPrecio); 
-    });
-
     // Función para actualizar el campo total global
-    function actualizarCampoTotalGlobal() {
+    window.actualizarCampoTotalGlobal = function() {
         var totalGlobal = 0;
 
         // Suma todos los totales de las filas
@@ -236,6 +207,36 @@
         actualizarCampoCambio();
     }
 
+    // El resto de tu código...
+
+    // Escucha los cambios en los radio buttons
+    $('input[name="tipo-precio"]').on('change', function() {
+        var tipoPrecio = $(this).val();
+        $('.cantidad-input').each(function () {
+            var fila = $(this).closest('tr');
+            actualizarTotal(fila, tipoPrecio);
+        });
+    });
+
+    // Llama a la función al cargar la página para inicializar los totales
+    $('.cantidad-input').each(function () {
+        var fila = $(this).closest('tr');
+        var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); // Obtener el tipo de precio seleccionado
+        actualizarTotal(fila, tipoPrecio); // Pasar el tipo de precio al llamar a actualizarTotal
+    });
+
+    // Escucha los cambios en los campos precio menor y mayor
+    $(document).on('input', '.precio_menor', function () {
+      var fila = $(this).closest('tr');
+      var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); 
+      actualizarTotal(fila, tipoPrecio); 
+    });
+    $(document).on('input', '.precio_mayor', function () {
+      var fila = $(this).closest('tr');
+      var tipoPrecio = $('input[name="tipo-precio"]:checked').val(); 
+      actualizarTotal(fila, tipoPrecio); 
+    });
+
     // Escucha los cambios en los campos de cantidad
     $('.cantidad-input').on('input', function () {
         var fila = $(this).closest('tr');
@@ -251,6 +252,7 @@
     // Llama a la función al cargar la página para inicializar el campo de cambio
     actualizarCampoCambio();
 });
+
 
 // Mascara para el campo recibido
 document.addEventListener('DOMContentLoaded', function () {
@@ -473,14 +475,14 @@ function mostrarMetodosNomina() {
 
     // Función formato dinero 
     // campos agregados: cajas, caja_edit, producto_precio_compra, producto_precio_venta, producto_precio_compra_edit,
-    // gasto_precio, montoDevolucion, nominaCantidad, quincenaEmpleado, bancoEfectivo_edit, quincenaEmpleado, vales_nomina
+    // gasto_precio, montoDevolucion, nominaCantidad, quincenaEmpleado, bancoEfectivo_edit, quincenaEmpleado, vales_nomina, campo_adicional
   $(document).ready(function() {
       function formatDineroSinDecimales(valor) {
           return "$" + parseFloat(valor).toFixed(0).replace(/\d(?=(\d{3})+$)/g, "$&,");
       }
       $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta,#producto_precio_venta_xmayor, " + 
         "#producto_precio_compra_edit, #producto_precio_venta_edit, #producto_precio_venta_xmayor_edit,#producto_precio_venta_xmayor_edit #precio_compra_stock, #precio_venta_stock, #gastoPrecio, #montoDevolucion, #nominaCantidad, " +
-        "#historialAbono, #quincenaEmpleado, #bancoEfectivo_edit, #quincenaEmpleado, #vales_nomina").on("input", function() {
+        "#historialAbono, #quincenaEmpleado, #bancoEfectivo_edit, #quincenaEmpleado, #vales_nomina, #campo_adicional").on("input", function() {
           var valor = $(this).val().replace(/[^0-9]/g, '');
           $(this).val(formatDineroSinDecimales(valor));
       });
@@ -489,7 +491,7 @@ function mostrarMetodosNomina() {
       $("form").submit(function() {
           var valor = $("#cajaEfectivo, #cajaEfectivo_edit, #producto_precio_compra, #producto_precio_venta,producto_precio_venta_xmayor," +
           "#producto_precio_compra_edit, #producto_precio_venta_edit,producto_precio_venta_xmayor_edit, #precio_compra_stock, #precio_venta_stock, #gastoPrecio," + 
-          "#historialAbono, #montoDevolucion, #nominaCantidad, #quincenaEmpleado, #bancoEfectivo_edit, #quincenaEmpleado, #vales_nomina").val().replace(/[^0-9]/g, ''); 
+          "#historialAbono, #montoDevolucion, #nominaCantidad, #quincenaEmpleado, #bancoEfectivo_edit, #quincenaEmpleado, #vales_nomina, #campo_adicional").val().replace(/[^0-9]/g, ''); 
           $("#cajaEfectivo").val(valor);
       });
   });

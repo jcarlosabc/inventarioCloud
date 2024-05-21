@@ -22,10 +22,10 @@ if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
 
-  $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id = :id AND link = :link");
-  $sentencia->bindParam(":id",$txtID);
-  $sentencia->bindParam(":link",$link);
-  $sentencia->execute();
+//   $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id = :id AND link = :link");
+//   $sentencia->bindParam(":id",$txtID);
+//   $sentencia->bindParam(":link",$link);
+//   $sentencia->execute();
 
   // Mostrar el carrito
   $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, precio_venta_mayor, marca, modelo FROM carrito WHERE estado = 0 AND link = :link");
@@ -1134,38 +1134,22 @@ if(isset($_POST['productos_traslados'])) {
     $precio_mayor = str_replace(array('$','.', ','), '', $precio_mayor);
      // Validando traslado
      $val_traslado = isset($_POST['val_traslado']) ? $_POST['val_traslado'] : $_POST['val_traslado'];
-    echo "val_traslado = > " .$val_traslado;
+    // echo "val_traslado = > " .$val_traslado;
     if ($val_traslado == 1) {
-        // echo "<br>";
-        // echo "../ Entrando al traslado con estado 1" ;
-        // echo "<br>";
-        
         $ramdonCode_tl_productos = isset($_POST['tl_productos']) ? $_POST['tl_productos'] : $_POST['tl_productos'];
-        // echo "ramdonCode_tl_productos = > " .$ramdonCode_tl_productos;
-        // echo "<br>";
         
         $valor_seleccionado = $_POST['empresa_destino'];
         $partes = explode('-', $valor_seleccionado);
         $empresa_id = $partes[0];
         $link_empresa = $partes[1];
-        // echo "empre destino id => " . $empresa_id;
-        // echo "<br>";
-        // echo "empre destino  link => " . $link_empresa;
      
         $producto_codigo_trasladar = isset($_POST['producto_codigo_trasladar']) ? $_POST['producto_codigo_trasladar'] : array();
         date_default_timezone_set('America/Bogota'); 
         $fechaTrasladoActual = date("d-m-Y"); 
 
         foreach ($cantidades as $id => $cantidad) {
-            // echo "<br>";
-            // echo "<br>";
-            // echo "ENTRANDOR FOR => " . $id;
-            // echo "<br>";
-        
             // Obtener el producto_codigo_trasladar correspondiente al $id actual
             $codigo_trasladar_actual = isset($producto_codigo_trasladar[$id]) ? $producto_codigo_trasladar[$id] : 0;
-            // echo "producto_codigo_trasladar FOR => " . $codigo_trasladar_actual;
-            // echo "<br>";
 
             $precio_menor_Tactual = isset($precio_menor[$id]) ? $precio_menor[$id] : 0;
             $precio_mayor_Tactual = isset($precio_mayor[$id]) ? $precio_mayor[$id] : 0;
@@ -1176,35 +1160,46 @@ if(isset($_POST['productos_traslados'])) {
             $lista_producto_buscado->execute();
             $lista_producto_buscado = $lista_producto_buscado->fetch(PDO::FETCH_LAZY);
 
-            if ($lista_producto_buscado) {
-                echo "encontrado =>";
-            }else{
-                // echo "No hay producto con ese codigo...aqui va insert";
-                // echo "<br>";
+            // Actualizando cantidad al carrito y estado a 1
+            $sql = "UPDATE carrito SET cantidad = ?, estado = ? WHERE id = ?";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($cantidad, 1, $id);
+            $sentencia->execute($params);
 
-                $sql = "UPDATE carrito SET cantidad = ?, estado = ? WHERE id = ?";
+            // Sacando la info del carrito
+            $sentencia_carrito = $conexion->prepare("SELECT id, cantidad, producto_id, producto, marca, modelo, costo, link, responsable FROM carrito WHERE id= :id");
+            $sentencia_carrito->bindParam(":id", $id);
+            $sentencia_carrito->execute();
+            $row_carrito = $sentencia_carrito->fetch(PDO::FETCH_ASSOC);
+            $id_carrito = $row_carrito['id'];
+            $cantidad_vendida = $row_carrito['cantidad'];
+            $producto_id = $row_carrito['producto_id'];
+            $producto = $row_carrito['producto'];
+            $marca = $row_carrito['marca'];
+            $modelo = $row_carrito['modelo'];
+            $costo = $row_carrito['costo'];
+            $link_carrito = $row_carrito['link'];
+            $responsable_carrito = $row_carrito['responsable'];
+
+            if ($lista_producto_buscado) {
+                $sql = "INSERT INTO historial_traslados (producto_id, cantidad, fecha_traslado, link_remitente, link_destino, traslado )         
+                VALUES (?, ?, ?, ?, ?, ?)";
+
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
-                    $cantidad, 
-                    1,  
-                    $id  
+                    $producto_id, $cantidad_vendida,
+                    $fechaTrasladoActual, $link_carrito,        
+                    $link_empresa, $ramdonCode_tl_productos
                 );
                 $sentencia->execute($params);
 
-                $sentencia_carrito = $conexion->prepare("SELECT id, cantidad, producto_id, producto, marca, modelo, costo, link, responsable FROM carrito WHERE id= :id");
-                $sentencia_carrito->bindParam(":id", $id);
-                $sentencia_carrito->execute();
-                $row_carrito = $sentencia_carrito->fetch(PDO::FETCH_ASSOC);
-                $id_carrito = $row_carrito['id'];
-                $cantidad_vendida = $row_carrito['cantidad'];
-                $producto_id = $row_carrito['producto_id'];
-                $producto = $row_carrito['producto'];
-                $marca = $row_carrito['marca'];
-                $modelo = $row_carrito['modelo'];
-                $costo = $row_carrito['costo'];
-                $link_carrito = $row_carrito['link'];
-                $responsable_carrito = $row_carrito['responsable'];
-
+                // Actualizando la cantidad en el stock del LOCAL que le pasamos de bodega
+                $sql = "UPDATE producto SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ? , traslado = ? WHERE producto_codigo = ? AND link= ?";
+                $sentencia_envio = $conexion->prepare($sql);
+                $params = array($fechaTrasladoActual, $cantidad_vendida, $ramdonCode_tl_productos, $producto_codigo_trasladar[$id], $link_empresa);
+                $resultado = $sentencia_envio->execute($params);
+                
+            }else{
                 // echo "INSERTANDO NUEVO PRODUCTO";
                 $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion, producto_nombre, producto_stock_total,
                 producto_precio_compra,producto_precio_venta, producto_precio_venta_xmayor, producto_marca,producto_modelo, categoria_id,proveedor_id, link, traslado )         
@@ -1213,18 +1208,13 @@ if(isset($_POST['productos_traslados'])) {
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
                     $producto_codigo_trasladar[$id], 
-                    $fechaTrasladoActual, 
-                    $producto,
-                    $cantidad_vendida, 
-                    $costo,
+                    $fechaTrasladoActual, $producto,
+                    $cantidad_vendida, $costo,
                     $precio_menor_Tactual, 
                     $precio_mayor_Tactual, 
-                    $marca,
-                    $modelo,
-                    0,
-                    0,
-                    $link_empresa,
-                    $ramdonCode_tl_productos
+                    $marca, $modelo,
+                    0, 0,
+                    $link_empresa, $ramdonCode_tl_productos
                 );
                 $sentencia->execute($params);
 
@@ -1233,56 +1223,48 @@ if(isset($_POST['productos_traslados'])) {
 
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
-                    $producto_id,
-                    $cantidad_vendida,
+                    $producto_id, $cantidad_vendida,
                     $fechaTrasladoActual,
-                    $link_carrito,        
-                    $link_empresa,
+                    $link_carrito, $link_empresa,
                     $ramdonCode_tl_productos
                 );
                 $sentencia->execute($params);
-
-                // echo "...| Actualizando nueva cantidad en el stock de local enviante |...";
-                // Actualizando nueva cantidad en el stock de BODEGA
-                $sql = "UPDATE producto SET producto_stock_total = producto_stock_total - ? WHERE producto_id = ? AND link = ?" ; 
-                $sentencia_bodega = $conexion->prepare($sql);
-                $params = array($cantidad_vendida, $producto_id, $link_carrito);
-                $resultado_bodega = $sentencia_bodega->execute($params);
-
-                // Borrar los datos de carrito una ves se haya realizado el proceso anterior
-                $sql = "DELETE FROM carrito WHERE estado = ? AND responsable= ?";
-                $sentencia = $conexion->prepare($sql);
-                $params = array(
-                    1, 
-                    $responsable_carrito
-                );
-
-                $result_traslado_nuevo=$sentencia->execute($params);
-                if ($result_traslado_nuevo) {
-                    echo '<script>
-                    Swal.fire({
-                        title: "¡Productos Trasladado Exitosamente!",
-                        icon: "success",
-                        confirmButtonText: "¡Entendido!"
-                    }).then((result)=>{
-                        if(result.isConfirmed){
-                            window.location.href = "'.$url_base.'secciones/'.$detalles_traslado_local. $ramdonCode_tl_productos.'";
-                        }
-                    })
-                    </script>';
-                }else {
-                    echo '<script>
-                    Swal.fire({
-                        title: "Error al Realizar Traslado",
-                        icon: "error",
-                        confirmButtonText: "¡Entendido!"
-                    });
-                    </script>';
-                
             }
 
-            }
+            // Actualizando nueva cantidad en el stock del local remitente
+            $sql = "UPDATE producto SET producto_stock_total = producto_stock_total - ? WHERE producto_id = ? AND link = ?" ; 
+            $sentencia_bodega = $conexion->prepare($sql);
+            $params = array($cantidad_vendida, $producto_id, $link_carrito);
+            $sentencia_bodega->execute($params);
 
+            // Borrar los datos de carrito una ves se haya realizado el proceso anterior
+            $sql = "DELETE FROM carrito WHERE estado = ? AND responsable= ?";
+            $sentencia = $conexion->prepare($sql);
+            $params = array(1, $responsable_carrito
+            );
+            $result_traslado_nuevo=$sentencia->execute($params);
+
+            if ($result_traslado_nuevo) {
+                echo '<script>
+                Swal.fire({
+                    title: "¡Productos Trasladado Exitosamente!",
+                    icon: "success",
+                    confirmButtonText: "¡Entendido!"
+                }).then((result)=>{
+                    if(result.isConfirmed){
+                        window.location.href = "'.$url_base.'secciones/'.$detalles_traslado_local. $ramdonCode_tl_productos.'";
+                    }
+                })
+                </script>';
+            }else {
+                echo '<script>
+                Swal.fire({
+                    title: "Error al Realizar Traslado",
+                    icon: "error",
+                    confirmButtonText: "¡Entendido!"
+                });
+                </script>';
+            }   
         }
     }else{
         echo "no pasa nada";
@@ -1387,7 +1369,7 @@ if(isset($_POST['productos_traslados'])) {
                                 </thead>
                                 <tbody>
                                     <?php foreach ($lista_carrito as $registro) {?>
-                                        <tr style="font-size: 14px;">
+                                        <tr id="producto_<?php echo $registro['id']; ?>" style="font-size: 14px;">
                                             <input type="hidden" value="<?php echo $registro['id']; ?>">
                                             <td scope="row"><?php echo $registro['producto_codigo']; ?></td>
                                             <td><?php echo $registro['producto']; ?></td>
@@ -1399,7 +1381,7 @@ if(isset($_POST['productos_traslados'])) {
                                             <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
                                             <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
                                             <div class="btn-group">
-                                                <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link . '&txtID=' . $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="remover_producto(<?php echo $registro['id']; ?>)"><i class="far fa-trash-alt"></i></button>
                                             </div>  
                                         </td>
                                     </tr>  
@@ -1416,7 +1398,7 @@ if(isset($_POST['productos_traslados'])) {
                         <div class="card-header">
                             <h3 class="card-title textTabla">DETALLES</h3>
                         </div>
-                            <!-- A credito --> 
+                        <!-- A credito --> 
                         <style>
                             #partes,#metodo_transferencia{
                                 display: none;

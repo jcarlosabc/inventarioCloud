@@ -3,9 +3,11 @@
 if ($_SESSION['valSudoAdmin']) {
     $ventas_link = "crear_venta_bodega.php";
     $ventas_detalles_link = "detalles.php?txtID";
+    $detalles_traslado_local = "detalles_traslado_local.php?txtID=";
  }else{
     $ventas_link = "crear_venta_bodega.php?link=sudo_bodega";
     $ventas_detalles_link = "detalles.php?link=sudo_bodega&txtID";
+    $detalles_traslado_local = "detalles_traslado_local.php?link=".$link.'&txtID=';
  }
 if(isset($_GET['link'])){ $linkeo=(isset($_GET['link']))?$_GET['link']:"";}
 //No Caja Asignada
@@ -23,10 +25,10 @@ if(isset($_GET['link'])){
   $link=(isset($_GET['link']))?$_GET['link']:"";
   $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
 
-  $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id = :id AND link = :link");
-  $sentencia->bindParam(":id",$txtID);
-  $sentencia->bindParam(":link",$link);
-  $sentencia->execute();
+//   $sentencia=$conexion->prepare("DELETE FROM carrito WHERE id = :id AND link = :link");
+//   $sentencia->bindParam(":id",$txtID);
+//   $sentencia->bindParam(":link",$link);
+//   $sentencia->execute();
 
   // Mostrar el carrito
   $sentencia=$conexion->prepare("SELECT id, producto_codigo, cantidad, producto_id, producto, precio, precio_venta_mayor, marca, modelo FROM carrito WHERE estado = 0 AND link = :link");
@@ -47,6 +49,11 @@ if(isset($_GET['link'])){
     // $lista_cliente=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 // ===========================================================
+
+//Lista de Locales    
+$sentencia_empresas = $conexion->prepare("SELECT empresa_id, empresa_nombre, link FROM empresa");
+$sentencia_empresas->execute();
+$lista_empresas = $sentencia_empresas->fetchAll(PDO::FETCH_ASSOC);
 
 // Modal de Crear Producto
 if(isset($_POST['producto_modal'])) {    
@@ -114,7 +121,7 @@ if(isset($_POST['producto_modal'])) {
         });
         </script>';
     }
-    } 
+} 
 
 // Guardar productos escogidos, al carrito
 if(isset($_POST['producto_seleccionado'])) {
@@ -128,7 +135,7 @@ if(isset($_POST['producto_seleccionado'])) {
     $precio_venta_mayor = $producto_seleccionado['producto_precio_venta_xmayor'];
     $producto_marca = $producto_seleccionado['producto_marca'];
     $producto_modelo = $producto_seleccionado['producto_modelo'];
-    
+
     // Guardando en carrito los productos escogidos
     $sql = "INSERT INTO carrito (producto_codigo, producto_id, producto, precio, precio_venta_mayor, marca, modelo, link) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -160,6 +167,7 @@ if(isset($_POST['producto_seleccionado'])) {
         $total_precio_venta_mayor += $precio_venta_mayor;
     }
 }
+
 // Realizando venta
 if(isset($_POST['productos_vendidos'])) {
     $cantidades = isset($_POST['cantidad']) ? $_POST['cantidad'] : array();
@@ -1111,6 +1119,153 @@ if ($user_id == 1) {
     $lista_proveedores = $sentencia_prove->fetchAll(PDO::FETCH_ASSOC);
 ////////////////////////////////////////////
 
+// Realizando traslado
+if(isset($_POST['productos_traslados'])) {
+    $cantidades = isset($_POST['cantidad']) ? $_POST['cantidad'] : array();
+    $totales = isset($_POST['total']) ? $_POST['total'] : array();
+    $totales = str_replace(array('$','.', ','), '', $totales);
+    $precio_menor = isset($_POST['precio']) ? $_POST['precio'] : array();
+    $precio_menor = str_replace(array('$','.', ','), '', $precio_menor);
+    $precio_mayor = isset($_POST['precio_venta_xmayor']) ? $_POST['precio_venta_xmayor'] : array();
+    $precio_mayor = str_replace(array('$','.', ','), '', $precio_mayor);
+     // Validando traslado
+     $val_traslado = isset($_POST['val_traslado']) ? $_POST['val_traslado'] : $_POST['val_traslado'];
+    // echo "val_traslado = > " .$val_traslado;
+    if ($val_traslado == 1) {
+        $ramdonCode_tl_productos = isset($_POST['tl_productos']) ? $_POST['tl_productos'] : $_POST['tl_productos'];
+        
+        $valor_seleccionado = $_POST['empresa_destino'];
+        $partes = explode('-', $valor_seleccionado);
+        $empresa_id = $partes[0];
+        $link_empresa = $partes[1];
+     
+        $producto_codigo_trasladar = isset($_POST['producto_codigo_trasladar']) ? $_POST['producto_codigo_trasladar'] : array();
+        date_default_timezone_set('America/Bogota'); 
+        $fechaTrasladoActual = date("d-m-Y"); 
+
+        foreach ($cantidades as $id => $cantidad) {
+            // Obtener el producto_codigo_trasladar correspondiente al $id actual
+            $codigo_trasladar_actual = isset($producto_codigo_trasladar[$id]) ? $producto_codigo_trasladar[$id] : 0;
+
+            $precio_menor_Tactual = isset($precio_menor[$id]) ? $precio_menor[$id] : 0;
+            $precio_mayor_Tactual = isset($precio_mayor[$id]) ? $precio_mayor[$id] : 0;
+
+            $lista_producto_buscado = $conexion->prepare("SELECT link FROM bodega WHERE producto_codigo = :producto_codigo AND link=:link_empresa");
+            $lista_producto_buscado->bindParam(":producto_codigo", $producto_codigo_trasladar[$id]);
+            $lista_producto_buscado->bindParam(":link_empresa", $link_empresa);
+            $lista_producto_buscado->execute();
+            $lista_producto_buscado = $lista_producto_buscado->fetch(PDO::FETCH_LAZY);
+
+            // Actualizando cantidad al carrito y estado a 1
+            $sql = "UPDATE carrito SET cantidad = ?, estado = ? WHERE id = ?";
+            $sentencia = $conexion->prepare($sql);
+            $params = array($cantidad, 1, $id);
+            $sentencia->execute($params);
+
+            // Sacando la info del carrito
+            $sentencia_carrito = $conexion->prepare("SELECT id, cantidad, producto_id, producto, marca, modelo, costo, link, responsable FROM carrito WHERE id= :id");
+            $sentencia_carrito->bindParam(":id", $id);
+            $sentencia_carrito->execute();
+            $row_carrito = $sentencia_carrito->fetch(PDO::FETCH_ASSOC);
+            $id_carrito = $row_carrito['id'];
+            $cantidad_vendida = $row_carrito['cantidad'];
+            $producto_id = $row_carrito['producto_id'];
+            $producto = $row_carrito['producto'];
+            $marca = $row_carrito['marca'];
+            $modelo = $row_carrito['modelo'];
+            $costo = $row_carrito['costo'];
+            $link_carrito = $row_carrito['link'];
+            $responsable_carrito = $row_carrito['responsable'];
+
+            if ($lista_producto_buscado) {
+                $sql = "INSERT INTO historial_traslados (producto_id, cantidad, fecha_traslado, link_remitente, link_destino, traslado )         
+                VALUES (?, ?, ?, ?, ?, ?)";
+
+                $sentencia = $conexion->prepare($sql);
+                $params = array(
+                    $producto_id, $cantidad_vendida,
+                    $fechaTrasladoActual, $link_carrito,        
+                    $link_empresa, $ramdonCode_tl_productos
+                );
+                $sentencia->execute($params);
+
+                // Actualizando la cantidad en el stock del LOCAL que le pasamos de bodega
+                $sql = "UPDATE bodega SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ? , traslado = ? WHERE producto_codigo = ? AND link= ?";
+                $sentencia_envio = $conexion->prepare($sql);
+                $params = array($fechaTrasladoActual, $cantidad_vendida, $ramdonCode_tl_productos, $producto_codigo_trasladar[$id], $link_empresa);
+                $resultado = $sentencia_envio->execute($params);
+                
+            }else{
+                // echo "INSERTANDO NUEVO PRODUCTO";
+                $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion, producto_nombre, producto_stock_total,
+                producto_precio_compra,producto_precio_venta, producto_precio_venta_xmayor, producto_marca,producto_modelo, categoria_id,proveedor_id, link, traslado )         
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            
+                $sentencia = $conexion->prepare($sql);
+                $params = array(
+                    $producto_codigo_trasladar[$id], 
+                    $fechaTrasladoActual, $producto,
+                    $cantidad_vendida, $costo,
+                    $precio_menor_Tactual, 
+                    $precio_mayor_Tactual, 
+                    $marca, $modelo,
+                    0, 0,
+                    $link_empresa, $ramdonCode_tl_productos
+                );
+                $sentencia->execute($params);
+
+                $sql = "INSERT INTO historial_traslados (producto_id, cantidad, fecha_traslado, link_remitente, link_destino, traslado )         
+                VALUES (?, ?, ?, ?, ?, ?)";
+
+                $sentencia = $conexion->prepare($sql);
+                $params = array(
+                    $producto_id, $cantidad_vendida,
+                    $fechaTrasladoActual,
+                    $link_carrito, $link_empresa,
+                    $ramdonCode_tl_productos
+                );
+                $sentencia->execute($params);
+            }
+
+            // Actualizando nueva cantidad en el stock del local remitente
+            $sql = "UPDATE bodega SET producto_stock_total = producto_stock_total - ? WHERE producto_id = ? AND link = ?" ; 
+            $sentencia_bodega = $conexion->prepare($sql);
+            $params = array($cantidad_vendida, $producto_id, $link_carrito);
+            $sentencia_bodega->execute($params);
+
+            // Borrar los datos de carrito una ves se haya realizado el proceso anterior
+            $sql = "DELETE FROM carrito WHERE estado = ? AND responsable= ?";
+            $sentencia = $conexion->prepare($sql);
+            $params = array(1, $responsable_carrito
+            );
+            $result_traslado_nuevo=$sentencia->execute($params);
+
+            if ($result_traslado_nuevo) {
+                echo '<script>
+                Swal.fire({
+                    title: "¡Productos Trasladado Exitosamente!",
+                    icon: "success",
+                    confirmButtonText: "¡Entendido!"
+                }).then((result)=>{
+                    if(result.isConfirmed){
+                        window.location.href = "'.$url_base.'secciones/'.$detalles_traslado_local. $ramdonCode_tl_productos.'";
+                    }
+                })
+                </script>';
+            }else {
+                echo '<script>
+                Swal.fire({
+                    title: "Error al Realizar Traslado",
+                    icon: "error",
+                    confirmButtonText: "¡Entendido!"
+                });
+                </script>';
+            }   
+        }
+    }else{
+        echo "no pasa nada";
+    }
+}
 
 ?>
 <br>
@@ -1154,13 +1309,14 @@ if ($user_id == 1) {
                                     <td class="tdColor"><?php echo '$ ' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ','); ?></td>
                                     <td>
                                         <form action="<?php echo $ventas_link ?>" method="POST">
+                                            <input type="hidden" name="producto_precio_compra" value="<?php echo $registro['producto_precio_compra']; ?>">
                                             <input type="hidden" name="link" value="<?php echo $linkeo; ?>">
                                             <input type="hidden" name="producto_id" value="<?php echo $registro['producto_id']; ?>">
                                             <input type="hidden" name="producto_codigo" value="<?php echo $registro['producto_codigo']; ?>">
                                             <?php if($registro['producto_stock_total'] == 0) { ?>
                                                 <button type="button" class="btn btn-warning">Agotado</button>
                                             <?php }else { ?>
-                                                   <button type="submit" name="producto_seleccionado" value="<?php echo base64_encode(serialize($registro)); ?>" class="btn btn-primary">Escoger <i class="fas fa-chevron-right"></i></button>
+                                                   <button type="submit" name="producto_seleccionado" value="<?php echo base64_encode(serialize($registro)); ?>" class="btn btn-primary"><i class="fas fa-chevron-right"></i></button>
                                             <?php } ?>
                                         </form>
                                     </td>
@@ -1170,27 +1326,28 @@ if ($user_id == 1) {
                     </table>
                 </div>
             </div>
-            <br>
-            <!-- formulario -->
-            <form method="post" action="">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="card card-success">
-                            <div class="card-header" style="background: #493a3be0">
-                                <h3 class="card-title textTabla">PRODUCTOS ESCOGIDOS</h3>
-                            </div>
-                            <style>
-                                 /* limitar productos en crear venta */ 
-                                .table-container {
-                                    max-height: 287px; /* Altura máxima del contenedor de la tabla */
-                                    overflow-y: auto; /* Agrega un scroll vertical cuando el contenido exceda la altura máxima */
-                                }
+        </div>
+        <br>
+        <!-- formulario -->
+        <form method="post" action="">
+            <div class="row">
+                <div class="col-6">
+                    <div class="card card-success">
+                        <div class="card-header" style="background: #493a3be0">
+                            <h3 class="card-title textTabla">PRODUCTOS ESCOGIDOS</h3>
+                        </div>
+                        <style>
+                                /* limitar productos en crear venta */ 
+                            .table-container {
+                                max-height: 287px; /* Altura máxima del contenedor de la tabla */
+                                overflow-y: auto; /* Agrega un scroll vertical cuando el contenido exceda la altura máxima */
+                            }
 
-                                .table {
-                                    width: 100%; /* Ancho completo de la tabla */
-                                }
-                            </style>
-                            <div class="card-body" style="overflow-x: auto;">
+                            .table {
+                                width: 100%; /* Ancho completo de la tabla */
+                            }
+                        </style>
+                        <div class="card-body" style="overflow-x: auto;">
                             <div class="table-container">
                                 <table class="table table-bordered table-striped" style="text-align:center; max-width: 100%;">
                                     <thead>
@@ -1208,7 +1365,7 @@ if ($user_id == 1) {
                                     </thead>
                                     <tbody>
                                         <?php foreach ($lista_carrito as $registro) {?>
-                                            <tr style="font-size: 14px;">
+                                            <tr id="producto_<?php echo $registro['id']; ?>" style="font-size: 14px;">
                                                 <input type="hidden" value="<?php echo $registro['id']; ?>">
                                                 <td scope="row"><?php echo $registro['producto_codigo']; ?></td>
                                                 <td><?php echo $registro['producto']; ?></td>
@@ -1220,342 +1377,384 @@ if ($user_id == 1) {
                                                 <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
                                                 <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
                                                     <div class="btn-group">
-                                                        <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link . '&txtID=' . $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                    
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="remover_producto_carrito(<?php echo $registro['id']; ?>)"><i class="far fa-trash-alt"></i></button>
+                                                        <!-- <a class="btn btn-danger btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $ventas_link . '&txtID=' . $registro['id']; ?>" role="button"><i class="far fa-trash-alt"></i></a>                     -->
                                                     </div>  
                                                 </td>
                                             </tr>  
                                         <?php } ?>
                                     </tbody>
                                 </table>
-                                </div>
-                                <br>    
                             </div>
+                            <br>    
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="card card-success">
-                            <div class="card-header" style="background: #493a3be0">
-                                <h3 class="card-title textTabla">DETALLES</h3>
-                            </div>
-                        <?php if ($noSeller) { ?>
-                            <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero asignar una <strong>caja</strong> para poder realizar una <strong>Venta.</strong></article>
-                            <?php } else { ?>
-                                <div class="card-body">
-                                <div class="row">
-                                    <div class="col-4">
-                                        <div class="form-group">
-                                            <label >Métodos de Pago</label> 
-                                            <div class="form-group">
-                                                <select class="form-control" id="metodoPago" name="metodo_pago" onchange="mostrarOcultarPartes(1)">                                    
-                                                    <option value="0" style="color:#22c600">Efectivo</option> 
-                                                    <option value="1" style="color:#009fc1">Transferencia</option> 
-                                                    <option value="3" style="color:#d50000">Datafono</option>  
-                                                    <option value="2" style="color:#f4a700">A Crédito</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- A credito --> 
-                                    <style>
-                                        #partes,#metodo_transferencia{
-                                            display: none;
-                                        }
-                                        span.select2-selection.select2-selection--single{
-                                            height: 38px;
-                                        }
-                                        /* Ocultar las flechas de incremento/decremento en campos numéricos */
-                                        input[type=number]::-webkit-inner-spin-button,
-                                        input[type=number]::-webkit-outer-spin-button {
-                                            -webkit-appearance: none;
-                                            margin: 0;
-                                        }
-                                        input[type=number] {
-                                            -moz-appearance: textfield; /* Firefox */
-                                        }
-                                        .custom-radio {
-                                            transform: scale(1.2);
-                                        }
-                                        </style>
-                                    <div class="col-5">
-                                        <div class="form-group">
-                                            <div class="row" id="partes">
-                                                <article style=" padding: 0px 0px 10px;"> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Para Credito es <strong>Obligatorio</strong> que el cliente esté <strong>Registrado</strong>, luego selecciónelo. </article>
-                                                Plazo: <input type="number" class="form-control" required name="plazo" value="0">
-                                                <br>
-                                                <br>
-                                                En Dias o Meses: <select class="form-control select2" name="tiempoDiasMeses" style="height: 20px">
-                                                    <option value="0">Dias</option> 
-                                                    <!-- <option value="1">Mes</option>  -->
-                                                </select> 
-                                                <br>
-                                                <table style="width: 100%">
-                                                    <tr>     
-                                                        <td><input checked type="radio" class="custom-radio" name="tipoAbono" value="1"> No hay abono</td>
-                                                        <td><input type="radio" class="custom-radio" value="2" name="tipoAbono"> Efectivo</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><input type="radio" class="custom-radio" value="02" name="tipoAbono"> Nequi</td>
-                                                        <td><input type="radio" class="custom-radio" value="00" name="tipoAbono"> Davivienda</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="2"><input type="radio" class="custom-radio" value="01" name="tipoAbono"> Bancolombia</td>
-                                                    </tr>
-                                                </table>
-                                                <br>
-                                                <article style=" padding: 0px 0px 10px;"> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Escoger  <strong>Cliente</strong>. </article>
-                                                 🔻⬇️⬇️🔻
-                                            </div>
-
-                                            <div class="row" id="metodo_transferencia">
-                                                <div class="form-group">
-                                                <label class="textLabel">Eliga Banco</label> 
-                                                <select class="form-control camposTabla" id="transferenciaMetodo" name="transferenciaMetodo">                                    
-                                                    <option value="00" style="color:#22c600">davivienda</option> 
-                                                    <option value="01" style="color:#009fc1">bancolombia</option> 
-                                                    <option value="02" style="color:#d50000">nequi</option>
-                                                </select>
-                                            </div>
-                                            </div>
-                                            <label>Clientes</label>
-                                            <select class="form-control select2" name="cliente_id" id="fastCliente" style="height: 20px">
-                                            </select>
-                                            <!-- <select class="form-control select2" name="cliente_id" id="fastCliente" style="height: 20px">
-                                                <option value="0">Público General </option> 
-                                                php foreach ($lista_cliente as $registro) {?>   
-                                                    <option value="?php echo $registro['cliente_id']; ?>">?php echo $registro['cliente_nombre']; echo " "; echo $registro['cliente_nit']; ?></option> 
-                                                php } ?>                                    
-                                            </select>   -->
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="form-group">
-                                            <label>Accesos Rápidos</label> 
-                                            <span><a type="button" class="" data-toggle="modal" data-target="#exampleModalCenter">- Crear Cliente</a> </span>
-                                            <span><a type="button" class="" data-toggle="modal" data-target="#crearProducto">- Crear Producto</a> </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <br>
-                                <br>
-                                <div class="row">
-                                    <div class="col-4">
-                                        <label class="">Total</label>
-                                        <input type="text" class="form-control camposTabla_dinero campo-total-global" name="total_dinero" readonly>
-                                    </div>
-                                    <div class="col-4">
-                                        <label for="recibido" class="">Recibido</label>
-                                        <input type="text" class="form-control camposTabla_dinero" name="recibe_dinero" id="recibido" required>
-                                    </div>
-                                    <div class="col-4">
-                                        <label class="">Cambio</label>
-                                        <input type="text" class="form-control camposTabla_dinero se_devuelve" name="cambio_dinero" readonly>
-                                    </div>
-                                    <input type="hidden" name="link_venta" value="<?php echo $linkeo; ?>">
-                                    <input type="hidden" id="generador_codigo_factura" name="codigo_factura">
-                                </div>
-                                <br>
-                                <div class="row" style="justify-content:center">
-                                    <div class="col-4">
-                                        <button type="submit" name="productos_vendidos" class="btn btn-success btn-lg">Realizar Venta <i class="fa fa-shopping-cart" aria-hidden="true"></i> </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php } ?>         
-                                </div>
-                            </div>
+                </div>
+                <div class="col-6">
+                    <div class="card card-success">
+                        <div class="card-header" style="background: #493a3be0">
+                            <h3 class="card-title textTabla">DETALLES</h3>
                         </div>
-                    </form>
-                    <!-- Modal Crear Cliente-->
-                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                        <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLongTitle">Crear Cliente</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="cliente_empresa" class="">Empresa</label>
-                                                <input type="text" class="form-control" id="cliente_empresa">
-                                            </div>
-                                        </div>                          
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="cliente_nit" class="">Nit</label>
-                                                <input type="text" class="form-control " id="cliente_nit">
-                                                <input type="hidden" id="link" value="<?php echo $link ?>">
-                                            </div>
-                                        </div>                            
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="cliente_nombre" class="">Nombres</label>
-                                                <input type="text" class="form-control " id="cliente_nombre" required>
-                                            </div>
-                                        </div>                     
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="cliente_apellido" class="">Apellidos</label>
-                                                <input type="text" class="form-control " id="cliente_apellido" required>
-                                            </div>
-                                        </div>                        
-                                    </div> 
-                                    <div class="row" style="justify-content:center">
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="cliente_telefono" class="">Teléfono</label>
-                                                <input type="num" class="form-control" id="cliente_telefono">
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="cliente_ciudad" >Ciudad</label>
-                                                <input type="text" class="form-control" id="cliente_ciudad">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <div class="form-group">
-                                                <label for="cliente_direccion">Dirección</label> 
-                                                <input type="text" class="form-control" id="cliente_direccion">
-                                            </div>
-                                        </div>                        
-                                        <div class="col-sm-3">
-                                            <div class="form-group">
-                                                <label for="cliente_email">Correo</label>
-                                                <input type="text" class="form-control " id="cliente_email">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            <div class="modal-footer">
-                                <button type="button" id="cerrarModalCliente" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                <button type="button" onclick="sendData()" class="btn btn-primary">Registrar</button>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Modal -->
-                    <!-- Modal Crear Producto-->
-                    <div class="modal fade" id="crearProducto" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                        <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLongTitle">Crear Producto</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <form method="post" action="">
-                                <div class="modal-body">
-                                    <div class="row">                        
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label>Código</label>
-                                                <input type="text" class="form-control camposTabla" name="producto_codigo" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label>Nombre</label>
-                                                <input type="text" class="form-control camposTabla" name="producto_nombre" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label>Marca</label>
-                                                <input type="text" class="form-control camposTabla" name="producto_marca" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label>Modelo</label>
-                                                <input type="text" class="form-control camposTabla" name="producto_modelo" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label>Categoría</label>
-                                                <div class="form-group camposTabla">
-                                                    <select class="form-control select2 camposTabla" style="width: 100%;" name="categoria_id">                                    
-                                                        <option value="">Escoger Categoría</option> 
-                                                        <?php foreach ($lista_categoria as $registro) {?>   
-                                                            <option value="<?php echo $registro['categoria_id']; ?>"><?php echo $registro['categoria_nombre']; ?></option> 
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label>Proveedor</label>
+                        <!-- A credito --> 
+                        <style>
+                            #partes,#metodo_transferencia{
+                                display: none;
+                            }
+                            span.select2-selection.select2-selection--single{
+                                height: 38px;
+                            }
+                            /* Ocultar las flechas de incremento/decremento en campos numéricos */
+                            input[type=number]::-webkit-inner-spin-button,
+                            input[type=number]::-webkit-outer-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                            }
+                            input[type=number] {
+                                -moz-appearance: textfield; /* Firefox */
+                            }
+                            .custom-radio {
+                                transform: scale(1.2);
+                            }
+                            </style>
+                        <!-- TABS -->
+                        <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Ventas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">Trasladar</a>
+                            </li>
+                        </ul>
+
+                        <!-- CONTENIDO DE TABS -->
+                        <div class="tab-content" id="custom-tabs-four-tabContent">
+                            <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                <?php if ($noSeller) { ?>
+                                    <article> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Primero asignar una <strong>caja</strong> para poder realizar una <strong>Venta.</strong></article>
+                                <?php } else { ?>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-4">
                                                 <div class="form-group">
-                                                    <select class="form-control select2 camposTabla" style="width: 100%;" name="proveedor_id">                                    
-                                                        <option value="">Escoger tu proveedor</option> 
-                                                        <?php foreach ($lista_proveedores as $registro) {?>   
-                                                            <option value="<?php echo $registro['id_proveedores']; ?>"><?php echo $registro['nombre_proveedores']; ?></option> 
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label>Fecha de Garantía</label>
-                                                <div class="input-group date" id="fechaGarantia" data-target-input="nearest">
-                                                    <input name ="fechaGarantia" type="text" class="form-control datetimepicker-input" data-target="#fechaGarantia" />
-                                                    <div class="input-group-append" data-target="#fechaGarantia" data-toggle="datetimepicker">
-                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    <label>Métodos de Pago</label>
+                                                    <div class="form-group">
+                                                        <select class="form-control" id="metodoPago" name="metodo_pago" onchange="mostrarOcultarPartes(1)">                                    
+                                                            <option value="0" style="color:#22c600">Efectivo</option> 
+                                                            <option value="1" style="color:#009fc1">Transferencia</option> 
+                                                            <option value="3" style="color:#d50000">Datafono</option>  
+                                                            <option value="2" style="color:#f4a700">A Crédito</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-5">
+                                                <div class="form-group">
+                                                    <div class="row" id="partes">
+                                                        <article style=" padding: 0px 0px 10px;"> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Para Credito es <strong>Obligatorio</strong> que el cliente esté <strong>Registrado</strong>, luego selecciónelo. </article>
+                                                        Plazo: <input type="number" class="form-control" required name="plazo" value="0">
+                                                        <br>
+                                                        <br>
+                                                        En Dias o Meses: <select class="form-control select2" name="tiempoDiasMeses" style="height: 20px">
+                                                            <option value="0">Dias</option> 
+                                                            <!-- <option value="1">Mes</option>  -->
+                                                        </select> 
+                                                        <br>
+                                                        <table style="width: 100%">
+                                                            <tr>     
+                                                                <td><input checked type="radio" class="custom-radio" name="tipoAbono" value="1"> No hay abono</td>
+                                                                <td><input type="radio" class="custom-radio" value="2" name="tipoAbono"> Efectivo</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><input type="radio" class="custom-radio" value="02" name="tipoAbono"> Nequi</td>
+                                                                <td><input type="radio" class="custom-radio" value="00" name="tipoAbono"> Davivienda</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2"><input type="radio" class="custom-radio" value="01" name="tipoAbono"> Bancolombia</td>
+                                                            </tr>
+                                                        </table>
+                                                        <br>
+                                                        <article style=" padding: 0px 0px 10px;"> <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong>Escoger  <strong>Cliente</strong>. </article>
+                                                            🔻⬇️⬇️🔻
+                                                    </div>
+                                                    <div class="row" id="metodo_transferencia">
+                                                        <div class="form-group">
+                                                        <label class="textLabel">Eliga Banco</label> 
+                                                        <select class="form-control camposTabla" id="transferenciaMetodo" name="transferenciaMetodo">                                    
+                                                            <option value="00" style="color:#22c600">davivienda</option> 
+                                                            <option value="01" style="color:#009fc1">bancolombia</option> 
+                                                            <option value="02" style="color:#d50000">nequi</option>
+                                                        </select>
+                                                    </div>
+                                                    </div>
+                                                    <label>Clientes</label>
+                                                    <select class="form-control select2" name="cliente_id" id="fastCliente" style="height: 20px">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="form-group">
+                                                    <label>Accesos Rápidos</label> 
+                                                    <span><a type="button" class="" data-toggle="modal" data-target="#exampleModalCenter">- Crear Cliente</a> </span>
+                                                    <span><a type="button" class="" data-toggle="modal" data-target="#crearProducto">- Crear Producto</a> </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <label class="">Total</label>
+                                                <input type="text" class="form-control camposTabla_dinero campo-total-global" name="total_dinero" readonly>
+                                            </div>
+                                            <div class="col-4">
+                                                <label for="recibido" class="">Recibido</label>
+                                                <input type="text" class="form-control camposTabla_dinero" name="recibe_dinero" id="recibido" required>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="">Cambio</label>
+                                                <input type="text" class="form-control camposTabla_dinero se_devuelve" name="cambio_dinero" readonly>
+                                            </div>
+                                            <input type="hidden" name="link_venta" value="<?php echo $linkeo; ?>">
+                                            <input type="hidden" id="generador_codigo_factura" name="codigo_factura">
+                                        </div>
+                                        <br>
+                                        <div class="row" style="justify-content:center">
+                                            <div class="col-3">
+                                                <button type="submit" name="productos_vendidos" style="width: 108%;font-size: 21px;" class="btn btn-success btn-lg">Vender <i class="fa fa-shopping-cart" aria-hidden="true"></i> </button>
+                                            </div>
                                         </div>
                                     </div>
+                                <?php } ?>
+                            </div>
+                        </form>
+                            <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+                                <form method="post" action="">
+                                    <input type="hidden" value="1" name="val_traslado">
+                                    <input type="hidden" id="tlProductos" name="tl_productos">
+                                    <?php foreach ($lista_carrito as $registro) {?>
+                                            <input type="hidden" name="producto_codigo_trasladar[<?php echo $registro['id']; ?>]" value="<?php echo $registro['producto_codigo']; ?>">
+                                            <input type="hidden" class="carrito_debajo carrito_<?php echo $registro['id']; ?>" name="cantidad[<?php echo $registro['id']; ?>]" value="<?php echo $registro['cantidad']; ?>">
+                                            <input type="hidden" class="precio_menor" name="precio[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio'], 0, '.', ','); ?>">
+                                            <input type="hidden" class="precio_mayor" name="precio_venta_xmayor[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio_venta_mayor'], 0, '.', ','); ?>">
+                                    <?php } ?>
+                                    <br>
                                     <div class="row">
-                                        <div class="col-3">
+                                        <div class="col-4" style="margin-left: 18px;">
                                             <div class="form-group">
-                                                <label>Stock o Existencias</label>
-                                                <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="producto_precio_compra">Precio de Compra</label>
-                                                <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_compra" id="producto_precio_compra">
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="producto_precio_venta">Precio al Detal</label>
-                                                <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta" id="producto_precio_venta">
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="producto_precio_venta_xmayor">Precio al por mayor</label> 
-                                                <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta_xmayor" id="producto_precio_venta_xmayor">
+                                                <label class="textLabel">Enviar a:</label> &nbsp;<i class="nav-icon fas fa-share"></i> 
+                                                <div class="form-group camposTabla">
+                                                    <select class="form-control select2 camposTabla" name="empresa_destino">                                    
+                                                        <option value="">Escoger Local</option> 
+                                                        <?php foreach ($lista_empresas as $registro) {?>   
+                                                            <option value="<?php echo $registro['empresa_id'] . '-' . $registro['link']?>"><?php echo $registro['empresa_nombre']; ?></option> 
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                    <button type="submit" name="producto_modal" class="btn btn-primary">Registrar</button>
-                                </div>
-                            </form>
+                                    <div class="row" style="justify-content:center">
+                                        <div class="col-3">
+                                            <button type="submit" name="productos_traslados" style="width: 108%;font-size: 21px;" class="btn btn-info">Trasladar <i class="nav-icon fas fa-share"></i> </button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <br>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    <!-- Modal -->
                 </div>
             </div>
+        <!-- Modal Crear Cliente-->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Crear Cliente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="cliente_empresa" class="">Empresa</label>
+                                    <input type="text" class="form-control" id="cliente_empresa">
+                                </div>
+                            </div>                          
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="cliente_nit" class="">Nit</label>
+                                    <input type="text" class="form-control " id="cliente_nit">
+                                    <input type="hidden" id="link" value="<?php echo $link ?>">
+                                </div>
+                            </div>                            
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="cliente_nombre" class="">Nombres</label>
+                                    <input type="text" class="form-control " id="cliente_nombre" required>
+                                </div>
+                            </div>                     
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="cliente_apellido" class="">Apellidos</label>
+                                    <input type="text" class="form-control " id="cliente_apellido" required>
+                                </div>
+                            </div>                        
+                        </div> 
+                        <div class="row" style="justify-content:center">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="cliente_telefono" class="">Teléfono</label>
+                                    <input type="num" class="form-control" id="cliente_telefono">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="cliente_ciudad" >Ciudad</label>
+                                    <input type="text" class="form-control" id="cliente_ciudad">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="cliente_direccion">Dirección</label> 
+                                    <input type="text" class="form-control" id="cliente_direccion">
+                                </div>
+                            </div>                        
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="cliente_email">Correo</label>
+                                    <input type="text" class="form-control " id="cliente_email">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" id="cerrarModalCliente" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" onclick="sendData()" class="btn btn-primary">Registrar</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <!-- Modal Crear Producto-->
+        <div class="modal fade" id="crearProducto" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Crear Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action="">
+                    <div class="modal-body">
+                        <div class="row">                        
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Código</label>
+                                    <input type="text" class="form-control camposTabla" name="producto_codigo" required>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Nombre</label>
+                                    <input type="text" class="form-control camposTabla" name="producto_nombre" required>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Marca</label>
+                                    <input type="text" class="form-control camposTabla" name="producto_marca" required>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Modelo</label>
+                                    <input type="text" class="form-control camposTabla" name="producto_modelo" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label>Categoría</label>
+                                    <div class="form-group camposTabla">
+                                        <select class="form-control select2 camposTabla" style="width: 100%;" name="categoria_id">                                    
+                                            <option value="">Escoger Categoría</option> 
+                                            <?php foreach ($lista_categoria as $registro) {?>   
+                                                <option value="<?php echo $registro['categoria_id']; ?>"><?php echo $registro['categoria_nombre']; ?></option> 
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label>Proveedor</label>
+                                    <div class="form-group">
+                                        <select class="form-control select2 camposTabla" style="width: 100%;" name="proveedor_id">                                    
+                                            <option value="">Escoger tu proveedor</option> 
+                                            <?php foreach ($lista_proveedores as $registro) {?>   
+                                                <option value="<?php echo $registro['id_proveedores']; ?>"><?php echo $registro['nombre_proveedores']; ?></option> 
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Fecha de Garantía</label>
+                                    <div class="input-group date" id="fechaGarantia" data-target-input="nearest">
+                                        <input name ="fechaGarantia" type="text" class="form-control datetimepicker-input" data-target="#fechaGarantia" />
+                                        <div class="input-group-append" data-target="#fechaGarantia" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Stock o Existencias</label>
+                                    <input type="number" class="form-control camposTabla_stock" name="producto_stock_total" required>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="producto_precio_compra">Precio de Compra</label>
+                                    <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_compra" id="producto_precio_compra">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="producto_precio_venta">Precio al Detal</label>
+                                    <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta" id="producto_precio_venta">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="producto_precio_venta_xmayor">Precio al por mayor</label> 
+                                    <input type="text" class="form-control camposTabla_dinero" placeholder="$ 000.000" name="producto_precio_venta_xmayor" id="producto_precio_venta_xmayor">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="producto_modal" class="btn btn-primary">Registrar</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+    </div>
 <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
-<script src="accion_fetch.js"></script>
+<script src="accion_fetch_bodega.js"></script>
 <?php include("../templates/footer.php") ?>
 
                             

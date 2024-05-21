@@ -76,3 +76,29 @@ function mostrarCliente(info) {
 
 // Llamar a la función para listar productos al cargar la página
 listarCliente();
+
+function remover_producto_carrito(id) {
+    fetch('removerProducto.php', {
+        method: 'POST',
+        body: new URLSearchParams({id: id})
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log("Borrado");
+        // Seleccionar y eliminar la fila del carrito del HTML
+        var filaEliminar = document.getElementById('producto_' + id);
+        if (filaEliminar) {
+            filaEliminar.parentNode.removeChild(filaEliminar);
+            // Llamar a la función para actualizar los totales globales y otros campos
+            if (typeof actualizarCampoTotalGlobal === 'function') {
+                actualizarCampoTotalGlobal();
+            }
+        } else {
+            console.log("Fila del carrito no encontrada en el HTML");
+        }
+    })
+    .catch(error => {
+        console.log("No borrado");
+        console.error('Error:', error);
+    });
+}

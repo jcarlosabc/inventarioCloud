@@ -42,6 +42,8 @@
       $ventas_link = "crear_venta.php";
       $ventas_detalles_link = "detalles.php";
       $ventas_link_historia_venta = "index_ventas.php";
+      $index_estado_de_cuenta = "index_estado_de_cuenta.php";
+      $factura_estado_cuenta = "detalles_estado_cuenta.php";
     //SECCIÓN DE PRODUCTOS
       $crear_categoria_link = 'crear_categoria.php';
       $lista_categoria_link = 'lista_categoria.php';
@@ -84,6 +86,8 @@
       $ventas_link = "crear_venta.php?link=".$link;
       $ventas_detalles_link = "detalles.php?link=".$link;
       $ventas_link_historia_venta = "index_ventas.php?link=".$link;
+      $index_estado_de_cuenta = "index_estado_de_cuenta.php?link=".$link;
+      $factura_estado_cuenta = "detalles_estado_cuenta.php?link=".$link;
     //SECCIÓN DE PRODUCTOS
       $crear_categoria_link = 'crear_categoria.php?link='.$link;
       $lista_categoria_link = 'lista_categoria.php?link='.$link;
@@ -158,7 +162,7 @@
   <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
   <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 <!-- Whatssap -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-NHunfPAzTJH7s1weDQ8q5PXdvXEZEfPeF2dQu9KcKzS0/OjLJNSU+87HwGY5HV0HdGbh+Kmt7lC3FRJ0wGF+1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
 
 </head>
 
@@ -313,6 +317,12 @@
                     <p>Historial de Ventas</p>
                   </a>
                 </li>
+                <li class="nav-item">
+                  <a href="<?php echo $url_base;?>secciones/<?php echo $index_estado_de_cuenta;?>" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Estado de Cuentas</p>
+                  </a>
+                </li>
               </ul>
             </li>
   
@@ -361,13 +371,13 @@
                     <p>Lista de Productos</p>
                   </a>
                 </li>    
-                  <li class="nav-item">
+                <?php } ?> 
+                <li class="nav-item">
                   <a href="<?php echo $url_base;?>secciones/<?php echo $index_traslados?>" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Historial Traslados</p>
                   </a>
                 </li>    
-                <?php } ?> 
               </ul>
             </li>
           <?php } ?> 

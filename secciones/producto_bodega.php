@@ -13,7 +13,7 @@ if ($_SESSION['valSudoAdmin']) {
     $sentencia->execute();    
   }
 
-  $sentencia_productos=$conexion->prepare("SELECT * FROM bodega");
+  $sentencia_productos=$conexion->prepare("SELECT * FROM bodega WHERE link = 'sudo_bodega'");
   $sentencia_productos->execute();
   $producto_bodega=$sentencia_productos->fetchAll(PDO::FETCH_ASSOC);
 

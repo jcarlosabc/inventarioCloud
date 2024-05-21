@@ -177,7 +177,7 @@
               <a href="<?php echo $url_base;?>secciones/<?php echo $crear_producto_link?>"> <button type="button" class="btn btn-block btn-outline-primary btn-lg" ><i class="nav-icon fas fa-shopping-basket fa-lg mr-2"></i>Crear Producto</button></a>
             </div>
             <div class="col-2 ">
-             <a href="<?php echo $url_base;?>secciones/<?php echo $producto_bodega_link?>"> <button type="button" class="btn btn-block btn-outline-warning btn-lg" > <i class="nav-icon fa fa-tasks fa-lg mr-2"></i>Trasladar Producto</button></a>
+             <a href="<?php echo $url_base;?>secciones/<?php echo $index_estado_de_cuenta?>"> <button type="button" class="btn btn-block btn-outline-warning btn-lg" > <i class="nav-icon fa fa-tasks fa-lg mr-2"></i>Estados de Cuenta</button></a>
             </div>
             <!-- <div class="col-2">
              <a href="<?php echo $url_base;?>secciones/<?php echo $crear_venta_bodega?>"> <button type="button" class="btn btn-block btn-outline-success btn-lg" ><i class="nav-icon fas fa-cart-plus fa-lg mr-2"></i> Comprar</button></a>

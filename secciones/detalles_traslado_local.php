@@ -1,10 +1,19 @@
 <?php include("../templates/header.php") ?>
 <?php 
-
+if(isset($_SESSION['link_remitente_array'])){
+    // Recorre el array y utiliza cada valor de link_remitente
+    foreach ($_SESSION['link_remitente_array'] as $link_remitente) {
+        // Puedes usar $link_remitente aquí como lo necesites
+        echo $link_remitente;
+    }
+} else {
+    // Si el array no está presente en la sesión, maneja el caso según tus necesidades
+}
   if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
     $link=(isset($_GET['link']))?$_GET['link']:"";
   
+   
     // Datos de empresa para la factura
     if ($_SESSION['rolBodega']) {   
         $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa_bodega WHERE link = :link");
@@ -16,36 +25,53 @@
         $empresa_direccion = isset($registro_empresa["bodega_direccion"]) ? $registro_empresa["bodega_direccion"] : "";
         $empresa_nit = isset($registro_empresa["bodega_nit"]) ? $registro_empresa["bodega_nit"] : "";
     }else if ($_SESSION['rolSudoAdmin']){
-        // $sentencia_empresa = $conexion->prepare("SELECT empresa.* FROM empresa INNER JOIN venta ON empresa.link = venta.link
-        // WHERE venta.venta_id = :venta_id");
-        // $sentencia_empresa->bindParam(":venta_id", $txtID);
-        // $sentencia_empresa->execute();
-        // $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
-        // $usuario_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
-        // $empresa_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
-        // $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
-        // $empresa_direccion = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
-        // $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
-        // $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
+        $sentencia_empresa=$conexion->prepare("SELECT link_remitente FROM historial_traslados WHERE traslado = :txtID");
+        $sentencia_empresa->bindParam(":txtID", $txtID);
+        $sentencia_empresa->execute();
+        $buscando_remitente=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+        if ($buscando_remitente) {
+            $link_encontrado = $buscando_remitente['link_remitente'];
+        }
+
+        if ($link_encontrado == "sudo_bodega") {
+            $link_bodega = "sudo_bodega";
+            $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa_bodega WHERE link = :link");
+            $sentencia_empresa->bindParam(":link", $link_bodega);
+            $sentencia_empresa->execute();
+            $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+            $empresa_nombre = isset($registro_empresa["bodega_nombre"]) ? $registro_empresa["bodega_nombre"] : "";
+            $empresa_telefono = isset($registro_empresa["bodega_telefono"]) ? $registro_empresa["bodega_telefono"] : "";
+            $empresa_direccion = isset($registro_empresa["bodega_direccion"]) ? $registro_empresa["bodega_direccion"] : "";
+            $empresa_nit = isset($registro_empresa["bodega_nit"]) ? $registro_empresa["bodega_nit"] : "";
+        }else {
+            $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link = :link");
+            $sentencia_empresa->bindParam(":link", $link);
+            $sentencia_empresa->execute();
+            $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+            $empresa_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
+            $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+            $empresa_direccion = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
+            $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+            $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
+        }
     }else{
         $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link = :link");
         $sentencia_empresa->bindParam(":link", $link);
         $sentencia_empresa->execute();
         $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
-        $usuario_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
         $empresa_nombre = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
         $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
         $empresa_direccion = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
         $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
         $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
     }
-    $empresa_nombre=$registro_empresa["empresa_nombre"];  
-    $empresa_telefono=$registro_empresa["empresa_telefono"];  
-    $empresa_direccion=$registro_empresa["empresa_direccion"];  
-    $empresa_nit=$registro_empresa["empresa_nit"];  
+    // $empresa_nombre=$registro_empresa["empresa_nombre"];  
+    // $empresa_telefono=$registro_empresa["empresa_telefono"];  
+    // $empresa_direccion=$registro_empresa["empresa_direccion"];  
+    // $empresa_nit=$registro_empresa["empresa_nit"];  
  
   // Mostrar lista comprados
-//   if($_SESSION['rolSudoAdmin']){
+  if($_SESSION['rolSudoAdmin']){
 //     $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo,producto_precio_venta_xmayor
 //     FROM venta
 //     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
@@ -53,7 +79,7 @@
 //     WHERE venta_detalle.venta_codigo = :venta_codigo");
 //     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
 
-//   }else  if ($_SESSION['rolBodega']) {
+  }else  if ($_SESSION['rolBodega']) {
 //     $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo,producto_precio_venta_xmayor
 //     FROM venta
 //     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
@@ -61,7 +87,7 @@
 //     WHERE venta_detalle.venta_codigo = :venta_codigo AND venta_detalle.link = :link");
 //     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
 //     $sentencia_venta->bindParam(":link", $link);
-//    }else {
+   }else {
 //     $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo,producto_precio_venta_xmayor
 //     FROM venta
 //     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
@@ -71,30 +97,8 @@
     // WHERE p.producto_id =: txtID");
     // $sentencia_venta->bindParam(":txtID", $txtID);
 
-//   }
-//     $sentencia_venta = $conexion->prepare("SELECT p.*, ht.*, e.* FROM producto p 
-//         INNER JOIN historial_traslados ht ON p.producto_id = ht.producto_id INNER JOIN empresa e ON e.link = ht.link_destino 
-//         WHERE p.producto_id =:producto_id AND p.producto_fecha_creacion = ht.fecha_traslado");
-//     $sentencia_venta->bindParam(":producto_id", $txtID);
-//     $sentencia_venta->execute();
-//     $detalle_traslado = $sentencia_venta->fetch(PDO::FETCH_LAZY);
+  }
 
-//   if ($detalle_traslado) {
-//         $producto_codigo = $detalle_traslado['producto_codigo'];
-//         $remision_traslado = $detalle_traslado['remision_traslado'];
-//         $producto_nombre = $detalle_traslado['producto_nombre'];
-//         $producto_marca = $detalle_traslado['producto_marca'];
-//         $producto_modelo = $detalle_traslado['producto_modelo'];
-//         $cantidad_traladada = $detalle_traslado['cantidad'];
-//         $producto_precio_compra = $detalle_traslado['producto_precio_compra'];
-//         $producto_precio_venta = $detalle_traslado['producto_precio_venta'];
-//         $producto_precio_venta_xmayor = $detalle_traslado['producto_precio_venta_xmayor'];
-//         $empresa_nombre = $detalle_traslado['empresa_nombre'];
-//         $empresa_telefonot = $detalle_traslado['empresa_telefono'];
-//         $empresa_nitt = $detalle_traslado['empresa_nit'];
-//         $empresa_direcciont = $detalle_traslado['empresa_direccion'];
-//         $fecha_traslado = $detalle_traslado['fecha_traslado'];
-//   }
     $sentencia_venta = $conexion->prepare("SELECT ht.* , p.* FROM historial_traslados ht 
         JOIN producto p ON ht.producto_id = p.producto_id   
         WHERE ht.link_remitente =:link AND ht.traslado=:txtID");
@@ -103,11 +107,23 @@
     $sentencia_venta->execute();
     $detalle_traslado = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
     $sumaTotal = 0;
+    $sumaTotalxMenor = 0;
+    $sumaTotalxMayor = 0;
     foreach ($detalle_traslado as $dataTraslado) {
         $empresa_destido = $dataTraslado['link_destino'];
         $fecha_traslado = $dataTraslado['fecha_traslado'];
+
+        // calculando el total de costos
         $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_compra'];
         $sumaTotal += $resulCadaUno;
+
+        // calculando el total de al por menor
+        $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_venta'];
+        $sumaTotalxMenor += $resulCadaUno;
+
+        // calculando el total de al por mayor
+        $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_venta_xmayor'];
+        $sumaTotalxMayor += $resulCadaUno;
     }
     $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link = :link");
     $sentencia_empresa->bindParam(":link", $empresa_destido);
@@ -119,25 +135,6 @@
     $empresa_direccionT = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
     $empresa_telefonoT = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
     $empresa_nitT = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
-
-//   if ($detalle_traslado) {
-//         $producto_codigo = $detalle_traslado['producto_codigo'];
-//         $remision_traslado = $detalle_traslado['remision_traslado'];
-//         $producto_nombre = $detalle_traslado['producto_nombre'];
-//         $producto_marca = $detalle_traslado['producto_marca'];
-//         $producto_modelo = $detalle_traslado['producto_modelo'];
-//         $cantidad_traladada = $detalle_traslado['cantidad'];
-//         $producto_precio_compra = $detalle_traslado['producto_precio_compra'];
-//         $producto_precio_venta = $detalle_traslado['producto_precio_venta'];
-//         $producto_precio_venta_xmayor = $detalle_traslado['producto_precio_venta_xmayor'];
-//         $empresa_nombre = $detalle_traslado['empresa_nombre'];
-//         $empresa_telefonot = $detalle_traslado['empresa_telefono'];
-//         $empresa_nitt = $detalle_traslado['empresa_nit'];
-//         $empresa_direcciont = $detalle_traslado['empresa_direccion'];
-//         $fecha_traslado = $detalle_traslado['fecha_traslado'];
-//   }
-
-
 }else {
   echo " no existe nada";
 }
@@ -210,7 +207,7 @@
             <div class= "invoice-col">
               <br>                
               <address>
-                <strong class="textTittleAddress">Vendedor: </strong><span class="textContentAddress"><?php echo $usuario_nombre;?></span><br>
+                <strong class="textTittleAddress">Despacho: </strong><span class="textContentAddress"><?php echo $empresa_nombre;?></span><br>
                 <strong class="textTittleAddress">Dirección: </strong><span class="textContentAddress"><?php echo $empresa_direccion;?></span><br>
                 <strong class="textTittleAddress">Teléfono: </strong><span class="textContentAddress"><?php echo $empresa_telefono;?></span><br>
                 <strong class="textTittleAddress">Ciudad: </strong><span class="textContentAddress"> Cartagena de Indias</span><br>  
@@ -260,7 +257,7 @@
                                 <th>COSTO</th>
                                 <th>AL DETAL</th>
                                 <th>AL POR MAYOR</th>
-                                <th>SUBTOTAL COSTO</th>
+                                <!-- <th>SUBTOTAL COSTO</th> -->
                             </tr>
                         </thead>
                         <tbody style="font-size: 13px;">
@@ -274,7 +271,7 @@
                                     <td><?php echo '$' . number_format($registro['producto_precio_compra'], 0, '.', ','); ?></td>
                                     <td><?php echo '$' . number_format($registro['producto_precio_venta'], 0, '.', ','); ?></td>
                                     <td><?php echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ','); ?></td>
-                                    <td><?php echo '$' . number_format($registro['producto_precio_venta'] = $registro['cantidad']*$registro['producto_precio_compra'], 0, '.', ','); ?></td>
+                                    <!-- <td><?php echo '$' . number_format($registro['producto_precio_venta'] = $registro['cantidad']*$registro['producto_precio_compra'], 0, '.', ','); ?></td> -->
                                 </tr>  
                             <?php } ?>
                         </tbody>
@@ -286,8 +283,16 @@
                     <div class="table-responsive">
                         <table class="table">
                             <tr>
-                                <th style="width:50%">Total:</th>
+                                <th style="width:50%">Total Costos:</th>
                                 <td class="tdColor"><?php echo '<strong>$' . number_format($sumaTotal, 0, '.', ',') . '</strong>'; ?></td>
+                            </tr>
+                            <tr>
+                                <th style="width:50%">Total al Detal:</th>
+                                <td class="tdColor"><?php echo '<strong>$' . number_format($sumaTotalxMenor, 0, '.', ',') . '</strong>'; ?></td>
+                            </tr>
+                            <tr>
+                                <th style="width:50%">Total al por Mayor:</th>
+                                <td class="tdColor"><?php echo '<strong>$' . number_format($sumaTotalxMayor, 0, '.', ',') . '</strong>'; ?></td>
                             </tr>
                             </tr>
                         </table>

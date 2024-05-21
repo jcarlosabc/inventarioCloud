@@ -1,6 +1,11 @@
 <?php include("../templates/header.php") ?>
 <?php 
 
+if ($_SESSION['valSudoAdmin']) {
+  $ventas_detalles_link = "detalles.php";
+}else{
+  $ventas_detalles_link = "detalles.php?link=".$link;
+}
   if(isset($_GET['txtID'])){
     $txtID=(isset($_GET['txtID']))?$_GET['txtID']:"";
     $link=(isset($_GET['link']))?$_GET['link']:"";
@@ -59,6 +64,19 @@
     $cliente_ciudad=$registro["cliente_ciudad"];  
     $cliente_direccion=$registro["cliente_direccion"];  
 
+    // Activar/Desactivar boton de editar Cuando la compra sea por credito
+  $estado_venta_hc = $registro["estado_venta"];  
+  $sentencia_hvc=$conexion->prepare("SELECT COUNT(historial_venta_codigo) as total_abonos FROM historial_credito WHERE historial_venta_codigo = :venta_codigo");
+  $sentencia_hvc->bindParam(":venta_codigo", $venta_codigo);
+  $sentencia_hvc->execute();
+  $resultado_sentencia = $sentencia_hvc->fetch(PDO::FETCH_LAZY);
+  if ($resultado_sentencia) {
+     $total_abonos = $resultado_sentencia['total_abonos'];
+  }
+  $estado_boton = true;
+  if ($estado_venta_hc == 0 && $total_abonos > 1 ) {
+    $estado_boton = false ;
+  }
     // Creando link de bono link en detalle
     if ($_SESSION['rolBodega']) {   
       $crear_abono_links = "crear_abono.php?link=sudo_bodega&txtID";
@@ -162,6 +180,91 @@ date_add($fechaCompra, date_interval_create_from_date_string($plazoDias . ' days
 // Obtener la fecha de vencimiento
 $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
 
+if(isset($_POST['factura_editada'])) {
+  $cantidad_nueva = isset($_POST['cantidad_nueva']) ? $_POST['cantidad_nueva'] : array();
+  $cantidad_anterior = isset($_POST['cantidad_anterior']) ? $_POST['cantidad_anterior'] : array();
+  $producto_id_edit = isset($_POST['producto_id_edit']) ? $_POST['producto_id_edit'] : array();
+
+  $venta_detalle_precio_venta = isset($_POST['venta_detalle_precio_venta']) ? $_POST['venta_detalle_precio_venta'] : array();
+  $venta_detalle_precio_venta = str_replace(array('$','.', ','), '', $venta_detalle_precio_venta);
+
+  $venta_codigo_edit = isset($_POST['venta_codigo_edit']) ? $_POST['venta_codigo_edit'] : "";
+  $estado_venta_edit = isset($_POST['estado_venta']) ? $_POST['estado_venta'] : "";
+
+  $venta_total_edit = 0;
+  foreach ($cantidad_nueva as $id => $cantidad_nueva) {
+    $cantidad_anterior_actual = isset($cantidad_anterior[$id]) ? $cantidad_anterior[$id] : 0;
+    $producto_id_edit_actual = isset($producto_id_edit[$id]) ? $producto_id_edit[$id] : 0;
+    $precio_venta_actual = isset($venta_detalle_precio_venta[$id]) ? $venta_detalle_precio_venta[$id] : 0;
+
+    $cantidad_final = 0;
+    $venta_sub_total = 0;
+    $total_cuenta = 0;
+    if ($cantidad_nueva > $cantidad_anterior_actual) {
+        $cantidad_final = $cantidad_nueva - $cantidad_anterior_actual;
+        $sql = "UPDATE producto SET producto_stock_total = producto_stock_total - ? WHERE producto_id = ?";
+        $sentencia_producto = $conexion->prepare($sql);
+        $params = array($cantidad_final, $producto_id_edit_actual);
+        $sentencia_producto->execute($params);
+
+    }else if($cantidad_nueva < $cantidad_anterior_actual){
+        $cantidad_final = $cantidad_anterior_actual - $cantidad_nueva;
+        $sql = "UPDATE producto SET producto_stock_total = producto_stock_total + ? WHERE producto_id = ?";
+        $sentencia_producto = $conexion->prepare($sql);
+        $params = array($cantidad_final, $producto_id_edit_actual);
+        $sentencia_producto->execute($params);
+    }
+
+    $venta_sub_total = $cantidad_nueva * $precio_venta_actual;
+    $sql = "UPDATE venta_detalle SET venta_detalle_cantidad = ?, venta_detalle_precio_venta = ?, venta_detalle_total = ? WHERE venta_detalle_id = ?";
+    $sentencia_venta_detalle = $conexion->prepare($sql);
+    $params = array($cantidad_nueva, $precio_venta_actual, $venta_sub_total, $id);
+    $sentencia_venta_detalle->execute($params);
+
+    $venta_total_edit += $venta_sub_total;
+  }
+  if ($estado_venta_edit != 1) {
+    $nuevo_credito_pendiente = -0 - $venta_total_edit;
+    $sql = "UPDATE venta SET venta_total = ?, venta_cambio = ? WHERE venta_codigo = ?";
+    $sentencia_venta= $conexion->prepare($sql);
+    $params = array($venta_total_edit, $nuevo_credito_pendiente, $venta_codigo_edit);
+    $result = $sentencia_venta->execute($params);
+
+    $sql = "UPDATE historial_credito SET historial_dinero_pendiente = ? WHERE historial_venta_codigo = ?";
+    $sentencia_historial_credito= $conexion->prepare($sql);
+    $params = array($nuevo_credito_pendiente, $venta_codigo_edit);
+    $sentencia_historial_credito->execute($params);
+    
+  }else {
+    $sql = "UPDATE venta SET venta_total = ? WHERE venta_codigo = ?";
+    $sentencia_venta= $conexion->prepare($sql);
+    $params = array($venta_total_edit, $venta_codigo_edit);
+    $result = $sentencia_venta->execute($params);
+  }
+  
+    if ($result ) {
+      echo '<script>
+      Swal.fire({
+          title: "¡Factura Editada!",
+          icon: "success",
+          confirmButtonText: "¡Entendido!"
+      }).then((result)=>{
+          if(result.isConfirmed){
+              window.location.href = "'.$url_base.'secciones/'.$ventas_detalles_link.'&txtID='.$txtID.'";
+          }
+      })
+      </script>';
+  }else {
+      echo '<script>
+      Swal.fire({
+          title: "Error al Editar Factura",
+          icon: "error",
+          confirmButtonText: "¡Entendido!"
+      });
+      </script>';
+  }   
+   
+}
 
 ?>
 <br>
@@ -181,9 +284,6 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
         </h1>
       </div>
     </div>
- 
-
-
             <!-- info row -->
             <style>
                 .contorno-negro {
@@ -301,19 +401,29 @@ $fechaVencimiento = date_format($fechaCompra, 'd-m-Y');
                             </tr>
                         </thead>
                         <tbody style="font-size: 13px;">
-                            <?php foreach ($detalle_venta as $registro) {?>
-                                <tr>
-                                    <td><?php echo $registro['producto_codigo']; ?></td>
-                                    <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
-                                    <td><?php echo $registro['producto_marca']; ?></td>
-                                    <td><?php echo $registro['producto_modelo']; ?></td>
-                                    <td><?php echo $registro['venta_detalle_cantidad']; ?></td>
-                                    <td><?php if ($registro['estado_mayor_menor'] == 0) { echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',');}else { echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ',') ;} ?></td> 
-                                    <!-- <td><?php echo '$' . number_format(abs($registro['venta_pagado']), 0, '.', ','); ?></td> -->
-                                    <td><?php echo '$' . number_format($registro['venta_detalle_total'], 0, '.', ','); ?></td>    
-                                    <!-- <td><?php echo '$' . number_format(abs($registro['venta_cambio']), 0, '.', ','); ?></td> -->
-                                </tr>  
-                            <?php } ?>
+                          <form method="post" action="">
+                            <input type="hidden" name="venta_codigo_edit" value="<?php echo $venta_codigo ?>">
+                              <?php foreach ($detalle_venta as $registro) {?>
+                                  <input type="hidden" value="<?php echo $registro['venta_detalle_cantidad']; ?>" name="cantidad_anterior[<?php echo $registro['venta_detalle_id']; ?>]">
+                                  <input type="hidden" value="<?php echo $registro['producto_id'];?>" name="producto_id_edit[<?php echo $registro['venta_detalle_id']; ?>]">
+                                  <input type="hidden" value="<?php echo $registro['estado_venta'];?>" name="estado_venta">
+                                  <tr>
+                                      <td><?php echo $registro['producto_codigo']; ?></td>
+                                      <td><?php echo $registro['venta_detalle_descripcion']; ?></td>
+                                      <td><?php echo $registro['producto_marca']; ?></td>
+                                      <td><?php echo $registro['producto_modelo']; ?></td>
+                                      <td><input type="number" style="border:none;text-align:center" value="<?php echo $registro['venta_detalle_cantidad']; ?>" name="cantidad_nueva[<?php echo $registro['venta_detalle_id']; ?>]"></td>
+                                      <!-- <td>?php if ($registro['estado_mayor_menor'] == 0) { echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',');}else { echo '$' . number_format($registro['producto_precio_venta_xmayor'], 0, '.', ',') ;} ?></td>  -->
+                                      <td> <input type="text" style="border:none;text-align:center" value="<?php echo '$' . number_format($registro['venta_detalle_precio_venta'], 0, '.', ',');?>" name="venta_detalle_precio_venta[<?php echo $registro['venta_detalle_id']; ?>]"></td> 
+                                      <!-- <td><?php echo '$' . number_format(abs($registro['venta_pagado']), 0, '.', ','); ?></td> -->
+                                      <td><?php echo '$' . number_format($registro['venta_detalle_total'], 0, '.', ','); ?></td>    
+                                      <!-- <td><?php echo '$' . number_format(abs($registro['venta_cambio']), 0, '.', ','); ?></td> -->
+                                  </tr>  
+                              <?php } ?>
+                              <?php if($estado_boton) { ?>
+                                <button type="submit" name="factura_editada" class="no-print btn btn-info btn-sm float-right"> ✅ Editado</button>   
+                              <?php } ?>
+                            </form>
                         </tbody>
                     </table>
                 </div>

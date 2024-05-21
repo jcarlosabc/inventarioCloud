@@ -10,6 +10,7 @@ if ($_SESSION['valSudoAdmin']) {
  }else{
     $detalles_traslado_local = "detalles_traslado_local.php?link=".$link.'&txtID';
  }
+ $_SESSION['link_remitente_array'] = array();
 
 //Eliminar Elementos
 if(isset($_GET['txtID'])){
@@ -22,23 +23,29 @@ if(isset($_GET['txtID'])){
 }
 $responsable = $_SESSION['usuario_id'];
 if ($responsable == 1) {
-    // $sentencia = $conexion->prepare("SELECT producto.*, categoria.*, e.empresa_nombre FROM producto
-    //     INNER JOIN categoria ON producto.categoria_id = categoria.categoria_id LEFT JOIN ( SELECT p.*, e.empresa_nombre FROM producto p 
-    //     LEFT JOIN empresa e ON p.link = e.link) AS e ON producto.link = e.link GROUP BY producto_id");
-    //   $sentencia=$conexion->prepare("SELECT p.*, c.*, e.empresa_nombre
-    //   FROM producto p LEFT JOIN categoria c ON p.categoria_id = c.categoria_id LEFT JOIN empresa e ON p.link = e.link");
-    // $sentencia->bindParam(":link",$link);
 
-}else if($link != "sudo_bodega"  || $link != "sudo_admin" ) { 
+  $sentencia_historial_traslados = $conexion->prepare("SELECT DISTINCT ht.*, ht.traslado as trasladoCode, p.*, e.empresa_nombre 
+    FROM historial_traslados ht 
+    JOIN bodega p ON ht.producto_id = p.producto_id JOIN empresa e ON ht.link_destino = e.link 
+    -- WHERE ht.link_remitente = :link
+    GROUP BY ht.traslado");
+  // $sentencia_historial_traslados->bindParam(":link", $link);
 
-    $sentencia_historial_traslados = $conexion->prepare("SELECT DISTINCT ht.*, ht.traslado as trasladoCode, p.*, e.empresa_nombre 
-        FROM historial_traslados ht 
-        JOIN producto p ON ht.producto_id = p.producto_id JOIN empresa e ON ht.link_destino = e.link 
-        WHERE ht.link_remitente = :link
-        GROUP BY ht.traslado");
-    $sentencia_historial_traslados->bindParam(":link", $link);
-
+}else if($link == "sudo_bodega") { 
+  $sentencia_historial_traslados = $conexion->prepare("SELECT DISTINCT ht.*, ht.traslado as trasladoCode, p.*, e.empresa_nombre 
+    FROM historial_traslados ht 
+    JOIN bodega p ON ht.producto_id = p.producto_id JOIN empresa e ON ht.link_destino = e.link 
+    WHERE ht.link_remitente = :link
+    GROUP BY ht.traslado");
+  $sentencia_historial_traslados->bindParam(":link", $link);
+  
 }else {
+  $sentencia_historial_traslados = $conexion->prepare("SELECT DISTINCT ht.*, ht.traslado as trasladoCode, p.*, e.empresa_nombre 
+    FROM historial_traslados ht 
+    JOIN producto p ON ht.producto_id = p.producto_id JOIN empresa e ON ht.link_destino = e.link 
+    WHERE ht.link_remitente = :link
+    GROUP BY ht.traslado");
+  $sentencia_historial_traslados->bindParam(":link", $link);
 
 }
 $sentencia_historial_traslados->execute();
@@ -66,7 +73,9 @@ $detalle_traslado = $sentencia_historial_traslados->fetchAll(PDO::FETCH_ASSOC)
             </thead>
             <tbody>
               <?php $count = 0; $precioComptaTotal =0;
-              foreach ($detalle_traslado as $registro) {?>
+              foreach ($detalle_traslado as $registro) {
+                $_SESSION['link_remitente_array'][] = $registro['link_remitente'];
+                ?>
                 <tr>
                   <td scope="row"><?php $count++; echo $count; ?></td>
                   <td><?php echo $registro['remision_traslado']; ?></td>
@@ -75,7 +84,7 @@ $detalle_traslado = $sentencia_historial_traslados->fetchAll(PDO::FETCH_ASSOC)
                   <td><?php echo $registro['fecha_traslado']; ?></td>
                   <td>
                     <a class="btn btn-primary btn-sm" href="<?php echo $url_base;?>secciones/<?php echo $detalles_traslado_local ;?>=<?php echo $registro['trasladoCode']; ?>" role="button" title="Detalles">
-                      <i class="fas fa-eye"></i> 
+                      <i class="fas fa-eye"></i>
                     </a>
                   </td>
                 </tr>  
