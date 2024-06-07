@@ -102,3 +102,22 @@ function remover_producto_carrito(id) {
         console.error('Error:', error);
     });
 }
+
+function update_producto_bodega(id) {
+    let cantidadProducto = document.getElementById('cantidadProductoBodega_' + id).value;
+    let cantidadPrecioMenor = document.getElementById('cantidadPrecioMenorBodega_' + id).value;
+    let cantidadPrecioMayor = document.getElementById('cantidadPrecioMayorBodega_' + id).value;
+    fetch('updateProducto.php', {
+        method: 'POST',
+        body: new URLSearchParams({id: id, cantidadProducto:cantidadProducto, cantidadPrecioMenor:cantidadPrecioMenor,
+            cantidadPrecioMayor:cantidadPrecioMayor })
+    })
+    .then(response => response.text())
+    .then(data => {
+    //    console.log("update realizado...");
+    })
+    .catch(error => {
+        // console.log("Algo salio mal con el update...");
+        console.error('Error:', error);
+    });
+}

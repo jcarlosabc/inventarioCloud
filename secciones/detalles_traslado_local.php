@@ -4,7 +4,6 @@ if(isset($_SESSION['link_remitente_array'])){
     // Recorre el array y utiliza cada valor de link_remitente
     foreach ($_SESSION['link_remitente_array'] as $link_remitente) {
         // Puedes usar $link_remitente aquí como lo necesites
-        echo $link_remitente;
     }
 } else {
     // Si el array no está presente en la sesión, maneja el caso según tus necesidades
@@ -65,76 +64,85 @@ if(isset($_SESSION['link_remitente_array'])){
         $empresa_telefono = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
         $empresa_nit = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
     }
-    // $empresa_nombre=$registro_empresa["empresa_nombre"];  
-    // $empresa_telefono=$registro_empresa["empresa_telefono"];  
-    // $empresa_direccion=$registro_empresa["empresa_direccion"];  
-    // $empresa_nit=$registro_empresa["empresa_nit"];  
- 
-  // Mostrar lista comprados
-  if($_SESSION['rolSudoAdmin']){
-//     $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo,producto_precio_venta_xmayor
-//     FROM venta
-//     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
-//     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
-//     WHERE venta_detalle.venta_codigo = :venta_codigo");
-//     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
 
-  }else  if ($_SESSION['rolBodega']) {
-//     $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo,producto_precio_venta_xmayor
-//     FROM venta
-//     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
-//     INNER JOIN bodega ON venta_detalle.producto_id = bodega.producto_id
-//     WHERE venta_detalle.venta_codigo = :venta_codigo AND venta_detalle.link = :link");
-//     $sentencia_venta->bindParam(":venta_codigo", $venta_codigo);
-//     $sentencia_venta->bindParam(":link", $link);
-   }else {
-//     $sentencia_venta = $conexion->prepare("SELECT venta.*, venta_detalle.*,producto_codigo, producto_fecha_garantia,producto_marca, producto_modelo,producto_precio_venta_xmayor
-//     FROM venta
-//     INNER JOIN venta_detalle ON venta.venta_codigo = venta_detalle.venta_codigo 
-//     INNER JOIN producto ON venta_detalle.producto_id = producto.producto_id
-//     WHERE venta_detalle.venta_codigo = :venta_codigo AND venta_detalle.link = :link");
-    // $sentencia_venta = $conexion->prepare("SELECT p.*, ht.* FROM producto p INNER JOIN historial_traslados ht ON p.producto_id = ht.producto_id 
-    // WHERE p.producto_id =: txtID");
-    // $sentencia_venta->bindParam(":txtID", $txtID);
+    if ($_SESSION['rolBodega']) {   
+        $sentencia_venta = $conexion->prepare("SELECT ht.* , p.* FROM historial_traslados ht 
+            JOIN producto p ON ht.producto_id = p.producto_id   
+            WHERE ht.link_remitente =:link AND ht.traslado=:txtID");
+            $sentencia_venta->bindParam(":link", $link);
+            $sentencia_venta->bindParam(":txtID", $txtID);
+            $sentencia_venta->execute();
+            $detalle_traslado = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
+            $sumaTotal = 0;
+            $sumaTotalxMenor = 0;
+            $sumaTotalxMayor = 0;
+        foreach ($detalle_traslado as $dataTraslado) {
+            $empresa_destido = $dataTraslado['link_destino'];
+            $fecha_traslado = $dataTraslado['fecha_traslado'];
 
-  }
+            // calculando el total de costos
+            $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_compra'];
+            $sumaTotal += $resulCadaUno;
 
-    $sentencia_venta = $conexion->prepare("SELECT ht.* , p.* FROM historial_traslados ht 
-        JOIN producto p ON ht.producto_id = p.producto_id   
-        WHERE ht.link_remitente =:link AND ht.traslado=:txtID");
-    $sentencia_venta->bindParam(":link", $link);
-    $sentencia_venta->bindParam(":txtID", $txtID);
-    $sentencia_venta->execute();
-    $detalle_traslado = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
-    $sumaTotal = 0;
-    $sumaTotalxMenor = 0;
-    $sumaTotalxMayor = 0;
-    foreach ($detalle_traslado as $dataTraslado) {
-        $empresa_destido = $dataTraslado['link_destino'];
-        $fecha_traslado = $dataTraslado['fecha_traslado'];
+            // calculando el total de al por menor
+            $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_venta'];
+            $sumaTotalxMenor += $resulCadaUno;
 
-        // calculando el total de costos
-        $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_compra'];
-        $sumaTotal += $resulCadaUno;
+            // calculando el total de al por mayor
+            $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_venta_xmayor'];
+            $sumaTotalxMayor += $resulCadaUno;
+        }
+        $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link = :link");
+        $sentencia_empresa->bindParam(":link", $empresa_destido);
+        $sentencia_empresa->execute();
+        $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
 
-        // calculando el total de al por menor
-        $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_venta'];
-        $sumaTotalxMenor += $resulCadaUno;
+        $empresa_nombreT = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
+        $empresa_telefonoT = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+        $empresa_direccionT = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
+        $empresa_telefonoT = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+        $empresa_nitT = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
+    
+    }else {
+        $sentencia_venta = $conexion->prepare("SELECT ht.* , p.* FROM historial_traslados ht 
+            JOIN producto p ON ht.producto_id = p.producto_id   
+            WHERE ht.link_remitente =:link AND ht.traslado=:txtID");
+        $sentencia_venta->bindParam(":link", $link);
+        $sentencia_venta->bindParam(":txtID", $txtID);
+        $sentencia_venta->execute();
+        $detalle_traslado = $sentencia_venta->fetchAll(PDO::FETCH_ASSOC);
+        $sumaTotal = 0;
+        $sumaTotalxMenor = 0;
+        $sumaTotalxMayor = 0;
+        foreach ($detalle_traslado as $dataTraslado) {
+            $empresa_destido = $dataTraslado['link_destino'];
+            $fecha_traslado = $dataTraslado['fecha_traslado'];
+    
+            // calculando el total de costos
+            $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_compra'];
+            $sumaTotal += $resulCadaUno;
+    
+            // calculando el total de al por menor
+            $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_venta'];
+            $sumaTotalxMenor += $resulCadaUno;
+    
+            // calculando el total de al por mayor
+            $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_venta_xmayor'];
+            $sumaTotalxMayor += $resulCadaUno;
+        }
+        $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link = :link");
+        $sentencia_empresa->bindParam(":link", $empresa_destido);
+        $sentencia_empresa->execute();
+        $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
+    
+        $empresa_nombreT = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
+        $empresa_telefonoT = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+        $empresa_direccionT = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
+        $empresa_telefonoT = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
+        $empresa_nitT = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
 
-        // calculando el total de al por mayor
-        $resulCadaUno = $dataTraslado['cantidad'] * $dataTraslado['producto_precio_venta_xmayor'];
-        $sumaTotalxMayor += $resulCadaUno;
     }
-    $sentencia_empresa=$conexion->prepare("SELECT * FROM empresa WHERE link = :link");
-    $sentencia_empresa->bindParam(":link", $empresa_destido);
-    $sentencia_empresa->execute();
-    $registro_empresa=$sentencia_empresa->fetch(PDO::FETCH_LAZY);
 
-    $empresa_nombreT = isset($registro_empresa["empresa_nombre"]) ? $registro_empresa["empresa_nombre"] : "";
-    $empresa_telefonoT = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
-    $empresa_direccionT = isset($registro_empresa["empresa_direccion"]) ? $registro_empresa["empresa_direccion"] : "";
-    $empresa_telefonoT = isset($registro_empresa["empresa_telefono"]) ? $registro_empresa["empresa_telefono"] : "";
-    $empresa_nitT = isset($registro_empresa["empresa_nit"]) ? $registro_empresa["empresa_nit"] : "";
 }else {
   echo " no existe nada";
 }

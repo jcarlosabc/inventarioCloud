@@ -1184,7 +1184,6 @@ if(isset($_POST['productos_traslados'])) {
             if ($lista_producto_buscado) {
                 $sql = "INSERT INTO historial_traslados (producto_id, cantidad, fecha_traslado, link_remitente, link_destino, traslado )         
                 VALUES (?, ?, ?, ?, ?, ?)";
-
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
                     $producto_id, $cantidad_vendida,
@@ -1193,19 +1192,34 @@ if(isset($_POST['productos_traslados'])) {
                 );
                 $sentencia->execute($params);
 
-                // Actualizando la cantidad en el stock del LOCAL que le pasamos de bodega
-                $sql = "UPDATE producto SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ? , traslado = ? WHERE producto_codigo = ? AND link= ?";
-                $sentencia_envio = $conexion->prepare($sql);
-                $params = array($fechaTrasladoActual, $cantidad_vendida, $ramdonCode_tl_productos, $producto_codigo_trasladar[$id], $link_empresa);
-                $resultado = $sentencia_envio->execute($params);
+                // Obtener el valor actual de 'traslado'
+                $sql_select = "SELECT traslado FROM producto WHERE producto_codigo = ? AND link = ?";
+                $sentencia_select = $conexion->prepare($sql_select);
+                $params_select = array($producto_codigo_trasladar[$id], $link_empresa);
+                $sentencia_select->execute($params_select);
+                $resultado = $sentencia_select->fetch(PDO::FETCH_ASSOC);
+
+                // Decodificar el JSON actual y agregar el nuevo código
+                $traslado_actual = json_decode($resultado['traslado'], true);
+                $traslado_actual[] = $ramdonCode_tl_productos; // Agregar el nuevo código al array
+
+                // Codificar nuevamente a JSON
+                $json_ramdonCode_tl_productos = json_encode($traslado_actual);
+
+                // Actualizar el campo 'traslado' con el nuevo JSON
+                $sql_update = "UPDATE producto SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ?, traslado = ? WHERE producto_codigo = ? AND link = ?";
+                $sentencia_update = $conexion->prepare($sql_update);
+                $params_update = array($fechaTrasladoActual, $cantidad_vendida, $json_ramdonCode_tl_productos, $producto_codigo_trasladar[$id], $link_empresa);
+                $resultado_update = $sentencia_update->execute($params_update);
                 
             }else{
-                // echo "INSERTANDO NUEVO PRODUCTO";
+            // echo "INSERTANDO NUEVO PRODUCTO";
                 $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion, producto_nombre, producto_stock_total,
-                producto_precio_compra,producto_precio_venta, producto_precio_venta_xmayor, producto_marca,producto_modelo, categoria_id,proveedor_id, link, traslado )         
+                producto_precio_compra, producto_precio_venta, producto_precio_venta_xmayor, producto_marca, producto_modelo, categoria_id, proveedor_id, link, traslado )         
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            
                 $sentencia = $conexion->prepare($sql);
+                // Convertir el código aleatorio a formato ARRAY JSON
+                $json_ramdonCode_tl_productos = json_encode([$ramdonCode_tl_productos]);
                 $params = array(
                     $producto_codigo_trasladar[$id], 
                     $fechaTrasladoActual, $producto,
@@ -1214,7 +1228,7 @@ if(isset($_POST['productos_traslados'])) {
                     $precio_mayor_Tactual, 
                     $marca, $modelo,
                     0, 0,
-                    $link_empresa, $ramdonCode_tl_productos
+                    $link_empresa, $json_ramdonCode_tl_productos
                 );
                 $sentencia->execute($params);
 

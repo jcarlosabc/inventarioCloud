@@ -1150,7 +1150,7 @@ if(isset($_POST['productos_traslados'])) {
             $precio_menor_Tactual = isset($precio_menor[$id]) ? $precio_menor[$id] : 0;
             $precio_mayor_Tactual = isset($precio_mayor[$id]) ? $precio_mayor[$id] : 0;
 
-            $lista_producto_buscado = $conexion->prepare("SELECT link FROM bodega WHERE producto_codigo = :producto_codigo AND link=:link_empresa");
+            $lista_producto_buscado = $conexion->prepare("SELECT link FROM producto WHERE producto_codigo = :producto_codigo AND link=:link_empresa");
             $lista_producto_buscado->bindParam(":producto_codigo", $producto_codigo_trasladar[$id]);
             $lista_producto_buscado->bindParam(":link_empresa", $link_empresa);
             $lista_producto_buscado->execute();
@@ -1178,30 +1178,45 @@ if(isset($_POST['productos_traslados'])) {
             $responsable_carrito = $row_carrito['responsable'];
 
             if ($lista_producto_buscado) {
+
+                // Obtener el valor actual de 'traslado'
+                $sql_select = "SELECT traslado, producto_id FROM producto WHERE producto_codigo = ? AND link = ?";
+                $sentencia_select = $conexion->prepare($sql_select);
+                $params_select = array($producto_codigo_trasladar[$id], $link_empresa);
+                $sentencia_select->execute($params_select);
+                $resultado = $sentencia_select->fetch(PDO::FETCH_ASSOC);
+
+                // Decodificar el JSON actual y agregar el nuevo código
+                $producto_id_actual = json_decode($resultado['producto_id'], true);
+                $traslado_actual = json_decode($resultado['traslado'], true);
+                $traslado_actual[] = $ramdonCode_tl_productos; // Agregar el nuevo código al array
+                // Codificar nuevamente a JSON
+                $json_ramdonCode_tl_productos = json_encode($traslado_actual);
+                
+                // Actualizar el campo 'traslado' con el nuevo JSON
+                $sql_update = "UPDATE producto SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ?, traslado = ? WHERE producto_codigo = ? AND link = ?";
+                $sentencia_update = $conexion->prepare($sql_update);
+                $params_update = array($fechaTrasladoActual, $cantidad_vendida, $json_ramdonCode_tl_productos, $producto_codigo_trasladar[$id], $link_empresa);
+                $sentencia_update->execute($params_update);
+                
                 $sql = "INSERT INTO historial_traslados (producto_id, cantidad, fecha_traslado, link_remitente, link_destino, traslado )         
                 VALUES (?, ?, ?, ?, ?, ?)";
 
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
-                    $producto_id, $cantidad_vendida,
+                    $producto_id_actual, $cantidad_vendida,
                     $fechaTrasladoActual, $link_carrito,        
                     $link_empresa, $ramdonCode_tl_productos
                 );
                 $sentencia->execute($params);
-
-                // Actualizando la cantidad en el stock del LOCAL que le pasamos de bodega
-                $sql = "UPDATE bodega SET producto_fecha_ingreso = ?, producto_stock_total = producto_stock_total + ? , traslado = ? WHERE producto_codigo = ? AND link= ?";
-                $sentencia_envio = $conexion->prepare($sql);
-                $params = array($fechaTrasladoActual, $cantidad_vendida, $ramdonCode_tl_productos, $producto_codigo_trasladar[$id], $link_empresa);
-                $resultado = $sentencia_envio->execute($params);
-                
             }else{
                 // echo "INSERTANDO NUEVO PRODUCTO";
-                $sql = "INSERT INTO bodega (producto_codigo, producto_fecha_creacion, producto_nombre, producto_stock_total,
-                producto_precio_compra,producto_precio_venta, producto_precio_venta_xmayor, producto_marca,producto_modelo, categoria_id,proveedor_id, link, traslado )         
+                $sql = "INSERT INTO producto (producto_codigo, producto_fecha_creacion, producto_nombre, producto_stock_total,
+                producto_precio_compra, producto_precio_venta, producto_precio_venta_xmayor, producto_marca, producto_modelo, categoria_id, proveedor_id, link, traslado )         
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            
                 $sentencia = $conexion->prepare($sql);
+                // Convertir el código aleatorio a formato ARRAY JSON
+                $json_ramdonCode_tl_productos = json_encode([$ramdonCode_tl_productos]);
                 $params = array(
                     $producto_codigo_trasladar[$id], 
                     $fechaTrasladoActual, $producto,
@@ -1210,16 +1225,17 @@ if(isset($_POST['productos_traslados'])) {
                     $precio_mayor_Tactual, 
                     $marca, $modelo,
                     0, 0,
-                    $link_empresa, $ramdonCode_tl_productos
+                    $link_empresa, $json_ramdonCode_tl_productos
                 );
                 $sentencia->execute($params);
+                $ultimo_id_insertado_traslado = $conexion->lastInsertId();
 
                 $sql = "INSERT INTO historial_traslados (producto_id, cantidad, fecha_traslado, link_remitente, link_destino, traslado )         
                 VALUES (?, ?, ?, ?, ?, ?)";
 
                 $sentencia = $conexion->prepare($sql);
                 $params = array(
-                    $producto_id, $cantidad_vendida,
+                    $ultimo_id_insertado_traslado, $cantidad_vendida,
                     $fechaTrasladoActual,
                     $link_carrito, $link_empresa,
                     $ramdonCode_tl_productos
@@ -1371,9 +1387,9 @@ if(isset($_POST['productos_traslados'])) {
                                                 <td><?php echo $registro['producto']; ?></td>
                                                 <td><?php echo $registro['marca']; ?></td>
                                                 <td><?php echo $registro['modelo']; ?></td>
-                                                <td><input style="width: 49px" type="number" class="cantidad-input form-control" name="cantidad[<?php echo $registro['id']; ?>]" value="<?php echo $registro['cantidad']; ?>"></td>
-                                                <td style="font-weight: 800;"><input type="text" class="precio_menor form-control" name="precio[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio'], 0, '.', ','); ?>"></td>
-                                                <td style="font-weight: 800;"><input type="text" class="precio_mayor form-control" name="precio_venta_xmayor[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio_venta_mayor'], 0, '.', ','); ?>"> </td>
+                                                <td><input style="width: 49px" type="number" onblur="update_producto_bodega(<?php echo $registro['id']; ?>)"  id="cantidadProductoBodega_<?php echo $registro['id']; ?>" class="cantidad-input form-control" name="cantidad[<?php echo $registro['id']; ?>]" value="<?php echo $registro['cantidad']; ?>"></td>
+                                                <td style="font-weight: 800;"><input type="text" onblur="update_producto_bodega(<?php echo $registro['id']; ?>)" id="cantidadPrecioMenorBodega_<?php echo $registro['id']; ?>" class="precio_menor form-control" name="precio[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio'], 0, '.', ','); ?>"></td>
+                                                <td style="font-weight: 800;"><input type="text" onblur="update_producto_bodega(<?php echo $registro['id']; ?>)" id="cantidadPrecioMayorBodega_<?php echo $registro['id']; ?>" class="precio_mayor form-control" name="precio_venta_xmayor[<?php echo $registro['id']; ?>]" style="width: 77px;" value="<?php echo number_format($registro['precio_venta_mayor'], 0, '.', ','); ?>"> </td>
                                                 <td class="total-column" style="color:#14af37;font-weight: 800;"></td>
                                                 <td><input type="hidden" class="total-input" name="total[<?php echo $registro['id']; ?>]" value="">
                                                     <div class="btn-group">
@@ -1754,7 +1770,7 @@ if(isset($_POST['productos_traslados'])) {
         <!-- Modal -->
     </div>
 <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
-<script src="accion_fetch_bodega.js"></script>
+<script src="accion_fetch_bode.js"></script>
 <?php include("../templates/footer.php") ?>
 
                             

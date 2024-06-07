@@ -4,7 +4,7 @@
 	# Incluyendo librerias necesarias #
     require ('code128.php');
     
-    $pdf = new PDF_Code128('P','mm',array(80,258));
+    $pdf = new PDF_Code128('P','mm',array(80,218));
     $pdf->SetMargins(4,10,4);
     $pdf->AddPage();
 

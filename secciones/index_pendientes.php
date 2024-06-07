@@ -30,24 +30,25 @@
     date_default_timezone_set('America/Bogota'); 
     $fechaActual = date("d-m-Y");
 
-
-    foreach ($lista_ventas_credito as $item) {
+  //   foreach ($lista_ventas_credito as $item) {
     
-      $venta_fecha = $item['venta_fecha'];
-      $plazo = $item['plazo'];
-      $tiempo = $item['tiempo'];
+  //     $venta_fecha = $item['venta_fecha'];
+  //     $plazo = $item['plazo'];
+  //     $tiempo = $item['tiempo'];
 
-      $fechaInicio = strtotime($venta_fecha);
-      $fechaActuales = strtotime(date($fechaActual));
+  //     $fechaInicio = strtotime($venta_fecha);
+  //     $fechaActuales = strtotime(date($fechaActual));
 
-      $diferenciaDias = ($fechaActuales - $fechaInicio) / (60*60*24);
-      $plazo -= $diferenciaDias;
+  //     $diferenciaDias = ($fechaActuales - $fechaInicio) / (60*60*24);
+  //     $plazo -= $diferenciaDias;
 
-      if ($plazo < 0) {
-          $plazo = 0;     
-        }
+  //     echo "plazooo => " .$plazo;
+
+  //     if ($plazo < 0) {
+  //         $plazo = 0;     
+  //       }
      
-  } 
+  // } 
 
 ?>
 
@@ -86,10 +87,27 @@
                   <td ><?php echo $registro['venta_cambio'] < 0 ? '$'.number_format(abs($registro['venta_cambio']) ,0, '.', ',') : "Cuenta Saldada ✅"; ?></td>
                   <td><?php echo $registro['cliente_nombre']; ?><?php echo $registro['cliente_apellido']; ?></td>
                   <td ><?php echo ($registro['venta_metodo_pago'] == 2)? "Credito": "nad"; ?></td>
-                  <td><?php echo $registro['plazo']; ?> <?php if ($registro['tiempo'] == 0) { echo "Dias" ;}else {echo "Meses" ;}; ?></td>
+                  <td><?php echo $registro['plazo']; ?> <?php if ($registro['tiempo'] == 0) { echo "Dias" ;} else {echo "Meses" ;}; ?></td>
                   <td>
                     <?php if ($registro['estado_venta'] != 1) { ?>
-                        <?php echo $plazo . " " ; if ($registro['tiempo'] == 0) { echo "Dias" ;}else {echo "Meses" ;}; ?>
+                        <?php 
+                            date_default_timezone_set('America/Bogota'); 
+                            $fechaActual = date("d-m-Y");
+                            $venta_fecha = $registro['venta_fecha'];
+                            $plazo = $registro['plazo'];
+                            $tiempo = $registro['tiempo'];
+                      
+                            $fechaInicio = strtotime($venta_fecha);
+                            $fechaActuales = strtotime(date($fechaActual));
+                      
+                            $diferenciaDias = ($fechaActuales - $fechaInicio) / (60*60*24);
+                            $plazo -= $diferenciaDias;
+                      
+                            if ($plazo < 0) {
+                                $plazo = 0;     
+                              }
+                        echo $plazo . " " ; if ($registro['tiempo'] == 0) { echo "Dias" ;} else {echo "Meses" ;}; ?>
+
                         <?php if ($plazo == 20 && $plazo <= 8) { ?>
                           <article class="text-warning">
                             <strong class="text-warning"><i class="fa fa-info-circle"></i> Recuerde: </strong> Quedan <strong class="text-warning">
@@ -135,7 +153,7 @@
                             <i class="fa fa-check" aria-hidden="true"></i> Pagado
                           </a>
                         <?php } ?>
-                      <?php } ?>
+                    <?php } ?>
                   </td>
                   <?php if ($registro['estado_venta'] == 1) { ?>                    
                     <td>  
